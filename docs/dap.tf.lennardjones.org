@@ -1,0 +1,265 @@
+#+TITLE: Lennard-Jones in Tensorflow with gradient forces and stress
+#+AUTHOR: John Kitchin
+
+
+The main purpose of this document is to show from start to finish that you can define an energy model in Tensorflow, and then get forces and stresses using tf.gradients. The second goal of this code is to show that batch training is possible. Both of those goals have been achieved.
+
+A potential use of this code is to run molecular simulations, e.g. molecular dynamics, on accelerated hardware. I don't have a sense for how well it will perform for large numbers of atoms. The neighbor distances code is fully vectorized, but state of the art MD codes are even smarter. In a simulation, they use a skin, and only update the distance matrix when an atom has moved further than a skin tolerance (which could cause it to move across the cutoff radius). This code is not that clever.
+
+* The training database
+  
+The [[./argon.db]] database contains 139 DFT calculations of Ar in different crystal structures at different volumes where the atoms have been rattled several times in each calculation. Here is a brief summary of the contents of the database.
+
+#+BEGIN_SRC python :results output org drawer
+import ase.db
+
+db = ase.db.connect('argon.db')
+data = db.select()
+
+count = 0
+structures = set()
+volumes = set()
+
+for row in data:
+    structures.update([row.structure])
+    volumes.update([float(row.volume)])
+    count += 1
+
+print(f'Number of calculations = {count}')
+print(f'structures: {structures}')
+print(f'volumes: {volumes}')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Number of calculations = 139
+structures: {'fcc', 'diamond', 'bcc', 'hcp', 'sc'}
+volumes: {64.923518, 97.46901300288376, 129.731256178007, 68.92099999999999, 69.09420649999996, 37.8434835, 71.05491046091358, 171.53224199999997, 235.2980000000001, 48.77799999999999, 50.243408999999986, 51.911500000000004, 313.181638, 91.73385100000003}
+:END:
+
+* Training the parameters on energies and forces
+
+Here, I train the model to a database of DFT calculations on Argon. I ran these calculations on my cluster at CMU. The arrays are padded as needed. We train on 50 of the data points here.
+
+#+BEGIN_SRC python :results output org drawer
+import warnings
+warnings.filterwarnings("ignore")
+
+import ase.db
+from dap.tf.lennardjones import *
+
+db = ase.db.connect('argon.db')
+
+N = 50
+ATOMS = [row.toatoms() for row in db.select(limit=N)]
+
+print('Atoms in set: ', set([len(atoms) for atoms in ATOMS]))
+
+maxnatoms = max([len(atoms) for atoms in ATOMS])
+
+POSITIONS = [row.positions for row in db.select(limit=N)]
+CELLS = [row.cell for row in db.select(limit=N)]
+
+ENERGIES = np.array([row.energy for row in db.select(limit=N)])
+FORCES = np.array([row.forces for row in db.select(limit=N)])
+
+# PADDING
+MASKS = [np.ones(maxnatoms, dtype=np.float64) for atoms in ATOMS]
+PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+                    for atoms in ATOMS]
+
+PADDED_FORCES = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+                 for atoms in ATOMS]
+
+for i, atoms in enumerate(ATOMS):
+    MASKS[i][len(atoms):] = 0.0
+    PADDED_POSITIONS[i][:len(atoms),:] = atoms.positions
+    PADDED_FORCES[i][:len(atoms),:] = atoms.get_forces()
+
+PADDED_FORCES = np.array(PADDED_FORCES)
+
+# Initial guesses. These are close to what I have previously fitted
+with tf.variable_scope("sigma", reuse=tf.AUTO_REUSE):
+      sigma = tf.get_variable(
+            "sigma",
+            initializer=tf.constant(3.71, dtype=tf.float64))
+
+with tf.variable_scope("epsilon", reuse=tf.AUTO_REUSE):
+      epsilon = tf.get_variable(
+            "epsilon",
+            initializer=tf.constant(0.0058, dtype=tf.float64))
+
+
+predicted_energies = energy_batch(PADDED_POSITIONS, CELLS, MASKS)
+e_errs = tf.convert_to_tensor(ENERGIES) - predicted_energies
+
+predicted_forces = forces_batch(PADDED_POSITIONS, CELLS, MASKS)
+f_errs = tf.square(tf.convert_to_tensor(PADDED_FORCES) - predicted_forces)
+
+loss = tf.reduce_mean(tf.square(e_errs)) + tf.reduce_mean(f_errs)
+
+optimizer = tf.train.AdamOptimizer(3e-4)
+train = optimizer.minimize(loss)
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+for i in range(1000):
+    if i % 200 and sess.run(loss) < 1e-5:
+        print(sess.run([epsilon, sigma, loss])) 
+        break
+    
+    sess.run(train)
+    if i % 200 == 0:
+        print(sess.run([epsilon, sigma, loss]))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atoms in set:  {1, 2}
+[0.0055000025750425409, 3.7102998552198923, 1.2074265234698833e-05]
+[0.0054327672115345414, 3.7138452508823128, 9.5131816405131827e-06]
+:END:
+
+Now we can use the parameters above to predict new energies.
+
+#+BEGIN_SRC python :results output org drawer
+from dap.tf.lennardjones import *
+import ase.db
+
+db = ase.db.connect('argon.db')
+
+
+ATOMS = [row.toatoms() for row in db.select()]
+
+STRUCTURES = [row.structure for row in db.select()]
+# Indices for plotting
+train = np.arange(50)
+fcc = [i for i in range(len(STRUCTURES)) if STRUCTURES[i] == 'fcc']
+bcc = [i for i in range(len(STRUCTURES)) if STRUCTURES[i] == 'bcc']
+hcp = [i for i in range(len(STRUCTURES)) if STRUCTURES[i] == 'hcp']
+sc = [i for i in range(len(STRUCTURES)) if STRUCTURES[i] == 'sc']
+diamond = [i for i in range(len(STRUCTURES)) if STRUCTURES[i] == 'diamond']
+
+maxnatoms = max([len(atoms) for atoms in ATOMS])
+
+POSITIONS = [row.positions for row in db.select()]
+CELLS = [row.cell for row in db.select()]
+
+ENERGIES = np.array([row.energy for row in db.select()])
+
+# PADDING
+MASKS = [np.ones(maxnatoms, dtype=np.float64) for atoms in ATOMS]
+PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+                    for atoms in ATOMS]
+
+for i, atoms in enumerate(ATOMS):
+    MASKS[i][len(atoms):] = 0.0
+    PADDED_POSITIONS[i][:len(atoms),:] = atoms.positions
+
+
+# These are copied from the fitting results above.
+with tf.variable_scope("sigma", reuse=tf.AUTO_REUSE):
+      sigma = tf.get_variable(
+            "sigma",
+            initializer=tf.constant(3.7138452508823128, dtype=tf.float64))
+
+with tf.variable_scope("epsilon", reuse=tf.AUTO_REUSE):
+      epsilon = tf.get_variable(
+            "epsilon",
+            initializer=tf.constant(0.0054327672115345414, dtype=tf.float64))
+
+
+predicted_energies = energy_batch(PADDED_POSITIONS, CELLS, MASKS)
+e_errs = tf.convert_to_tensor(ENERGIES) - predicted_energies
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+pe, ee = sess.run([predicted_energies, e_errs])
+
+import matplotlib.pyplot as plt
+plt.plot(ENERGIES[fcc], pe[fcc], 'bo', label='fcc')
+plt.plot(ENERGIES[bcc], pe[bcc], 'go', label='bcc')
+plt.plot(ENERGIES[hcp], pe[hcp], 'ro', label='hcp')
+plt.plot(ENERGIES[sc], pe[sc], 'ys', label='sc')
+plt.plot(ENERGIES[diamond], pe[diamond], 'ks', label='diamond')
+plt.plot(ENERGIES[train], pe[train], 'w.', label='train')
+
+plt.legend(loc='best')
+plt.xlabel('DFT energies (eV)')
+plt.ylabel('LJ energies (eV)')
+plt.savefig('lj-vs-dft.png')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+:END:
+
+[[./lj-vs-dft.png]]
+
+This figure shows the training data (white circles on top of the symbols) was mostly on the fcc and bcc structures and some of the hcp structures. The energies are not very spread out, and the variations are largely due to the changes in volume. It is evident here that the most close-packed structures (fcc, bcc and hcp) fall closest to parity, while the more open and directional structures (sc and diamond) deviate. This is expected for a simple pair-wise potential with no angular dependence.
+
+* Tensorboard graphs
+
+These blocks will launch a Tensorboard visualization of the graphs for each function.
+
+** energy 
+#+BEGIN_SRC python :results output org drawer
+from ase.build import bulk
+from dap.tf.visualize import show_graph
+import dap.tf.lennardjones as lj
+
+atoms = bulk('Ar', 'fcc', a=3)
+
+e = lj.energy(atoms.positions, atoms.cell)
+
+show_graph()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Created new window in existing browser session.
+:END:
+
+** forces
+   
+#+BEGIN_SRC python :results output org drawer
+from ase.build import bulk
+from dap.tf.visualize import show_graph
+import dap.tf.lennardjones as lj
+
+atoms = bulk('Ar', 'fcc', a=3)
+
+e = lj.forces(atoms.positions, atoms.cell)
+
+show_graph()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Created new window in existing browser session.
+:END:
+
+** stress
+   
+#+BEGIN_SRC python :results output org drawer
+from ase.build import bulk
+from dap.tf.visualize import show_graph
+import dap.tf.lennardjones as lj
+
+atoms = bulk('Ar', 'fcc', a=3)
+
+e = lj.stress(atoms.positions, atoms.cell)
+
+show_graph()
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Created new window in existing browser session.
+:END:
+
+
