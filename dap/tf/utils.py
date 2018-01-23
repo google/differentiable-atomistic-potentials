@@ -127,3 +127,38 @@ def combinations(arr, k):
       combination for combination in itertools.combinations(inds, k)
   ]
   return tf.stack([tf.gather(arr, ind) for ind in combination_indices])
+
+
+def slices_values_to_sparse_tensor(slices, values, dense_shape):
+  """Convert a tensor of slices and corresponding values to a sparse tensor.
+
+  Given a 2D tensor of slices, where each row corresponds to the row the slice
+  is from in another tensor, and the columns are the indices in that row, and a
+  tensor of corresponding values, create a tf.SparseTensor representation.
+
+  For example, to create a sparse representation of the top_k results:
+  >> arr = [[1, 2, 3], [3, 2, 1], [2, 1, 3]]
+  >> kv, ki = tf.nn.top_k(arr, k)
+  >> sparse_tensor = slices_values_to_sparse_tensor(kv, ki, arr.shape)
+
+  This is useful to then make a dense tensor comprised of those values, with
+  some other default value for the rest.
+
+  Here the default other values are zero.
+
+  >> dst = tf.sparse_tensor_to_dense(sparse_tensor, validate_indices=False)
+  """
+
+  slices = tf.cast(tf.convert_to_tensor(slices), dtype=tf.int64)
+  values = tf.convert_to_tensor(values)
+
+  shape = tf.shape(slices, out_type=tf.int64)
+
+  nrows = shape[0]
+  row_inds = tf.range(nrows)
+
+  flattened_indices = tf.reshape(slices * nrows + row_inds[:, None], [-1])
+  twod_inds = tf.stack(
+      [flattened_indices % nrows, flattened_indices // nrows], axis=1)
+  return tf.SparseTensor(
+      twod_inds, values=tf.reshape(values, [-1]), dense_shape=dense_shape)
