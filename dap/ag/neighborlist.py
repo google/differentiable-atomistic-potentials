@@ -115,15 +115,16 @@ def get_neighbors_oneway(positions, cell, cutoff_radius,
     strain_tensor = np.eye(3) + strain
     cell = np.dot(strain_tensor, cell.T).T
     positions = np.dot(strain_tensor, positions.T).T
-
-    inverse_cell = np.linalg.pinv(cell)
+    inverse_cell = np.linalg.inv(cell)
     h = 1 / np.linalg.norm(inverse_cell, axis=0)
-    N = (2 * cutoff_radius / h).astype(int) + 1
+    N = np.floor(2 * cutoff_radius / h) + 1
 
     scaled = np.dot(positions, inverse_cell)
-    scaled0 = scaled.copy() % 1.0
+    scaled0 = np.dot(positions, inverse_cell) % 1.0
 
-    offsets = (scaled0 - scaled).round().astype(int)
+    # this is autograd compatible.
+    offsets = np.int_((scaled0 - scaled).round())
+
     positions0 = positions + np.dot(offsets, cell)
     natoms = len(positions)
     indices = np.arange(natoms)
@@ -157,7 +158,7 @@ def get_neighbors_oneway(positions, cell, cutoff_radius,
 
         def atoms_mapfn(a):
             d = positions0 + displacement - positions0[a]
-            i = indices[(d**2).sum(1) < (cutoff_radius)**2]
+            i = indices[(d**2).sum(1) < (cutoff_radius**2 + skin)]
             if n1 == 0 and n2 == 0 and n3 == 0:
                 i = i[i > a]
             neighbors[a] = np.concatenate((neighbors[a], i))
