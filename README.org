@@ -3,9 +3,14 @@
 
 This is not an official Google product.
 
+#+BEGIN_EXPORT html
+<a href='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials'><img src='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials.svg?branch=master'/></a>
+<a href='https://coveralls.io/github/jkitchin/differentiable-atomistic-potentials'><img src='https://coveralls.io/repos/github/jkitchin/differentiable-atomistic-potentials/badge.svg' alt='Coverage Status' /></a>
+
+#+END_EXPORT
 * Summary
 
-An atomistic potential is a function that takes atomic coordinates, atom types and a unit cell and calculates the potential energy of that atomic configuration. These potentials are used in molecular simulations such as molecular dynamics and Monte Carlo Simulations. Historically, the forces and stress were derived by analytical or numerical derivatives of the potential energy function, then implemented in a program. In this project, we use automatic differentiation to compute forces and stresses from the potential energy program. This project focuses on materials that are described by periodic boundary conditions. 
+An atomistic potential is a function that takes atomic coordinates, atom types and a unit cell and calculates the potential energy of that atomic configuration. These potentials are used in molecular simulations such as molecular dynamics and Monte Carlo Simulations. Historically, the forces and stress were derived by analytical or numerical derivatives of the potential energy function, then implemented in a program. In this project, we use automatic differentiation to compute forces and stresses from the potential energy program. This project focuses on materials that are described by periodic boundary conditions.
 
 The first demonstration of this approach is for the Lennard Jones potential, which is fully implemented in TensorFlow to compute energies, forces and stress of periodic atomic systems containing one kind of chemical element. The potential is trainable from a database of reference data, e.g. density functional theory calculations. An example is illustrated in [[./docs/dap.tf.lennardjones.org]].
 
@@ -23,16 +28,15 @@ This project is written for Python 3.6.
 See [[./requirements.txt]] for a list of required Python packages.
 
 * Tests
-  
+
 In the project directory you can run these commands to run the tests.
 
 #+BEGIN_SRC sh
 python setup.py test
 #+END_SRC
 
-or 
+or
 
 #+BEGIN_SRC sh
 python -m unittest discover
 #+END_SRC
-
