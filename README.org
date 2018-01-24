@@ -3,11 +3,11 @@
 
 This is not an official Google product.
 
-#+BEGIN_EXPORT html
+#+BEGIN_HTML
 <a href='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials'><img src='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials.svg?branch=master'/></a>
 <a href='https://coveralls.io/github/jkitchin/differentiable-atomistic-potentials'><img src='https://coveralls.io/repos/github/jkitchin/differentiable-atomistic-potentials/badge.svg' alt='Coverage Status' /></a>
+#+END_HTML
 
-#+END_EXPORT
 * Summary
 
 An atomistic potential is a function that takes atomic coordinates, atom types and a unit cell and calculates the potential energy of that atomic configuration. These potentials are used in molecular simulations such as molecular dynamics and Monte Carlo Simulations. Historically, the forces and stress were derived by analytical or numerical derivatives of the potential energy function, then implemented in a program. In this project, we use automatic differentiation to compute forces and stresses from the potential energy program. This project focuses on materials that are described by periodic boundary conditions.
