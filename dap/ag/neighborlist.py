@@ -149,11 +149,13 @@ def get_neighbors_oneway(positions, cell, cutoff_radius,
     neighbors = [np.empty(0, int) for a in range(natoms)]
     displacements = [np.empty((0, 3), int) for a in range(natoms)]
 
-    for n1, n2, n3 in N:
+    def offset_mapfn(n):
+        n1, n2, n3 = n
         if n1 == 0 and (n2 < 0 or (n2 == 0 and n3 < 0)):
-            continue
+            return
         displacement = np.dot((n1, n2, n3), cell)
-        for a in range(natoms):
+
+        def atoms_mapfn(a):
             d = positions0 + displacement - positions0[a]
             i = indices[(d**2).sum(1) < (cutoff_radius)**2]
             if n1 == 0 and n2 == 0 and n3 == 0:
@@ -163,4 +165,9 @@ def get_neighbors_oneway(positions, cell, cutoff_radius,
             disp[:] = (n1, n2, n3)
             disp += offsets[i] - offsets[a]
             displacements[a] = np.concatenate((displacements[a], disp))
+
+        list(map(atoms_mapfn, range(natoms)))
+
+    list(map(offset_mapfn, N))
+
     return neighbors, displacements
