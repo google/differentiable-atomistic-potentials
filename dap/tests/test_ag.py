@@ -19,7 +19,8 @@ from ase.neighborlist import NeighborList
 from ase.calculators.lj import LennardJones
 
 from dap.ag.neighborlist import get_distances, get_neighbors_oneway
-from dap.ag.lennardjones import energy, forces, stress
+from dap.ag.lennardjones import (energy, forces, stress,
+                                 energy_oneway, forces_oneway, stress_oneway)
 
 
 class TestNeighborList(unittest.TestCase):
@@ -64,21 +65,25 @@ class TestNeighborListOneWay(unittest.TestCase):
                     (2, 2, 1),
                     (2, 2, 2),
                     (1, 2, 3)):
-            for cutoff_radius in np.linspace(a / 2, 5 * a, 5):
+            for cutoff_radius in np.linspace(a / 2.1, 5 * a, 5):
                 atoms = bulk('Cu', 'fcc', a=a).repeat(rep)
-
+                # It is important to rattle the atoms off the lattice points.
+                # Otherwise, float tolerances makes it hard to count correctly.
+                atoms.rattle(0.02)
                 nl = NeighborList([cutoff_radius / 2] * len(atoms), skin=0.0,
                                   self_interaction=False, bothways=False)
                 nl.update(atoms)
 
                 neighbors, displacements = get_neighbors_oneway(atoms.positions,
                                                                 atoms.cell,
-                                                                cutoff_radius)
+                                                                cutoff_radius,
+                                                                skin=0.0)
 
                 for i in range(len(atoms)):
                     an, ad = nl.get_neighbors(i)
-                    # These are the indices
+                    # Check the same number of neighbors
                     self.assertEqual(len(neighbors[i]), len(an))
+                    # Check the same indices
                     self.assertCountEqual(neighbors[i], an)
 
                     # I am not sure how to test for the displacements.
@@ -108,6 +113,35 @@ class TestLennardJones(unittest.TestCase):
                                             lj_forces))
 
                 lj_stress = stress({}, atoms.positions, atoms.cell)
+
+                self.assertTrue(np.allclose(atoms.get_stress(),
+                                            lj_stress))
+
+
+class TestLennardJonesOneWay(unittest.TestCase):
+    def test_fcc(self):
+        "Check structures and repeats with different symmetries."
+        for struct in ['fcc', 'bcc', 'diamond']:
+            for repeat in [(1, 1, 1),
+                           (1, 1, 2),
+                           (1, 2, 1),
+                           (2, 1, 1),
+                           (1, 2, 3),
+                           (2, 2, 2)]:
+                atoms = bulk('Cu', struct, a=3.7).repeat(repeat)
+                atoms.rattle(0.02)
+                atoms.set_calculator(LennardJones())
+
+                ase_energy = atoms.get_potential_energy()
+                lj_energy = energy_oneway({}, atoms.positions, atoms.cell)
+
+                self.assertAlmostEqual(ase_energy, lj_energy)
+
+                lj_forces = forces_oneway({}, atoms.positions, atoms.cell)
+                self.assertTrue(np.allclose(atoms.get_forces(),
+                                            lj_forces))
+
+                lj_stress = stress_oneway({}, atoms.positions, atoms.cell)
 
                 self.assertTrue(np.allclose(atoms.get_stress(),
                                             lj_stress))
