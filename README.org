@@ -4,8 +4,8 @@
 This is not an official Google product.
 
 #+BEGIN_HTML
-<a href='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials'><img src='https://travis-ci.org/jkitchin/differentiable-atomistic-potentials.svg?branch=master'/></a>
-<a href='https://coveralls.io/github/jkitchin/differentiable-atomistic-potentials'><img src='https://coveralls.io/repos/github/jkitchin/differentiable-atomistic-potentials/badge.svg' alt='Coverage Status' /></a>
+<a href='https://travis-ci.org/google/differentiable-atomistic-potentials'><img src='https://travis-ci.org/google/differentiable-atomistic-potentials.svg?branch=master'/></a>
+<a href='https://coveralls.io/github/google/differentiable-atomistic-potentials?branch=master'><img src='https://coveralls.io/repos/github/google/differentiable-atomistic-potentials/badge.svg?branch=master' alt='Coverage Status' /></a>
 #+END_HTML
 
 * Summary
