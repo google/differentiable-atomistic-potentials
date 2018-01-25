@@ -18,6 +18,7 @@ These are mostly experimental implementations of differentiable potentials using
 autograd (https://github.com/HIPS/autograd).
 
 Autograd is essentially limited to functions. It does not support gradients on
-classes.
+classes. Autograd is built on top of numpy though, which makes it an all Python
+approach to differentiable programming that is pretty easy to use.
 
 """
