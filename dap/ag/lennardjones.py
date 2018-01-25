@@ -47,7 +47,11 @@ def energy(params, positions, cell, strain=np.zeros((3, 3))):
 
     e0 = 4 * epsilon * ((sigma / rc)**12 - (sigma / rc)**6)
 
-    r2 = get_distances(positions, cell, rc, 0.01, strain)**2
+    strain_tensor = np.eye(3) + strain
+    cell = np.dot(strain_tensor, cell.T).T
+    positions = np.dot(strain_tensor, positions.T).T
+
+    r2 = get_distances(positions, cell, rc, 0.01)**2
 
     zeros = np.equal(r2, 0.0)
     adjusted = np.where(zeros, np.ones_like(r2), r2)
@@ -112,7 +116,7 @@ def stress(params, positions, cell, strain=np.zeros((3, 3))):
     result = (der + der.T) / 2 / volume
     return np.take(result, [0, 4, 8, 5, 2, 1])
 
-# * Oneway LennardJones potential
+# Oneway LennardJones potential
 
 
 def energy_oneway(params, positions, cell, strain=np.zeros((3, 3))):
@@ -146,7 +150,7 @@ def energy_oneway(params, positions, cell, strain=np.zeros((3, 3))):
     cell = np.dot(strain_tensor, cell.T).T
     positions = np.dot(strain_tensor, positions.T).T
 
-    inds, disps = get_neighbors_oneway(positions, cell, rc, strain=strain)
+    inds, disps = get_neighbors_oneway(positions, cell, rc)
 
     natoms = len(positions)
     energy = 0.0
