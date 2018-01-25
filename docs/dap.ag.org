@@ -159,3 +159,60 @@ plt.savefig('ag-lj.png')
 [[./ag-lj.png]]
 
 See also: http://kitchingroup.cheme.cmu.edu/blog/2017/11/19/Training-the-ASE-Lennard-Jones-potential-to-DFT-calculations/
+
+* EMT - effective medium theory
+
+ASE implements an effective medium theory cite:jacobsen-1996-semi-empir calculator (https://wiki.fysik.dtu.dk/ase/ase/calculators/emt.html#module-ase.calculators.emt), but it is notably lacking an ability to compute stress. One of the key features of differentiable atomistic potentials is that the stress is straightforward to compute. It is tricky to verify the stress is correct, and in the tests we use a numerical approximation to the stress for comparison.
+
+Here is an example usage.
+
+#+BEGIN_SRC python :results output org drawer
+from ase.build import bulk
+from dap.ag.ase_emt import EMT
+import numpy as np
+
+atoms = bulk('Cu', 'fcc', a=3.6).repeat((2, 2, 2))
+atoms.set_calculator(EMT())
+atoms.rattle()
+from dap.ag.emt import energy, forces, stress
+
+e = energy(atoms.positions, atoms.numbers, atoms.cell)
+print(f'ase: {atoms.get_potential_energy()}\nag : {e}')
+
+f = forces(atoms.positions, atoms.numbers, atoms.cell)
+print(f'Forces equal: {np.allclose(f, atoms.get_forces())}')
+
+s = stress(atoms.positions, atoms.numbers, atoms.cell)
+print(s)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+ase: -0.0534529034684148
+ag : -0.0534529034684148
+Forces equal: True
+[ 6.99783243e-03  6.99779486e-03  6.99766900e-03 -7.41208181e-07
+  3.16443974e-07 -2.32564931e-07]
+:END:
+
+
+*  Bibtex entries
+
+#+BEGIN_SRC text
+@article{jacobsen-1996-semi-empir,
+  author =	 {K.W. Jacobsen and P. Stoltze and J.K. N{\o}rskov},
+  title =	 {A Semi-Empirical Effective Medium Theory for Metals and
+                  Alloys},
+  journal =	 {Surface Science},
+  volume =	 366,
+  number =	 2,
+  pages =	 {394-402},
+  year =	 1996,
+  doi =		 {10.1016/0039-6028(96)00816-3},
+  url =		 {https://doi.org/10.1016/0039-6028(96)00816-3},
+  DATE_ADDED =	 {Tue Nov 21 15:34:51 2017},
+}
+
+
+
+#+END_SRC
