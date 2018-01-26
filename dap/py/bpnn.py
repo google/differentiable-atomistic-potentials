@@ -56,7 +56,8 @@ def G2(species_index, eta, Rs):
   """G2 function generator.
 
     This is a radial function between an atom and atoms with some chemical
-    symbol. It is defined in cite:behler-2011-atom-center Eq 6.
+    symbol. It is defined in cite:khorshidi-2016-amp, eq. 6. This version is
+    scaled a little differently than the one Behler uses.
 
     Parameters
     ----------
