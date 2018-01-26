@@ -1,0 +1,13 @@
+* Tests
+
+In the project directory you can run these commands to run the tests.
+
+#+BEGIN_SRC sh
+python setup.py test
+#+END_SRC
+
+or
+
+#+BEGIN_SRC sh
+python -m unittest discover
+#+END_SRC

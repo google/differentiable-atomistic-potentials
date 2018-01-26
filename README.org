@@ -15,11 +15,26 @@ An atomistic potential is a function that takes atomic coordinates, atom types a
 The first demonstration of this approach is for the Lennard Jones potential, which is fully implemented in TensorFlow to compute energies, forces and stress of periodic atomic systems containing one kind of chemical element. The potential is trainable from a database of reference data, e.g. density functional theory calculations. An example is illustrated in [[./docs/dap.tf.lennardjones.org]].
 
 
+* Related projects
+  
+The earliest code we are aware of is [[http://www.theochem.ruhr-uni-bochum.de/~joerg.behler/runner.htm][Runner]], but it is only available by request from the authors.
+
+- [[https://bitbucket.org/andrewpeterson/amp][Amp]] cite:khorshidi-2016-amp is an open-source Python/Fortran package for machine learned neural network potentials.
+- [[https://biklooost.github.io/PROPhet/][PROPhet]] cite:kolb-2017-discov-charg is an open-source package for machine learned neural network potentials.
+- [[http://ann.atomistic.net/Documentation/][aenet]] cite:artrith-2016 is an open source Fortran package for machine learned neural network potentials.
+
+This project is complementary to those projects. We share a common goal of open-source machine learned neural network potentials. Our approach differs primarily in the use of automatic differentiation to enable efficient training as well as automatic forces and stresses. We also aim to make it possible to generate hybrid potentials comprised of a classical potential and a neural network potential.
+
+- TensorMol https://github.com/jparkhill/TensorMol is an open source package focused on molecular properties. It also uses TensorFlow.
+
+* Roadmap
+
 These projects are planned in the future.
-
-- [ ] Effective medium theory for multicomponent alloys
+- [X] Vectorized neighborlists for periodic boundary conditions [[./dap/ag/neighborlist.py][autograd]] and [[./dap/tf/neighborlist.py][TensorFlow]].
+- [X] Vectorized one-way neighborlists for periodic boundary conditions [[./dap/ag/neighborlist.py][autograd]] and Tensorflow
+- [X] Lennard Jones potential in [[./dap/ag/lennardjones.py][autograd]] and [[./dap/tf/lennardjones.py][Tensorflow]].
+- [ ] Effective medium theory for multicomponent alloys in [[./dap/ag/emt.py][autograd]] and Tensorflow
 - [ ] Behler-Parinello Neural Network for multicomponent systems
-
 
 * Requirements
 
@@ -27,16 +42,3 @@ This project is written for Python 3.6.
 
 See [[./requirements.txt]] for a list of required Python packages.
 
-* Tests
-
-In the project directory you can run these commands to run the tests.
-
-#+BEGIN_SRC sh
-python setup.py test
-#+END_SRC
-
-or
-
-#+BEGIN_SRC sh
-python -m unittest discover
-#+END_SRC
