@@ -43,6 +43,55 @@ os.system('rm -fr amp-data*')
  [0.867586   0.9451572  0.86519688 0.94410847]]
 :END:
 
+Here is a water fingerprint for angular functions in amp
+
+#+BEGIN_SRC python :results output org drawer
+import os
+
+os.system('rm -fr amp-data*')
+
+from ase.structure import molecule
+atoms = molecule('H2O')
+
+from amp.descriptor.gaussian import *
+
+sf = {'H': make_symmetry_functions(['H', 'O'], 'G4', [0.05], zetas=[1], gammas=[+1]),
+      'O': make_symmetry_functions(['H', 'O'], 'G4', [0.05], zetas=[1], gammas=[+1])}
+
+for el in sf:
+    print(el)
+    for f in sf[el]:
+        print(f'  {f}')
+
+descriptor = Gaussian(Gs=sf)
+
+from amp.utilities import hash_images
+images = hash_images([atoms], ordered=True)
+descriptor.calculate_fingerprints(images)
+
+fparray = []
+for index, hash in enumerate(images.keys()):
+    for fp in descriptor.fingerprints[hash]:
+        fparray += [fp[1]]
+print(np.array(fparray))
+os.system('rm -fr amp-data*')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+H
+  {'type': 'G4', 'elements': ['H', 'H'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+  {'type': 'G4', 'elements': ['H', 'O'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+  {'type': 'G4', 'elements': ['O', 'O'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+O
+  {'type': 'G4', 'elements': ['H', 'H'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+  {'type': 'G4', 'elements': ['H', 'O'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+  {'type': 'G4', 'elements': ['O', 'O'], 'eta': 0.05, 'gamma': 1, 'zeta': 1}
+[[0.58753778 0.         0.        ]
+ [0.         1.38576822 0.        ]
+ [0.         1.38576822 0.        ]]
+:END:
+
 * dap.py.bpnn
   
 We take a different approach to computing fingerprints than Amp in using a fully vectorized approach. This style is challenging to implement, so we use Amp to benchmark and validate our code.
