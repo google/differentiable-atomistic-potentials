@@ -36,6 +36,7 @@ install:
   - pip install autograd
   - pip install tensorflow
   # Installation of amp
+  - sudo ln -s `which f2py` `which f2py`3
   - git clone https://bitbucket.org/andrewpeterson/amp.git
   - cd amp/amp
   - make python3
