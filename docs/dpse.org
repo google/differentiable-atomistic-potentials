@@ -1,0 +1,851 @@
+#+TITLE: Differentiable programming for scientists and engineers
+
+
+* Broadcasting and Vectorized operations
+
+pydoc:tensorflow.expand_dims
+
+Tensorflow supports broadcasting practically the same way that numpy does. We can use tf.expand_dims to add dimensions to tensors, or we can use indexing with None to achieve the same thing. Here is an example.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([0, 1, 2])
+
+b = tf.ones((3, 3), dtype=tf.int32)
+
+c = b + a  # Adds a to every row of b
+
+# These are two ways to do the same thing.
+d = b + a[:, None]  # Adds a columnwise to b
+e = b + tf.expand_dims(a, 1)
+
+with tf.Session() as sess:
+    print(sess.run(c))
+    print(sess.run(d))
+    print(sess.run(e))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 2 3]
+ [1 2 3]
+ [1 2 3]]
+[[1 1 1]
+ [2 2 2]
+ [3 3 3]]
+[[1 1 1]
+ [2 2 2]
+ [3 3 3]]
+#+END_SRC
+
+
+* Iteration in tensorflow
+
+Often we will iterate over some tensor and reduce it to some scalar value, e.g. a sum, average, product, or min/max. Tensorflow provides several "reduce_*" ops to achieve this.
+
+pydoc:tensorflow.reduce_sum
+pydoc:tensorflow.reduce_mean
+pydoc:tensorflow.reduce_prod
+pydoc:tensorflow.reduce_max
+pydoc:tensorflow.reduce_min
+
+** Accumulating a sum
+   :PROPERTIES:
+   :ID:       29E4682F-DE66-4C84-904D-00334228B8C4
+   :END:
+
+Here are two ways in Python you might accumulate a sum using a for loop.
+
+#+BEGIN_SRC python :results output org drawer
+sum = 0
+
+for i in range(5):
+    sum += i
+
+print(sum)
+
+import numpy as np
+print(np.sum(np.arange(5)))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+10
+10
+:END:
+
+In TF, we use an approach more like numpy to accumulate the sum. pydoc:tf.reduce_sum
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+sum = tf.reduce_sum(tf.range(5))
+
+with tf.Session() as sess:
+    print(sum.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+
+We can also use a loop-like approach in tensorflow. The syntax is quite different than Python though. You have to define two functions, one for the conditional part of the loop, and one for the body of the loop. Both functions take all the loop variables. Here we have two loop variables we need to track: a counter, and the accumulated sum. We want the loop to proceed as long as the counter is less than 5. We create this in a lambda function since it is just one line. In the body we have to accumulate the sum and increment the counter. The body function should return both of these values.
+
+Finally, we pass initial values of the loop_vars to the while_loop. The while_loop returns the loop variables, which we can evaluate in a tf.Session.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+i = tf.constant(0, dtype=tf.int32)
+sum = tf.constant(0, dtype=tf.int32)
+
+cond = lambda i, sum: i < 5
+
+def body(i, sum):
+    sum = tf.add(sum, i)
+    i = tf.add(i, 1)
+    return i, sum
+
+_i, _sum = tf.while_loop(cond, body, loop_vars=[i, sum])
+
+with tf.Session() as sess:
+    print(_sum.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+
+** Mimicing list comprehension
+
+Consider this list comprehension in Python. It is easy to accomplish the same thing with element-wise operations in numpy.
+
+#+BEGIN_SRC python :results output org drawer
+print([i**2 for i in range(5)])
+
+import numpy as np
+a = np.arange(5)
+print(a**2)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[0, 1, 4, 9, 16]
+[ 0  1  4  9 16]
+:END:
+
+We can also use element-wise operations in tensorflow.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+a = tf.range(5)
+
+with tf.Session() as sess:
+    print(sess.run(a**2))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
+
+It is possible to do something more like list comprehension, which can be helpful for more complex operations.
+
+pydoc:tensorflow.scan
+
+To get this in TF, we can use the tf.scan op. This op takes a function as its first argument, and
+a sequence as its second argument. The result is obtained by applying the function to each element of the sequence. The function in the first argument should take two arguments, the value from the previous function call, and the current element.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+res = tf.scan(lambda acc, curr: curr**2, tf.range(5))
+
+with tf.Session() as sess:
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
+
+Another approach is to use the tf.map_fn op.
+
+pydoc:tensorflow.map_fn
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import numpy as np
+X = tf.range(5)
+
+def f(x):
+    return x**2
+
+res = tf.map_fn(f, X)
+
+with tf.Session() as sess:
+    print(sess.run(res))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
+
+You can use the value from the previous call to accumulate something, e.g. a cumulative sum. This is not something that can be done with tf.reduce_sum, for example.
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+print(np.cumsum(np.arange(5)))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[ 0  1  3  6 10]
+:END:
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+res = tf.scan(lambda acc, curr: acc + curr, tf.range(5))
+
+with tf.Session() as sess:
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  3  6 10]
+#+END_SRC
+
+
+** tf.while_loop
+
+pydoc:tensorflow.while_loop
+
+Here is how we use the while_loop to accumulate the sum. It is better to use tf.reduce_sum on this.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+i = tf.constant(0)
+sum = tf.constant(0)
+
+cond = lambda i, sum: i < 5
+
+def body(i, sum):
+    sum = sum + i
+    i = i + 1
+    return i, sum
+
+i, sum = tf.while_loop(cond, body, [i, sum])
+with tf.Session() as sess:
+    print(sess.run(sum))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+
+I find the tensorflow version a little unintuitive because you have to pass loop vars around. This approach is not much easier.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+i = tf.constant(0, dtype=tf.int32)
+
+with tf.variable_scope("foo", reuse=tf.AUTO_REUSE):
+    sum = tf.get_variable("sum", (), dtype=tf.int32)
+    sum = tf.assign(sum, 10)
+
+cond = lambda i: i < 5
+
+def body(i):
+    with tf.variable_scope("foo", reuse=tf.AUTO_REUSE):
+        sum = tf.get_variable("sum", (), dtype=tf.int32)
+    sum = tf.assign(sum, sum + 1)
+    i = i + 1
+    return i
+
+i = tf.while_loop(cond, body, [i])
+
+with tf.Session() as sess:
+    print(sess.run(sum))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+
+** Accumulating a list
+
+Say we want to accumulate a list of even numbers. In Python, we can do it like this.
+
+#+BEGIN_SRC python :results output org drawer
+res = []
+for i in range(5):
+    if i % 2 == 0:
+        res += [i]
+print(res)
+# or like this
+print([i for i in range(5) if i % 2 == 0])
+
+# numpy approach
+import numpy as np
+a = np.arange(5)
+print(a[a % 2 == 0])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[0, 2, 4]
+[0, 2, 4]
+[0 2 4]
+:END:
+
+
+pydoc:tensorflow.boolean_mask
+
+The best approach is probably the numpy like one using a mask like this. Basically we use it as a filter to select just what we want from a larger list.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+even = tf.equal(tf.mod(a, 2), 0)
+res = tf.boolean_mask(a, even)
+
+with tf.Session() as sess:
+    print(sess.run(res))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 2 4]
+#+END_SRC
+
+We can also  use a while_loop op.
+
+pydoc:tensorflow.while_loop
+
+We use the tf.while_loop to achieve this. The while_loop is tricky. The following code does what we want, but it is not intuitive to me why it is required. Since we have a list we are accumulating that will change size, we need to use the shape_invariants option in the tf.while_loop. You have to specify some information about each loop variable. The counter i will not change shape, so we just get its shape. The list will change, but we have only one dimension, so we specify the shape in that dimension to be None, indicating we are not saying how bit it will get.
+
+The body of this loop took several unsuccessful iterations of more obvious approaches that didn't work. For example, you cannot use standard "if" conditional statements. The tf.cond op here does what we want, calling a true_fn on the condition that i is even, and the false_fn otherwise.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+i = tf.constant(0, dtype=tf.int32)
+res = tf.Variable([], dtype=tf.int32)
+
+# run the loop as long as i is less than 5.
+def cond(i, res):
+    return i < 5
+
+# if i is even, add it to the res list, and increment i in the body.
+def body(i, res):
+    res = tf.cond(tf.equal(i % 2, 0),
+                  true_fn=lambda: tf.concat([res, [i]], axis=0),
+                  false_fn=lambda: res)
+
+    i = tf.add(i, 1)
+    return i, res
+
+counter, loop = tf.while_loop(cond, body, loop_vars=[i, res],
+                       shape_invariants=[i.get_shape(), tf.TensorShape(None)])
+
+with tf.Session() as sess:
+    print(loop.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 2 4]
+#+END_SRC
+
+** Nested iteration
+
+Consider this nested list prototype where the inner list depends on the value of outer counter.
+
+#+BEGIN_SRC python :results output org drawer
+res = []
+for i in range(3):
+    for j in range(i + 1, 3):
+        res += [(i, j)]
+
+print(res)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[(0, 1), (0, 2), (1, 2)]
+:END:
+
+Here is a version of that in tensorflow. We have to use shape_invariants since our list is changing size. I was not able to figure out how to get an empty tensor with the required shape, so we initialize a constant with a throw away value, and use indexing at the end.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+i = tf.constant(0, dtype=tf.int32)
+res = tf.constant([[-1, -1]], dtype=tf.int32)
+
+
+outer_cond = lambda i, res: i < 3
+
+def outer_body(i, res):
+    j = tf.add(i, 1)
+
+    inner_cond = lambda j, res: j < 3
+    def inner_body(j, res):
+        res = tf.concat([res, [[i, j]]], axis=0)
+        j += 1
+
+        return j, res
+
+    j, res = tf.while_loop(inner_cond, inner_body, [j, res],
+                           shape_invariants=[j.get_shape(),
+                                             tf.TensorShape([None, 2])])
+    i += 1
+    return i, res
+
+i, res = tf.while_loop(outer_cond, outer_body, [i, res],
+                       shape_invariants=[i.get_shape(),
+                                         tf.TensorShape([None, 2])])
+
+# Throw away the first row.
+res = res[1:, :]
+
+with tf.Session() as sess:
+    print(sess.run(res))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[0 1]
+ [0 2]
+ [1 2]]
+#+END_SRC
+
+
+
+* Sorting and Unique elements in tensorflow
+
+Get the unique values. They are unsorted.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+s = tf.unique([1, 4, 1, 0, 0])
+
+with tf.Session() as sess:
+    print(sess.run(s.y))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[1 4 0]
+#+END_SRC
+
+
+** Sorting
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([3, 1, 2, 1])
+
+srt, srtargs = tf.nn.top_k(a, k=tf.reduce_prod(a.get_shape()))
+
+with tf.Session() as sess:
+    print(sess.run(srt))
+    print(sess.run(srtargs))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[3 2 1 1]
+[0 2 1 3]
+#+END_SRC
+
+To get the tensor sorted in ascending order, multiply the tensor by -1, and then multiply the sorted tensor by -1 again.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([3, 1, 2, 1])
+
+srt, srtargs = tf.nn.top_k(-a, k=tf.reduce_prod(a.get_shape()))
+
+with tf.Session() as sess:
+    print(sess.run(-srt))
+    print(sess.run(srtargs))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[1 1 2 3]
+[1 3 2 0]
+#+END_SRC
+
+* Set operations
+
+Get unique values that are sorted.
+
+This requires you expand the dimensions.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([3, 1, 2, 1])
+b = tf.constant([1, 3, 4, 3])
+
+# This set appears to be sorted, but that is not documented behavior.
+s = tf.sets.set_intersection(a[None,:], b[None, :])
+
+
+with tf.Session() as sess:
+    print(sess.run(s).values)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[1 3]
+#+END_SRC
+
+* Automatic differentiation in Tensorflow
+
+pydoc:tensorflow.gradients
+
+
+Tensorflow provides automatic differentiation to get the derivatives of outputs with respect to some inputs. Here is a simple example of computing the derivative of $y = x^2$ at $x=10$. Note that a list is returned from the gradients function.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant(5.0)
+y = x**2
+
+dydx = tf.gradients(y, x)
+
+with tf.Session() as sess:
+    print(sess.run(dydx))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[10.0]
+#+END_SRC
+
+If the input is a vector, then the derivatives returned will also be a vector.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([1.0, 2.0, 5.0])
+y = x**2
+
+dydx = tf.gradients(y, x)
+
+with tf.Session() as sess:
+    print(sess.run(dydx))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[array([  2.,   4.,  10.], dtype=float32)]
+#+END_SRC
+
+You can take the derivative of the output with respect to other nodes in the graph. Here we compute the derivative with the respect to another variable $a$.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant(5.0)
+a = tf.constant(2.0)
+y = a * x**2
+
+dyda = tf.gradients(y, a)
+
+with tf.Session() as sess:
+    print(sess.run(dyda))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[25.0]
+#+END_SRC
+
+There is a subtle point here though. If x is an array, then tf.gradients returns the sum of all the partial derivatives, i.e. out of the box you cannot compute the partial derivative of a as a function of x.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([1.0, 2.0, 5.0])
+a = tf.constant(2.0)
+y = a * x**2
+
+dyda = tf.gradients(y, a)
+
+with tf.Session() as sess:
+    print(sess.run(dyda))
+    print(sess.run(tf.reduce_sum(x**2)))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[30.0]
+30.0
+#+END_SRC
+
+
+To get an element-wise gradient, we have to scan over the elements, and compute the gradient at each point. Here is an example. I have not figured out how to generalize this into a function yet.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([1.0, 2.0, 5.0])
+a = tf.constant(2.0)
+
+f = a * x**2
+dyda = tf.scan(lambda acc, _x: tf.gradients(a * _x**2, a)[0], x)
+
+with tf.Session() as sess:
+    print(sess.run(dyda))
+    print(sess.run(v))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[  1.   4.  25.]
+[30.0, 30.0, 30.0]
+#+END_SRC
+
+
+** inf, nans
+   :PROPERTIES:
+   :ID:       3909B227-F0AD-456A-959B-578C1FE84777
+   :END:
+
+Some times functions don't have derivatives defined at a point, e.g. the square root of zero.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([0.0, 0.5, 0.74, 1.0])
+y = tf.sqrt(x)
+
+dydx = tf.gradients(y, x)[0]
+
+with tf.Session() as sess:
+    print(sess.run(dydx))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[        inf  0.70710683  0.58123815  0.50000006]
+#+END_SRC
+
+That infinity can cause a problem for some code, resulting in nans (not a number), etc...
+
+In this case, we have to decide what is appropriate to do, and then design a safe version. Typically this will involve creating a mask of values that are not appropriate, changing those values to something safe, taking the gradient, and then changing the values back to something safe. Here for example, we will mask out the zero values by setting them to 1.0, take the square root, and then set them back to zero afterwards. Then, we won't have a problem with infinities in the derivatives. You have to decide that is the right thing to do.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([0.0, 0.5, 0.74, 1.0])   # (ref:test)
+
+mask = tf.equal(x, 0.0) # (ref:mask)
+safex = tf.where(mask, tf.ones_like(x), x)
+sqx = tf.sqrt(safex)
+result = tf.where(mask, tf.zeros_like(x), sqx)
+
+dydx = tf.gradients(result, x)
+
+with tf.Session() as sess:
+    print(sess.run(dydx))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[array([ 0.        ,  0.70710683,  0.58123815,  0.50000006], dtype=float32)]
+#+END_SRC
+
+In line [[(test)]] we define a constant. In line [[(mask)]] we get the mask.
+
+* Applications
+** Solving an ODE in tensorflow
+   :PROPERTIES:
+   :SENT-ON:  Mon Dec 11 07:46:36 2017
+   :TO:       kitchin@google.com
+   :Message-ID: [[mu4e:msgid:m2y3m9p8rq.fsf@andrew.cmu.edu][Solving an ODE in tensorflow (Mon Dec 11 07:46:36 2017)]]
+   :END:
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import numpy as np
+import os
+os.makedirs('my-model', exist_ok=True)
+
+t = tf.placeholder(tf.float64, (None, 1))
+
+def neural_network(X, layers):
+    neurons, activation = layers[0]
+    hidden_layers = [tf.layers.dense(X, neurons, activation)]
+    for neurons, activation in layers[1:]:
+        hidden_layers += [tf.layers.dense(hidden_layers[-1], neurons, activation)]
+
+    return hidden_layers[-1]
+
+def swish(x):
+    return x / (1.0 + tf.exp(-x))
+
+time = np.linspace(0, 10).reshape((-1, 1))
+Ca = neural_network(t, ((8, swish), (1, tf.identity)))
+
+dCadt = tf.gradients(Ca, t)[0]
+
+k = 0.23
+Ca0 = 2.0
+
+deq = dCadt + k * Ca
+ic = Ca[0] - Ca0
+
+loss = tf.reduce_mean(tf.square(deq)) + ic**2
+
+train = tf.train.AdamOptimizer(0.001).minimize(loss)
+
+saver = tf.train.Saver()
+tf.add_to_collection('train_op', train)
+tf.add_to_collection('loss_op', loss)
+tf.add_to_collection('ph', t)
+tf.add_to_collection('Ca', Ca)
+
+import matplotlib.pyplot as plt
+
+init = tf.global_variables_initializer()
+sess = tf.Session()
+sess.run(init)
+
+for i in range(5001):
+    _, _loss = sess.run([train, loss], feed_dict={t: time})
+    if i % 500 == 0:
+        print(i, _loss)
+        if _loss < 5e-6:
+            break
+
+saver.save(sess, './my-model/model', global_step=i)
+
+soln = sess.run(Ca, feed_dict={t: time})
+plt.plot(time, soln)
+plt.plot(time, Ca0 * np.exp(-k * time), 'r--')
+plt.xlim([0, 10])
+plt.ylim([0, 2])
+plt.savefig('ode.png')
+sess.close()
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+0 [4.22055446]
+500 [0.01229707]
+1000 [0.00025969]
+1500 [4.83326249e-05]
+2000 [1.27974797e-05]
+2500 [5.63028632e-06]
+3000 [3.35930356e-06]
+#+END_SRC
+
+[[./ode.png]]
+
+ Restoring the model and continuing. This is moderately awkward.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+import numpy as np
+import matplotlib.pyplot as plt
+Ca0 = 2.0
+k = 0.23
+
+time = np.linspace(0, 10).reshape((-1, 1))
+
+with tf.Session() as sess:
+  saver = tf.train.import_meta_graph('my-model/model-5000.meta')
+  saver.restore(sess, './my-model/model-5000')
+  # tf.get_collection() returns a list. In this example we only want the
+  # first one.
+  train_op = tf.get_collection('train_op')[0]
+  loss = tf.get_collection('loss_op')
+  Ca = tf.get_collection('Ca')[0]
+  ph = tf.get_collection('ph')[0]
+  for step in range(1000):
+    _, _loss = sess.run([train_op, loss], feed_dict={ph: time})
+    if step % 100 == 0:
+      print(_loss)
+
+  plt.plot(time, Ca.eval(feed_dict={ph: time}))
+  plt.plot(time, Ca0 * np.exp(-k * time), 'r--')
+  saver.save(sess, 'my-model/final', global_step=0)
+
+plt.savefig('restored-result.png')
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[array([0.00024064])]
+[array([0.00022692])]
+[array([0.00021335])]
+[array([0.00020004])]
+[array([0.00018712])]
+[array([0.00017476])]
+[array([0.00016312])]
+[array([0.00015234])]
+[array([0.00014252])]
+[array([0.00013374])]
+#+END_SRC
+
+[[./restored-result.png]]
+
+** Basic neural network code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import numpy as np
+
+X = tf.placeholder(tf.float64, (None, 2))
+
+
+def neural_network(X, layers):
+    neurons, activation = layers[0]
+    hidden_layers = [tf.layers.dense(X, neurons, activation)]
+    for neurons, activation in layers[1:]:
+        hidden_layers += [tf.layers.dense(hidden_layers[-1], neurons, activation)]
+    return hidden_layers[-1]
+
+nn = neural_network(X, ((10, tf.nn.relu), (3, tf.identity)))
+
+init = tf.global_variables_initializer()
+
+with tf.Session() as sess:
+    sess.run(init)
+    print(sess.run(nn, feed_dict={X: np.random.rand(5, 2)}))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[ 0.32730352 -0.32113062 -0.57728228]
+ [ 0.22432179 -0.23120213 -0.3962985 ]
+ [ 0.41064357 -0.19050928 -0.20839852]
+ [ 0.36477839 -0.2612205  -0.34333513]
+ [ 0.26847371 -0.27772755 -0.45310965]]
+#+END_SRC
