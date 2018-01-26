@@ -7,6 +7,12 @@ import numpy as np
 import tensorflow as tf
 
 
+def swish(x, beta=1.0):
+  """Swish activation function. See https://arxiv.org/abs/1710.05941"""
+  with tf.name_scope("swish"):
+    return x * tf.nn.sigmoid(beta * x)
+
+
 def tri(N, M=None, k=0, dtype=tf.float64):
   """
     An array with ones at and below the given diagonal and zeros elsewhere.
