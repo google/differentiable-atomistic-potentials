@@ -1,0 +1,228 @@
+#+TITLE: dap.py.bpnn
+
+This code is a pure python, vectorized implementation of the main pieces of a BPNN. It exists because it was useful to develop them in pure python, easy to benchmark and validate them against Amp, and potentially useful later.
+
+I did not implement forces in this module, because it would require analytical derivatives, and the whole point of this project is to avoid those. If these make it into the dap.ag module, there might be forces then.
+
+
+* Amp benchmark  
+
+Here is a water fingerprint for radial functions in Amp.
+
+#+BEGIN_SRC python :results output org drawer
+import os
+
+os.system('rm -fr amp-data*')
+
+from ase.structure import molecule
+atoms = molecule('H2O')
+
+from amp.descriptor.gaussian import *
+
+sf = {'H': make_symmetry_functions(['H', 'O'], 'G2', [0.05, 0.1]),
+      'O': make_symmetry_functions(['H', 'O'], 'G2', [0.05, 0.1])}
+
+descriptor = Gaussian(Gs=sf)
+
+from amp.utilities import hash_images
+images = hash_images([atoms], ordered=True)
+descriptor.calculate_fingerprints(images)
+
+fparray = []
+for index, hash in enumerate(images.keys()):
+    for fp in descriptor.fingerprints[hash]:
+        fparray += [fp[1]]
+print(np.array(fparray))
+os.system('rm -fr amp-data*')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[1.89031441 0.         1.88821695 0.        ]
+ [0.867586   0.9451572  0.86519688 0.94410847]
+ [0.867586   0.9451572  0.86519688 0.94410847]]
+:END:
+
+* dap.py.bpnn
+  
+We take a different approach to computing fingerprints than Amp in using a fully vectorized approach. This style is challenging to implement, so we use Amp to benchmark and validate our code.
+
+** Cosine cutoff function
+
+A critical difference between dap and Amp is that we compute all the data for every atom in a multidimensional array. This requires us to remember some things.
+
+1. The array may have more "rows" than atoms, and then you must provide an atom_mask
+
+ #+BEGIN_SRC python :results output org drawer
+import numpy as np
+from dap.py.bpnn import cosine_cutoff, G2
+from dap.ag.neighborlist import get_distances
+
+from ase.structure import molecule
+atoms = molecule('H2O')
+atoms.cell = 100 * np.eye(3)
+print(atoms)
+
+positions = atoms.positions
+cell = atoms.cell
+atom_mask = [[1] for atom in atoms]
+
+config = {'cutoff_radius': 6.5}
+d = get_distances(positions, cell, config['cutoff_radius'])
+
+print(cosine_cutoff(config, d, atom_mask)) 
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ Atoms(symbols='OH2', pbc=False, cell=[100.0, 100.0, 100.0])
+ [[[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]]
+
+  [[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.86998172 0.         0.         0.         0.        ]]
+
+  [[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.86998172 0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]]]
+ :END:
+
+Here is an example of using a mask. There are three atoms in the molecule, but the positions array has four "rows", perhaps because this is part of a batch where the largest molecule has 4 atoms, and we need all the arrays to be the same size. We provide a mask with three ones, and a 0 in the last row as the mask, which masks all the invalid atom distances to zero.
+
+ #+BEGIN_SRC python :results output org drawer
+import numpy as np
+from dap.py.bpnn import cosine_cutoff, G2
+from dap.ag.neighborlist import get_distances
+
+from ase.structure import molecule
+atoms = molecule('H2O')
+atoms.cell = 100 * np.eye(3)
+print(atoms)
+
+positions = np.zeros((4, 3))
+positions[0:3, :] = atoms.positions
+cell = atoms.cell
+atom_mask = np.ones((4, 1))
+atom_mask[-1] = 0
+
+config = {'cutoff_radius': 6.5}
+d = get_distances(positions, cell, config['cutoff_radius'])
+
+print(cosine_cutoff(config, d, atom_mask)) 
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ Atoms(symbols='OH2', pbc=False, cell=[100.0, 100.0, 100.0])
+ [[[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]]
+
+  [[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.86998172 0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]]
+
+  [[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.9462071  0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.86998172 0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]]
+
+  [[0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]
+   [0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.
+    0.         0.         0.         0.         0.         0.        ]]]
+ :END:
+
+** G2 function
+
+ The G2 function is adapted from the one used in Amp. It also differs in the use of vectorization, and utilizes an atom_mask and species_masks. The G2 function returns a function that computes the fingerprint on each atom as a column vector.
+
+ #+BEGIN_SRC python :results output org drawer
+import numpy as np
+from dap.py.bpnn import cosine_cutoff, G2
+from dap.ag.neighborlist import get_distances
+
+from ase.structure import molecule
+atoms = molecule('H2O')
+atoms.cell = 100 * np.eye(3)
+print(atoms)
+
+positions = atoms.positions
+cell = atoms.cell
+atom_mask = [[1] for atom in atoms]
+
+numbers = list(np.unique(atoms.numbers))
+
+species_mask = np.stack([[atom.number == el for atom in atoms] 
+                         for el in numbers], axis=1).astype(int)
+
+config = {'cutoff_radius': 6.5}
+d = get_distances(positions, cell, config['cutoff_radius'])
+
+g0 = G2(0, 0.05, 0.0)
+g1 = G2(1, 0.05, 0.0)
+print(np.concatenate((g0(config, d, atom_mask, species_mask),
+                      g1(config, d, atom_mask, species_mask)), axis=1))
+ #+END_SRC
+
+ #+RESULTS:
+ :RESULTS:
+ Atoms(symbols='OH2', pbc=False, cell=[100.0, 100.0, 100.0])
+ [[1.89031441 0.        ]
+  [0.867586   0.9451572 ]
+  [0.867586   0.9451572 ]]
+ :END:
