@@ -35,7 +35,7 @@ install:
   - pip install autograd
   - pip install tensorflow
   # Installation of amp
-  - git clone git@bitbucket.org:andrewpeterson/amp.git
+  - git clone https://bitbucket.org/andrewpeterson/amp.git
   - cd amp
   - make python3
   - cd
