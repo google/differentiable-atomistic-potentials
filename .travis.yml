@@ -41,6 +41,8 @@ install:
   - git clone https://bitbucket.org/andrewpeterson/amp.git
   - cd amp/amp
   - make python3
+  - cd ..
+  - pip install -e .
   - popd
 
 # Run test
