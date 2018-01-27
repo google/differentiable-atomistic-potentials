@@ -338,7 +338,7 @@ We can also  use a while_loop op.
 
 pydoc:tensorflow.while_loop
 
-We use the tf.while_loop to achieve this. The while_loop is tricky. The following code does what we want, but it is not intuitive to me why it is required. Since we have a list we are accumulating that will change size, we need to use the shape_invariants option in the tf.while_loop. You have to specify some information about each loop variable. The counter i will not change shape, so we just get its shape. The list will change, but we have only one dimension, so we specify the shape in that dimension to be None, indicating we are not saying how bit it will get.
+We use the tf.while_loop to achieve this. The while_loop is tricky. The following code does what we want, but it is not intuitive to me why it is required. Since we have a list we are accumulating that will change size, we need to use the shape_invariants option in the tf.while_loop. You have to specify some information about each loop variable. The counter i will not change shape, so we just get its shape. The list will change, but we have only one dimension, so we specify the shape in that dimension to be None, indicating we are not saying how big it will get.
 
 The body of this loop took several unsuccessful iterations of more obvious approaches that didn't work. For example, you cannot use standard "if" conditional statements. The tf.cond op here does what we want, calling a true_fn on the condition that i is even, and the false_fn otherwise.
 
