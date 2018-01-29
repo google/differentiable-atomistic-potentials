@@ -19,8 +19,10 @@
 	     '("tf" "#+BEGIN_SRC tf :results output drawer org\nimport tensorflow as tf\n?\n#+END_SRC"
 	       "<src lang=\"python\">\n?\n</src>"))
 
+(require 'color)
+
 (defface org-block-tf
-  `((t (:background "LightSalmon1")))
+  `((t (:background ,(color-lighten-name "LightSalmon1" 0.50))))
   "Face for tensorflow python blocks")
 
 
