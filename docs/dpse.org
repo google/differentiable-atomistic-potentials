@@ -5,7 +5,7 @@
 
 pydoc:tensorflow.expand_dims
 
-Tensorflow supports broadcasting practically the same way that numpy does. We can use tf.expand_dims to add dimensions to tensors, or we can use indexing with None to achieve the same thing. Here is an example.
+Tensorflow supports broadcasting practically the same way that numpy does. We can use pydoc:tensorflow.expand_dims to add dimensions to tensors, or we can use indexing with None to achieve the same thing. Here is an example.
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -16,21 +16,24 @@ b = tf.ones((3, 3), dtype=tf.int32)
 
 c = b + a  # Adds a to every row of b
 
-# These are two ways to do the same thing.
-d = b + a[:, None]  # Adds a columnwise to b
+# These are two ways to add a columnwise to b
+d = b + a[:, None]  #
 e = b + tf.expand_dims(a, 1)
 
 with tf.Session() as sess:
-    print(sess.run(c))
+    print('row-wise:\n', sess.run(c))
+    print('column-wise:')
     print(sess.run(d))
     print(sess.run(e))
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC org
-[[1 2 3]
+row-wise:
+ [[1 2 3]
  [1 2 3]
  [1 2 3]]
+column-wise:
 [[1 1 1]
  [2 2 2]
  [3 3 3]]
@@ -39,6 +42,277 @@ with tf.Session() as sess:
  [3 3 3]]
 #+END_SRC
 
+* Constructing tensors
+
+pydoc:tensorflow.convert_to_tensor
+
+pydoc:tensorflow.ones
+pydoc:tensorflow.ones_like
+
+pydoc:tensorflow.zeros
+pydoc:tensorflow.zeros_like
+
+pydoc:tensorflow.fill
+
+pydoc:tensorflow.eye
+pydoc:tensorflow.diag
+
+pydoc:tensorflow.meshgrid
+
+pydoc:tensorflow.concat
+
+pydoc:tensorflow.stack
+
+pydoc:tensorflow.reshape
+
+pydoc:tensorflow.where
+
+pydoc:tensorflow.tile
+
+pydoc:tensorflow.split
+
+** Make tensor from values and indices with a default value
+
+We can use indexing to create arrays in numpy. Consider this example to make an identity matrix.
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+
+a = np.zeros((3, 3))
+
+a[[0, 1, 2], [0, 1, 2]] = [1, 2, 3]
+
+print(a)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[ 1.  0.  0.]
+ [ 0.  2.  0.]
+ [ 0.  0.  3.]]
+:END:
+
+pydoc:tensorflow.sparse_to_dense is the way to create this as a tensor from the indices and values. You specify the indices where values are known, the shape of the /dense/ tensor that you want, and the values at the indices.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.sparse_to_dense(sparse_indices=[[0, 0], [1, 1], [2, 2]],
+                       output_shape=(3, 3),
+                       sparse_values=[1, 2, 3])
+
+with tf.Session() as sess:
+    print(a.eval())
+    print()
+    # This is the simplest way to make this particular tensor
+    print(tf.diag([1, 2, 3]).eval())
+    print()
+    # Here is another simple way
+    print((tf.eye(3, 3, dtype=tf.int32) * tf.constant([1, 2, 3])).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 0 0]
+ [0 2 0]
+ [0 0 3]]
+
+[[1 0 0]
+ [0 2 0]
+ [0 0 3]]
+
+[[1 0 0]
+ [0 2 0]
+ [0 0 3]]
+#+END_SRC
+
+
+** logical
+
+pydoc:tensorflow.less
+pydoc:tensorflow.lessequal
+pydoc:tensorflow.greater
+pydoc:tensorflow.greaterequal
+pydoc:tensorflow.equal
+
+pydoc:tensorflow.logical_and
+pydoc:tensorflow.logical_or
+pydoc:tensorflow.logical_xor
+pydoc:tensorflow.logical_not
+
+* Accessing tensor components
+
+pydoc:tensorflow.slice
+
+pydoc:tensorflow.gather_nd
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+z = tf.reshape(tf.range(9), (3, 3))
+
+with tf.Session() as sess:
+    print(z.eval())
+    print('diag:  ', tf.diag_part(z).eval())
+    print('row 1: ', z[1].eval())
+    print('col 1: ', z[:, 1].eval())
+    print('corners: ', tf.gather_nd(z, [[0, 0], [0, 2], [2, 0], [2, 2]]).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[0 1 2]
+ [3 4 5]
+ [6 7 8]]
+diag:   [0 4 8]
+row 1:  [3 4 5]
+col 1:  [1 4 7]
+corners:  [0 2 6 8]
+#+END_SRC
+
+* Assignments
+
+To modify a tensor, it needs to be a pydoc:tensorflow.Variable.
+
+** Change a variable
+
+pydoc:tensorflow.assign is the main op to change the value of a variable.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+# An assignable variable
+a = tf.Variable(3)
+
+method1 = tf.assign(a, 5)
+
+method2 = a.assign(4)
+
+with tf.Session() as sess:
+    # You have to initialize variables
+    sess.run(tf.global_variables_initializer())
+
+    method1.eval() # changes value of a
+    print(a.eval())
+
+    method2.eval() # changes value of a again
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+5
+4
+#+END_SRC
+
+Note there is also pydoc:tensorflow.assign_add and pydoc:tensorflow.assign_sub
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+# An assignable variable
+a = tf.Variable(3)
+
+b = tf.assign_add(a, 1)
+
+c = tf.assign_sub(a, 2)
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+
+    print('add: ', b.eval())
+
+    print('sub: ', c.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+add:  4
+sub:  2
+#+END_SRC
+
+** Change part of a tensor
+
+If your tensor is made of elements, you can use pydoc:tensorflow.scatter_update to change parts of it. It is a little subtle. You specify indices into the /first/ dimension of the variable. In 1-D this is easy to interpret, the indices are just the elements to replace. Here we set the second element of a tensor of ones to zero.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.Variable(tf.ones((3,)))
+
+u = tf.scatter_update(a, [1], [0])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print('Before: ', a.eval())
+    sess.run(u)
+    print('After:  ', a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+Before:  [ 1.  1.  1.]
+After:   [ 1.  0.  1.]
+#+END_SRC
+
+In higher dimensions, it is a little trickier. The indices to replace are for the first dimension, which means you have to replace /everything/ at those indices. So for a 2D tensor, the first index is for a row, so we have to replace the entire row with pydoc:tensorflow.scatter_update.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.Variable(tf.ones((3, 3)))
+
+u = tf.scatter_update(a, [1], [[0, 0, 0]])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print('Before:\n', a.eval())
+    sess.run(u)
+    print('After:\n', a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+Before:
+ [[ 1.  1.  1.]
+ [ 1.  1.  1.]
+ [ 1.  1.  1.]]
+After:
+ [[ 1.  1.  1.]
+ [ 0.  0.  0.]
+ [ 1.  1.  1.]]
+#+END_SRC
+
+** Sparse updates
+
+pydoc:tensorflow.scatter_nd_update is used to make a /sparse/ update, i.e. just a few values in the tensor. You specify the indices to replace, and the replacement values.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.Variable(tf.ones((3, 3)))
+
+u = tf.scatter_nd_update(a, [[0, 1]], [2])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    sess.run(tf.global_variables_initializer())
+    print('Before:\n', a.eval())
+    sess.run(u)
+    print('After:\n', a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+Before:
+ [[ 1.  1.  1.]
+ [ 1.  1.  1.]
+ [ 1.  1.  1.]]
+After:
+ [[ 1.  2.  1.]
+ [ 1.  1.  1.]
+ [ 1.  1.  1.]]
+#+END_SRC
 
 * Iteration in tensorflow
 
@@ -47,8 +321,14 @@ Often we will iterate over some tensor and reduce it to some scalar value, e.g. 
 pydoc:tensorflow.reduce_sum
 pydoc:tensorflow.reduce_mean
 pydoc:tensorflow.reduce_prod
+pydoc:tensorflow.reduce_join
+
 pydoc:tensorflow.reduce_max
 pydoc:tensorflow.reduce_min
+
+pydoc:tensorflow.reduce_all
+pydoc:tensorflow.reduce_any
+
 
 ** Accumulating a sum
    :PROPERTIES:
@@ -75,7 +355,7 @@ print(np.sum(np.arange(5)))
 10
 :END:
 
-In TF, we use an approach more like numpy to accumulate the sum. pydoc:tf.reduce_sum
+In TF, we use an approach more like numpy to accumulate the sum. pydoc:tensorflow.reduce_sum
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -91,6 +371,21 @@ with tf.Session() as sess:
 10
 #+END_SRC
 
+For more complex operations that work iteratively there are pydoc:tensorflow.foldl and pydoc:tensorflow.foldr. These functions map a function onto the unpacked elements of a tensor. The function takes arguments of the last function value, and the current element. You can think of pydoc:tensorflow.foldl as working from the first element to the last, and pydoc:tensorflow.foldr working from the last to the first.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+sum = tf.foldl(lambda acc, curr: acc + curr, tf.range(5))
+
+with tf.Session() as sess:
+    print(sum.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
 
 We can also use a loop-like approach in tensorflow. The syntax is quite different than Python though. You have to define two functions, one for the conditional part of the loop, and one for the body of the loop. Both functions take all the loop variables. Here we have two loop variables we need to track: a counter, and the accumulated sum. We want the loop to proceed as long as the counter is less than 5. We create this in a lambda function since it is just one line. In the body we have to accumulate the sum and increment the counter. The body function should return both of these values.
 
@@ -154,12 +449,27 @@ with tf.Session() as sess:
 [ 0  1  4  9 16]
 #+END_SRC
 
-It is possible to do something more like list comprehension, which can be helpful for more complex operations.
+It is possible to do something more like list comprehension, which can be helpful for more complex operations. To do this, use pydoc:tensorflow.unstack to unpack a tensor into a list of tensors, do the list comprehension on this list, and then use pydoc:tensorflow.stack to put them back together.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+
+lc = tf.stack([x**2 for x in tf.unstack(a)])
+
+with tf.Session() as sess:
+    print(lc.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
 
 pydoc:tensorflow.scan
 
-To get this in TF, we can use the tf.scan op. This op takes a function as its first argument, and
-a sequence as its second argument. The result is obtained by applying the function to each element of the sequence. The function in the first argument should take two arguments, the value from the previous function call, and the current element.
+To get this in TF, we can use the tf.scan op. This op takes a function as its first argument, and a sequence as its second argument. The result is obtained by applying the function to each element of the sequence. The function in the first argument should take two arguments, the value from the previous function call, and the current element.
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -198,6 +508,8 @@ with tf.Session() as sess:
 [ 0  1  4  9 16]
 #+END_SRC
 
+
+
 You can use the value from the previous call to accumulate something, e.g. a cumulative sum. This is not something that can be done with tf.reduce_sum, for example.
 
 #+BEGIN_SRC python :results output org drawer
@@ -209,6 +521,24 @@ print(np.cumsum(np.arange(5)))
 :RESULTS:
 [ 0  1  3  6 10]
 :END:
+
+Tensorflow does have pydoc:tensorflow.cumsum:
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+res = tf.cumsum(tf.range(5))
+
+with tf.Session() as sess:
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  3  6 10]
+#+END_SRC
+
+But we can create our one version in one line like this.
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -224,6 +554,27 @@ with tf.Session() as sess:
 [ 0  1  3  6 10]
 #+END_SRC
 
+** Something like enumerate
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+
+lc = tf.stack([(i, x**2) for i, x in enumerate(tf.unstack(a))])
+
+with tf.Session() as sess:
+    print(lc.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[ 0  0]
+ [ 1  1]
+ [ 2  4]
+ [ 3  9]
+ [ 4 16]]
+#+END_SRC
 
 ** tf.while_loop
 
@@ -391,7 +742,33 @@ print(res)
 [(0, 1), (0, 2), (1, 2)]
 :END:
 
-Here is a version of that in tensorflow. We have to use shape_invariants since our list is changing size. I was not able to figure out how to get an empty tensor with the required shape, so we initialize a constant with a throw away value, and use indexing at the end.
+This can be achieved without any loops. We can generate these indices from tensor operations. The idea is to generate all the i, j combinations with a meshgrid, and then find the indices where the condition that j >= i + 1 is true, then use those indices to select the pairs of i and j that apply.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import tensorflow.contrib.eager as tfe
+
+tfe.enable_eager_execution()
+
+i, j = tf.meshgrid(tf.range(3), tf.range(3))
+inds = j >= i + 1
+
+res = tf.stack([tf.boolean_mask(i, inds),
+                tf.boolean_mask(j, inds)], axis=1)
+
+print(res)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+tf.Tensor(
+[[0 1]
+ [0 2]
+ [1 2]], shape=(3, 2), dtype=int32)
+#+END_SRC
+
+
+It is possible to use nested loops in tensorflow. We have to use shape_invariants since our list is changing size. I was not able to figure out how to get an empty tensor with the required shape, so we initialize a constant with a throw away value, and use indexing at the end.
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -682,6 +1059,16 @@ with tf.Session() as sess:
 
 In line [[(test)]] we define a constant. In line [[(mask)]] we get the mask.
 
+
+** Jacobians
+
+https://github.com/tensorflow/tensorflow/issues/675
+https://en.wikipedia.org/wiki/Jacobian_matrix_and_determinant
+
+** TODO Hessians
+
+http://runopti.github.io/blog/2016/07/07/HessianComp/
+
 * Applications
 ** Solving an ODE in tensorflow
    :PROPERTIES:
@@ -818,12 +1205,13 @@ plt.savefig('restored-result.png')
 
 ** Basic neural network code
 
+In this simple example we create a neural network with two hidden layers. The first one has 10 neurons, activated by a relu function, and the second one has three neurons, with no activation. We feed the network a 5x2 array, and it outputs a 5x3 array. There is no training here, it just illustrates the mechanics of creating and feeding the network.
+
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
 import numpy as np
 
 X = tf.placeholder(tf.float64, (None, 2))
-
 
 def neural_network(X, layers):
     neurons, activation = layers[0]
@@ -849,3 +1237,44 @@ with tf.Session() as sess:
  [ 0.36477839 -0.2612205  -0.34333513]
  [ 0.26847371 -0.27772755 -0.45310965]]
 #+END_SRC
+
+** Sensitivity analysis
+
+See http://kitchingroup.cheme.cmu.edu/blog/2017/11/15/Sensitivity-analysis-using-automatic-differentiation-in-Python/.
+
+It is a little awkward right now to do this in Tensorflow. It is set up to sum all the gradients we want, so we have to evaluate each one at each point separately. We do this by unstacking the time tensor to get a list of time values, and then get the gradient we want at each time.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import numpy as np
+
+t = np.linspace(0, 0.5)
+time = tf.constant(t)
+A0 = 1.0
+k1 = tf.constant(3.0, dtype=t.dtype)
+k_1 = tf.constant(3.0, dtype=t.dtype)
+
+times = tf.unstack(time)
+output = [A0 / (k1 + k_1) * (k1 * tf.exp(-(k1 + k_1) * time) + k_1)
+          for time in times]
+
+dAdk1 = [tf.gradients(A, [k1])[0] for A in output]
+dAdk_1 = [tf.gradients(A, [k_1])[0] for A in output]
+
+with tf.Session() as sess:
+    sk1, sk_1 = sess.run([dAdk1, dAdk_1])
+
+import matplotlib.pyplot as plt
+plt.plot(t, np.abs(sk1), t, np.abs(sk_1))
+plt.xlim([0, 0.5])
+plt.ylim([0, 0.1])
+plt.xlabel('t')
+plt.legend(['$S_{k1}$', '$S_{k\_1}$'])
+plt.savefig('sensitivity-analysis.png')
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+#+END_SRC
+
+[[./sensitivity-analysis.png]]
