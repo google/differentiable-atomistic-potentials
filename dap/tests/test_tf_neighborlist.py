@@ -133,4 +133,5 @@ class TestNeighborlist(tf.test.TestCase):
 #     n = get_neighbors_oneway(atoms.positions, atoms.cell, Rc)
 
 #     with self.test_session() as sess:
+#       sess.run(tf.global_variables_initializer())
 #       print(sess.run(n))

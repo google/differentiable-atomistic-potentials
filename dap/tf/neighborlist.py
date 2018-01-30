@@ -198,48 +198,43 @@ def get_neighbors_oneway(positions, cell, cutoff_radius, skin=0.01,
 
   cartesian_displacements = tf.matmul(tf.cast(N, dtype=cell.dtype), cell)
 
-  # From here down is not working. The problem seems to be that I need loops to
-  # run over things, but this should get variables from a list not from a
-  # tensor. Maybe I can create some appropriately named variables, with a
-  # function I would use to assign to them. That seems clunky, but many other
-  # ideas have not worked. The inner loop is over the atoms, and for each one I
-  # have to get the variable associated with each atom.
+  def get_ath_neighbors(a):
+    with tf.variable_scope('neighbors', reuse=tf.AUTO_REUSE):
+      var = tf.get_variable('neighbor_{}'.format(a), (1,), dtype=tf.int32)
+      return var
 
-  # for a in range(natoms):
-  #   i = tf.constant(0, tf.int32)  # counter for offsets
-  #   res0 =   # for neighbor inds
-  #   res1 = tf.Variable([[-1, -1, -1]], dtype=tf.int32)
+  neighbors = [get_ath_neighbors(i) for i in range(natoms)]
 
-  #   inner_cond = lambda i, res0, res1: i < noffsets
+  n = tf.constant(0)
 
-  #   def inner_body(i, res0, res1):
-  #     displacement = cartesian_displacements[i]
-  #     d = positions0 + displacement - positions0[a]
-  #     mask = tf.reduce_sum(d**2, 1) < (cutoff_radius**2 + skin)
-  #     inds = tf.boolean_mask(indices, mask)
+  def offset_cond(n):
+    return n < noffsets
 
-  #     # check for self_interaction
-  #     n1, n2, n3 = tf.unstack(N[i])
-  #     inds = tf.cond(
-  #         tf.reduce_all([tf.equal(n1, 0),
-  #                        tf.equal(n2, 0),
-  #                        tf.equal(n3, 0)]),
-  #         true_fn=lambda: tf.boolean_mask(inds, inds > a),
-  #         false_fn=lambda: inds)
+  def offset_body(n):
+    displacement = cartesian_displacements[n]
 
-  #     res0 = tf.concat([res0, inds], axis=0)
-  #     i = tf.add(i, 1)
-  #     return i, res0, res1
+    for a in range(natoms):
+      d = positions0 + displacement - positions0[a]
+      mask = tf.reduce_sum(d**2, 1) < (cutoff_radius + skin)**2
+      inds = tf.boolean_mask(indices, mask)
 
-  #   i, res0, res1 = tf.while_loop(
-  #       inner_cond,
-  #       inner_body,
-  #       loop_vars=[i, res0, res1],
-  #       shape_invariants=[
-  #           i.get_shape(),
-  #           tf.TensorShape([None]),
-  #           tf.TensorShape([None, 3])
-  #       ])
-  #   neighbors += [res0]
+      n1, n2, n3 = tf.unstack(N[n])
+      inds = tf.cond(
+          tf.reduce_all([tf.equal(n1, 0),
+                         tf.equal(n2, 0),
+                         tf.equal(n3, 0)]),
+          true_fn=lambda: tf.boolean_mask(inds, inds > a),
+          false_fn=lambda: inds)
 
-  # return neighbors
+      vara = get_ath_neighbors(a)
+      ath_neighbors = tf.assign(vara,
+                                tf.concat([vara, inds], axis=0),
+                                validate_shape=False)
+
+    with tf.control_dependencies([ath_neighbors]):
+      return tf.add(n, 1)
+
+  n = tf.while_loop(offset_cond, offset_body, loop_vars=[n])
+
+  with tf.control_dependencies([n]):
+    return neighbors
