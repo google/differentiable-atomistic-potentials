@@ -13,6 +13,7 @@
 # limitations under the License.
 """Neighborlist functions for tensorflow."""
 
+import numpy as np
 import tensorflow as tf
 
 
@@ -120,3 +121,125 @@ def get_distances(config, positions, cell, atom_mask=None):
     adjusted = tf.where(zeros, tf.ones_like(distances2), distances2)
     distance = tf.sqrt(adjusted)
     return tf.where(zeros, tf.zeros_like(distance), distance)
+
+
+def get_neighbors_oneway(positions, cell, cutoff_radius, skin=0.01,
+                         strain=None):
+  """A one-way neighbor list.
+
+    Parameters
+    ----------
+
+    positions: atomic positions. array-like (natoms, 3)
+    cell: unit cell. array-like (3, 3)
+    cutoff_radius: Maximum radius to get neighbor distances for. float
+    skin: A tolerance for the cutoff_radius. float
+    strain: array-like (3, 3)
+
+    Returns
+    -------
+    indices, offsets
+
+    """
+  positions = tf.convert_to_tensor(positions)
+  cell = tf.convert_to_tensor(cell)
+  if strain is None:
+    strain = tf.zeros_like(cell)
+  else:
+    strain = tf.convert_to_tensor(strain)
+
+  strain_tensor = tf.eye(3, dtype=cell.dtype) + strain
+  cell = tf.transpose(tf.matmul(strain_tensor, tf.transpose(cell)))
+  positions = tf.transpose(tf.matmul(strain_tensor, tf.transpose(positions)))
+  inverse_cell = tf.matrix_inverse(cell)
+  h = 1 / tf.norm(inverse_cell, axis=0)
+  N = tf.floor(2 * cutoff_radius / h) + 1
+
+  scaled = tf.matmul(positions, inverse_cell)
+  scaled0 = tf.matmul(positions, inverse_cell) % 1.0
+
+  offsets = tf.cast(tf.round(scaled - scaled0), tf.int32)
+
+  positions0 = positions + tf.matmul(tf.cast(offsets, cell.dtype), cell)
+  natoms = positions.get_shape().as_list()[0]
+  indices = tf.range(natoms)
+
+  v0_range = tf.range(0, N[0] + 1)
+  v1_range = tf.range(-N[1], N[1] + 1)
+  v2_range = tf.range(-N[2], N[2] + 1)
+
+  xhat = tf.constant([1, 0, 0], dtype=cell.dtype)
+  yhat = tf.constant([0, 1, 0], dtype=cell.dtype)
+  zhat = tf.constant([0, 0, 1], dtype=cell.dtype)
+
+  v0_range = v0_range[:, None] * xhat[None, :]
+  v1_range = v1_range[:, None] * yhat[None, :]
+  v2_range = v2_range[:, None] * zhat[None, :]
+
+  N = (
+      v0_range[:, None, None] + v1_range[None, :, None] +
+      v2_range[None, None, :])
+
+  N = tf.cast(tf.reshape(N, (-1, 3)), tf.int32)
+
+  # pick out the ones that don't meet the one-way conditions
+  n1 = N[:, 0]
+  n2 = N[:, 1]
+  n3 = N[:, 2]
+
+  mask = tf.logical_not(
+      tf.logical_and(
+          tf.equal(n1, 0), (tf.logical_or(
+              tf.less(n2, 0),
+              (tf.logical_and(tf.equal(n2, 0), (tf.less(n3, 0))))))))
+
+  N = tf.boolean_mask(N, mask)
+  noffsets = tf.shape(N)[0]
+
+  cartesian_displacements = tf.matmul(tf.cast(N, dtype=cell.dtype), cell)
+
+  # From here down is not working. The problem seems to be that I need loops to
+  # run over things, but this should get variables from a list not from a
+  # tensor. Maybe I can create some appropriately named variables, with a
+  # function I would use to assign to them. That seems clunky, but many other
+  # ideas have not worked. The inner loop is over the atoms, and for each one I
+  # have to get the variable associated with each atom.
+
+  # for a in range(natoms):
+  #   i = tf.constant(0, tf.int32)  # counter for offsets
+  #   res0 =   # for neighbor inds
+  #   res1 = tf.Variable([[-1, -1, -1]], dtype=tf.int32)
+
+  #   inner_cond = lambda i, res0, res1: i < noffsets
+
+  #   def inner_body(i, res0, res1):
+  #     displacement = cartesian_displacements[i]
+  #     d = positions0 + displacement - positions0[a]
+  #     mask = tf.reduce_sum(d**2, 1) < (cutoff_radius**2 + skin)
+  #     inds = tf.boolean_mask(indices, mask)
+
+  #     # check for self_interaction
+  #     n1, n2, n3 = tf.unstack(N[i])
+  #     inds = tf.cond(
+  #         tf.reduce_all([tf.equal(n1, 0),
+  #                        tf.equal(n2, 0),
+  #                        tf.equal(n3, 0)]),
+  #         true_fn=lambda: tf.boolean_mask(inds, inds > a),
+  #         false_fn=lambda: inds)
+
+  #     res0 = tf.concat([res0, inds], axis=0)
+  #     i = tf.add(i, 1)
+  #     return i, res0, res1
+
+  #   i, res0, res1 = tf.while_loop(
+  #       inner_cond,
+  #       inner_body,
+  #       loop_vars=[i, res0, res1],
+  #       shape_invariants=[
+  #           i.get_shape(),
+  #           tf.TensorShape([None]),
+  #           tf.TensorShape([None, 3])
+  #       ])
+  #   neighbors += [res0]
+
+  # return neighbors

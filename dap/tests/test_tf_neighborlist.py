@@ -20,7 +20,7 @@ import numpy as np
 import tensorflow as tf
 from ase.build import bulk
 from ase.neighborlist import NeighborList
-from dap.tf.neighborlist import (get_distances)
+from dap.tf.neighborlist import (get_distances, get_neighbors_oneway)
 
 
 class TestNeighborlist(tf.test.TestCase):
@@ -110,3 +110,27 @@ class TestNeighborlist(tf.test.TestCase):
 
     with self.test_session():
       self.assertTrue(np.all(ase_nau == nau.eval()))
+
+
+# class TestNeighborsOneWay(tf.test.TestCase):
+
+#   def test0(self):
+#     tf.logging.set_verbosity(tf.logging.ERROR)
+#     import warnings
+#     warnings.filterwarnings('ignore')
+#     import os
+#     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
+#     from dap.ag.neighborlist import get_neighbors_oneway as gno
+
+#     a = 3.6
+#     Rc = a / np.sqrt(2)
+#     atoms = bulk('Cu', 'fcc', a=a).repeat((4, 1, 1))
+
+#     ref_inds, ref_disps = gno(atoms.positions, atoms.cell, Rc)
+#     print('ase\n', ref_inds, '\n')
+
+#     n = get_neighbors_oneway(atoms.positions, atoms.cell, Rc)
+
+#     with self.test_session() as sess:
+#       print(sess.run(n))
