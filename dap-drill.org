@@ -1,0 +1,731 @@
+#+TITLE: I can haz differentiable programs?
+
+* About
+  
+There are a lot of things you have to learn to effectively write differentiable programs. This document uses [[https://orgmode.org/worg/org-contrib/org-drill.html][org-drill]] to provide a spaced repetition set of "flash cards" to help you get familiar with all the ideas and functions. It is a work in progress that eventually will cover:
+
+- [ ] Tensorflow
+- [ ] Numpy
+- [0/3] Testing
+  - [ ] Python unittest
+  - [ ] Tensorflow testing
+  - [ ] numpy testing
+
+* Setup
+
+Just run this code block to get started.
+
+#+BEGIN_SRC emacs-lisp
+(require 'org-drill)
+(org-drill)
+#+END_SRC
+
+#+RESULTS:
+: You can continue the drill session with the command ‘org-drill-resume’.
+
+You will get asked a series of questions which you can answer in your head. After you think you have it, press a key to see the answer. You will be asked to grade your answer using the following numeric scale. org-drill will save your answer and use it to define future questions for you to review.
+
+| Quality | Fail? | Meaning                                              |
+|---------+-------+------------------------------------------------------|
+|       0 | Yes   | Wrong, and the answer is unfamiliar when you see it. |
+|       1 | Yes   | Wrong answer.                                        |
+|       2 | Yes   | Almost, but not quite correct.                       |
+|       3 | No    | Correct answer, but with much effort.                |
+|       4 | No    | Correct answer, with a little thought.               |
+|       5 | No    | Correct answer, effortless.                          |
+
+You can reset this document and clear all training data with this block.
+
+#+BEGIN_SRC emacs-lisp
+(org-drill-strip-all-data)
+#+END_SRC
+
+* Testing
+** Python unittest
+
+*** unittest test class inheritance                                   :drill:
+    :PROPERTIES:
+    :ID:       a3055638-52bf-4061-bb69-25ffad62d89d
+    :END:
+
+ Your test classes should all inherit from [unittest.TestCase].
+
+*** unittest test preparation                                         :drill:
+    :PROPERTIES:
+    :ID:       1dc8d7c5-9f75-4c8f-a62a-27a80cce6ec5
+    :END:
+
+ Use the [setUp] class method to run code before every test.
+
+*** unittest test preparation                                         :drill:
+    :PROPERTIES:
+    :ID:       7e727b07-b2f5-4506-8540-c85c014d8912
+    :END:
+
+ Use the [tearDown] class method to run code after every test.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       ac2c1abb-6d30-4204-bed9-84f0d7d45a88
+    :END:
+
+ [assertEqual(a, b)] is used to check if two things are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       d4933280-7246-451e-94bb-94e2386eca41
+    :END:
+
+ [assertNotEqual(a, b)]	is used to check if two things are not equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       e12e353f-79ea-4a69-8fc9-40876e3d2469
+    :END:
+
+ [assertTrue(x)] is used to check if something evaluates as truthy.
+
+*** unittest methods                                                           :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       3592c943-e7bf-48e3-a1d2-6b1b120c9b06
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 2
+    :DRILL_FAILURE_COUNT: 1
+    :DRILL_AVERAGE_QUALITY: 1.5
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:58]
+    :END:
+
+ [assertFalse(x)]	is used to check if something evaluates as falsey.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       cfac9f9e-0576-4dc2-bdeb-babb29cb7939
+    :END:
+
+ [assertIs(a, b)]	is used to check if one thing is the same as another.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       9932c836-ca1a-4e61-a03f-c053260f1b02
+    :END:
+
+ [assertIsNot(a, b)]	is used to check if one thing is not the same as another.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       4ac24e57-9aea-439a-9a49-1c0997f83020
+    :END:
+
+ [assertIsNone(x)]	is used to check if something is None.
+
+*** unittest methods                                                           :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       d8c3909a-2588-4eec-85a1-49b64ac8bd7d
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:54]
+    :END:
+
+ [assertIsNotNone(x)]	is used to check if something is not None.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       e8079664-0ea6-487c-9482-96a3d704535d
+    :END:
+
+ [assertIn(a, b)]	is used to check if an item is in an iterable item.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       a668d954-7297-4ba7-a726-1bdfcec412b4
+    :END:
+
+ [assertNotIn(a, b)]	is used to check if an item is not in an iterable item.
+
+*** unittest methods                                                           :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       e1f5ace2-e294-44fe-b8ec-ebe086beb844
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
+    :END:
+
+ [assertIsInstance(a, b)] is used to check if an item is an instance of some class.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       26ab4a9b-ec5b-46cb-a802-d262b0704c0d
+    :END:
+
+ [assertNotIsInstance(a, b)] is used to check if an item is an instance of some class.
+
+*** unittest methods                                                           :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       5dbfde0c-7796-4035-8fd4-eff66605d112
+    :DRILL_LAST_INTERVAL: 4.0
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 4.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 4
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:53]
+    :END:
+
+ [assertRaises(exc, fun, *args, **kwds)] is used to check if a function raises an exception
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       bb4401ae-eec3-4866-91fc-99c7884c0af1
+    :END:
+
+ [assertRaisesRegex(exc, r, fun, *args, **kwds)] is used to check if a function raises an exception with a message matching a regular expression.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       92958672-be92-44ff-a383-5df50b484831
+    :END:
+
+ [assertWarns(warn, fun, *args, **kwds)] is used to check if a function raises a warning.
+
+*** unittest methods                                                           :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       e431a2f2-fd2a-4cc0-ab26-b0fd3e148028
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 2
+    :DRILL_FAILURE_COUNT: 1
+    :DRILL_AVERAGE_QUALITY: 2.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:01]
+    :END:
+
+ [assertWarnsRegex(warn, r, fun, *args, **kwds)] is used to check if a function raises a warning that matches a regular expression.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       c72fc02c-47fb-49fd-b933-e475da30953a
+    :END:
+
+ [assertLogs(logger, level)] is used to make sure a block of code runs a logger at some minimum level
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       c0a122e3-b58e-4724-8ca6-15f10554b100
+    :END:
+
+ [assertAlmostEqual(a, b, places=7)] is used to see if two things are equal to some number of decimal places.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       1af89b9e-332c-4aa4-9a07-6de59c61fc8b
+    :END:
+
+ [assertNotAlmostEqual(a, b, places=7)]is used to see if two things are not equal to some number of decimal places.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       7e196a17-46ba-4a9f-9c78-48628d020b2c
+    :END:
+
+ [assertGreater(a, b)] is used to see if one thing is greater than another thing.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       a15e2fdd-20de-42e0-98cd-c5b466b921ed
+    :END:
+
+ [assertGreaterEqual(a, b)] is used to see if one thing is greater than or equal to another thing.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       a0498a67-5c9b-4565-bd3b-8bfec5e5da18
+    :END:
+
+ [assertLess(a, b)] is used to see if one thing is less than another thing.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       63c31019-c2f2-4010-8464-e9d6c9d67885
+    :END:
+
+ [assertLessEqual(a, b)] is used to see if one thing is less than or equal to another thing.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       b921a129-0155-43b8-b3c3-55f349265e08
+    :END:
+
+ [assertRegex(s, r)] is used to check if a string matches a regular expression.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       0c822959-b446-4402-82dd-8c16220782f2
+    :END:
+
+ 
+
+ [assertNotRegex(s, r)] is used to check if a string does not match a regular expression.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       3a9df071-8d85-4535-8db0-b7527300d203
+    :END:
+
+ 
+
+ [assertCountEqual(a, b)] is used to check if two iterables have the same numbers of each kind of element.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       7e688d35-489c-4692-b56b-23e2dff90c8e
+    :END:
+
+ [assertMultiLineEqual(a, b)|unittest] is used to see if two strings are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       1c87dc7a-ecc9-475a-905c-e30102053a57
+    :END:
+
+ [assertSequenceEqual(a, b)|unittest] is used to check if two sequences are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       f8e36a78-700f-45d1-81d1-45c679f2c24c
+    :END:
+
+ [assertListEqual(a, b)|unittest] is used to check if two lists are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       89a96ca0-cd41-4591-968d-89dc2d5ccf8f
+    :END:
+
+ [assertTupleEqual(a, b)|unittest] is used to check if two tuples are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       5a48c8e1-47e6-4f44-b070-d254a46351ea
+    :END:
+
+ [assertSetEqual(a, b)|unittest] is used to check if two sets are equal.
+
+*** unittest methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       b219a807-e149-42bd-838c-31a5376f0429
+    :END:
+
+ [assertDictEqual(a, b)|unittest] is used to check if two dictionaries are equal.
+
+** Tensorflow testing
+
+*** class inheritance                                                 :drill:
+    SCHEDULED: <2018-02-02 Fri>
+    :PROPERTIES:
+    :ID:       cc035da8-d6c7-4e6e-ad5a-95a8a7e47221
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
+    :END:
+    
+Tensorflow test classes should inherit from the [tf.test.TestCase] class.
+
+*** test session                                                      :drill:
+    
+Use [with tf.test_session():] to create a test session to run tests in.
+
+*** tf.test.TestCase methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       68b0265f-c1cb-4531-bbcb-28eea152d2ef
+    :DRILL_LAST_INTERVAL: 0.0
+    :DRILL_REPEATS_SINCE_FAIL: 1
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 1
+    :DRILL_AVERAGE_QUALITY: 2.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 2
+    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
+    :END:
+
+[assertAllClose(a, b, rtol, atol)||tensorflow] is used to check that two arrays or dictionaries have near values.
+
+*** tf.test.TestCase methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       e8cc12b5-bd00-4142-9182-7a6791386676
+    :END:
+
+[assertAllEqual(a, b)|tensorflow] is used to check if two arrays are equal.
+
+*** tf.test.TestCase methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       08b8b13e-b3d3-4303-9716-595ff2c405b7
+    :END:
+
+[assertAlmostEqual(a, b, places)||tensorflow] is used to see if two objects are almost equal to some number of places.
+
+*** tf.test.TestCase methods                                                           :drill:
+    :PROPERTIES:
+    :ID:       a88b30d8-53e3-4676-8b4a-9d159dd83fd3
+    :END:
+
+[assertAlmostEquals(a, b, places)||tensorflow] is used to see if two arrays are almost equal to some number of places.
+
+*** tf.test.TestCase methods                                          :drill:
+    :PROPERTIES:
+    :ID:       a33a214c-8e4c-4f61-970c-960587ed24b1
+    :END:
+
+[assertArrayNear(f1, f2, err)||tensorflow] is used to see if |f1 - f2| < err for all values.
+
+
+*** tf.test.TestCase methods                                          :drill:  
+
+[assertDictContainsSubset(expected, actual)] is used to see if a dictionary contains a subset.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertDictEqual(d1, d2)] is used to check if two dictionaries are equal
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertEqual(first, second)] is used to see if first == second.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertEquals(first, second)] is used to see if first == second.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertFalse(expr)] is used to check if an expression is falsey.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertGreater(a, b)] is used to see if a > b.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertGreaterEqual(a, b)] is used to see if a >= b
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIn(member, container)] is used to see if a member is in a container.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIs(expr1, expr2)] is used to see if expr1 is expr2.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIsInstance(obj, cls)] is used to see if an object is an instance of a class.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIsNone(obj)] is used to see if an object is None.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIsNot(expr1, expr)] is used to see if expr1 is not expr2.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertIsNotNone(obj)] is used to see if an object is not None.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertItemsEqual(expected_seq, actual_seq)] is used to see if two sequences have the same element counts in any order.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertLess(a, b)] is used to see if a < b.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertLessEqual(a, b)] is used to see if a <= b.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertListEqual(list1, list2, msg=None)] is used to see if two lists are equal.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertMultiLineEqual(first, second, msg=None)] is used to see if two multiline strings are equal.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNDArrayNear(ndarray1, ndarray2, err)] is used to see if two arrays are the same within an error.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotAlmostEqual(first, second, places=None, msg=None, delta=None)] is used to see if two arrays are not equal to a specified number of decimal places.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotAlmostEquals(first, second, places=None, msg=None, delta=None)] is used to see if two arrays are not equal to a specified number of decimal places.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotEqual(first, second, msg=None)] is used to see if first != second.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotEquals(first, second, msg=None)] is used to see if first != second.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotIn(member, container, msg=None)] checks if member is in container.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotIsInstance(obj, cls, msg=None)] checks if an object is not an instance of a class.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertNotRegexpMatches(text, unexpected_regexp, msg=None)] is used to check if string does not match a regular expression.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertRaises(excClass, callableObj=None, *args, **kwargs)] checks if a function raises an exception.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertRaisesRegexp(expected_exception, expected_regexp, callable_obj=None, *args, **kwargs)] checks if the message from an exception matches a regular expression.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertRegexpMatches(text, expected_regexp, msg=None)] checks if a string matches a regular expression.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertSequenceEqual(seq1, seq2, msg=None, seq_type=None)] checks if two ordered sequences are equal.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertSetEqual(set1, set2, msg=None)] checks if two sets are equal.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertShapeEqual(np_array, tf_tensor)] checks if a numpy array and tensorflow tensor have the same shape.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertStartsWith(actual, expected_start, msg=None)] checks if string startswith something.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertTrue(expr, msg=None)] checks if an expression is truthy.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assertTupleEqual(tuple1, tuple2, msg=None)] Checks if two tuples are equal.
+
+*** tf.test.TestCase methods                                          :drill:
+
+[assert_(expr, msg=None)] checks if an expression is truthy.
+
+
+
+* Tensorflow
+** core methods
+*** tensorflow core methods                                           :drill:   
+
+[tf.floor(x, name=None)] Returns element-wise largest integer not greater than x.
+
+*** tensorflow core methods                                           :drill:   
+
+[tf.norm(tensor, ord='euclidean', axis=None, keepdims=None, name=None, keep_dims=None)] Computes the norm of vectors, matrices, and tensors. (deprecated arguments)
+
+*** tensorflow core methods                                           :drill:   
+
+[tf.range(start, limit, delta=1, dtype=None, name='range')] Creates a sequence of numbers.
+
+*** tensorflow core methods                                           :drill:   
+
+[tf.round(x, name=None)] Rounds the values of a tensor to the nearest integer, element-wise.
+
+** tensor creation
+   
+*** tensorflow array creation                                         :drill:   
+
+[tf.fill(dims, value, name=None)] will create a tensor with a default value.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.fill([2, 3], 9)
+
+with tf.Session():
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[9 9 9]
+ [9 9 9]]
+#+END_SRC
+
+** Tensorflow iteration
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.map_fn(fn, elems, dtype=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] will apply a function to each element on dimension 0 of a tensor
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.scan(fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] scan a function on the list of tensors unpacked from elems on dimension 0.
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.while_loop(cond, body, loop_vars, shape_invariants=None, parallel_iterations=10, back_prop=True, swap_memory=False, name=None, maximum_iterations=None)] will do a while loop.
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_all(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical and" of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_any(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical or" of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_max(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the maximum of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_mean(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the mean of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_min(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the minimum of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_prod(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the product of elements across dimensions of a tensor. (deprecated arguments)
+
+*** tensorflow iteration methods                                      :drill:      
+
+[tf.reduce_sum(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the sum of elements across dimensions of a tensor. (deprecated arguments)
+
+** Linear algebra
+
+*** tensorflow methods                                                :drill:
+
+[tf.matmulmatmul(a, b, transpose_a=False, transpose_b=False, adjoint_a=False, adjoint_b=False, a_is_sparse=False, b_is_sparse=False, name=None)] is used to multiply two tensors.
+
+*** tensorflow methods                                                :drill:
+
+[tf.matrix_determinant(input, name=None)] is used to compute the determinant of a tensor
+
+*** tensorflow methods                                                :drill:
+
+[tf.matrix_transpose(a, name='matrix_transpose', conjugate=False)] is used to transpose a tensor.
+
+*** tensorflow methods                                                :drill:
+
+[tf.matrix_inverse(input, adjoint=False, name=None)] is used to get the inverse of a square tensor.
+
+** Element-wise operations
+
+*** tensorflow methods                                                :drill:
+
+[tf.add(x, y, name=None)] is used to element-wise add two tensors
+
+*** tensorflow methods                                                :drill:
+
+[tf.subtract(x, y, name=None)]
+
+*** tensorflow methods                                                :drill:
+
+[tf.div(x, y, name=None)] Divides x / y elementwise (using Python 2 division operator semantics).
+
+*** tensorflow methods                                                :drill:
+
+[tf.cross(a, b, name=None)] Compute the pairwise cross product.
+
+*** tensorflow methods                                                :drill:
+
+[tf.floormod(x, y, name=None)] Returns element-wise remainder of division.
+
+*** tensorflow methods                                                :drill:
+
+[tf.truncatemod(x, y, name=None)] Returns element-wise remainder of division. This emulates C semantics.
+
+*** tensorflow methods                                                :drill:
+
+[tf.floor_div(x, y, name=None)] Returns x // y element-wise.
+
+*** tensorflow methods                                                :drill:
+
+[tf.truncatediv(x, y, name=None)] Returns x / y element-wise for integer types.
+
+*** tensorflow methods                                                :drill:
+
+[tf.realdiv(x, y, name=None)] Returns x / y element-wise for real types.
+
+*** tensorflow methods                                                :drill:
+
+[tf.floordiv(x, y, name=None)] Divides x / y elementwise, rounding toward the most negative integer.
+
+*** tensorflow methods                                                :drill:
+
+[tf.truediv(x, y, name=None)] Divides x / y elementwise (using Python 3 division operator semantics).
+
+*** tensorflow methods                                                :drill:
+
+[tf.divide(x, y, name=None)] Computes Python style division of x by y.
+
+*** tensorflow methods                                                :drill:
+
+[tf.scalar_mul(scalar, x)] Multiplies a scalar times a Tensor or IndexedSlices object.
+
+*** tensorflow methods                                                :drill:
+
+[tf.multiply(x, y, name=None)] is used for element-wise multiplication of two tensors.
+
+* utilities
+
+I used this to clean up pasted strings.
+
+#+BEGIN_SRC emacs-lisp
+(defun normalize ()
+  (interactive)
+  (goto-char (line-beginning-position))
+  (insert "[")
+  (let ((r1 (point))
+	(r2 (re-search-forward ")"))) 
+    (replace-regexp " \\|\\\\n\\|\\|
+" "" nil r1 r2)
+    (replace-regexp "," ", " nil r1 r2))
+  (goto-char (line-end-position))
+  (insert "]")
+  (re-search-forward "^a"))
+#+END_SRC
+
+#+RESULTS:
+: normalize
