@@ -615,26 +615,27 @@ i = tf.constant(0, dtype=tf.int32)
 
 with tf.variable_scope("foo", reuse=tf.AUTO_REUSE):
     sum = tf.get_variable("sum", (), dtype=tf.int32)
-    sum = tf.assign(sum, 10)
+    sum = tf.assign(sum, 0)
 
 cond = lambda i: i < 5
 
 def body(i):
     with tf.variable_scope("foo", reuse=tf.AUTO_REUSE):
         sum = tf.get_variable("sum", (), dtype=tf.int32)
-    sum = tf.assign(sum, sum + 1)
-    i = i + 1
-    return i
+    sum = tf.assign(sum, sum + i)
+    with tf.control_dependencies([sum]):
+        return tf.add(i, 1)
 
 i = tf.while_loop(cond, body, [i])
 
 with tf.Session() as sess:
-    print(sess.run(sum))
+    sess.run(tf.global_variables_initializer())
+    print(sess.run([i, sum]))
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC org
-10
+[5, 10]
 #+END_SRC
 
 
@@ -774,8 +775,10 @@ It is possible to use nested loops in tensorflow. We have to use shape_invariant
 import tensorflow as tf
 
 i = tf.constant(0, dtype=tf.int32)
-res = tf.constant([[-1, -1]], dtype=tf.int32)
 
+# Note we initialize with a fake value. I don't know how to specify the shape
+# otherwise since it is not 1d.
+res = tf.constant([[-1, -1]], dtype=tf.int32)
 
 outer_cond = lambda i, res: i < 3
 
@@ -815,11 +818,12 @@ with tf.Session() as sess:
 
 
 * Data structures in tensorflow
-  
+
 ** TODO dictionary / hashtable
-   
+
 pydoc:tensorflow.contrib.lookup.HashTable
 pydoc:tensorflow.contrib.lookup.KeyValueTensorInitializer
+
 
 * Sorting and Unique elements in tensorflow
 
