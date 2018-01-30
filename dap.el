@@ -16,7 +16,7 @@
 (setq org-src-block-faces '(("tf" (:background "#EEE2FF"))))
 
 (add-to-list 'org-structure-template-alist
-	     '("tf" "#+BEGIN_SRC tf :results output drawer org\nimport tensorflow as tf\n?\n#+END_SRC"
+	     '("tf" "#+BEGIN_SRC tf :results output drawer org\nimport tensorflow as tf\n?\n\nwith tf.Session():\n    #+END_SRC"
 	       "<src lang=\"python\">\n?\n</src>"))
 
 (require 'color)
