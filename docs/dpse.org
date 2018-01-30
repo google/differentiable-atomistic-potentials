@@ -606,7 +606,7 @@ with tf.Session() as sess:
 #+END_SRC
 
 
-I find the tensorflow version a little unintuitive because you have to pass loop vars around. This approach is not much easier.
+I find the tensorflow version a little unintuitive because you have to pass loop vars around. This approach creates a variable that you retrieve in the body, but it is not much easier to use in my opinion.
 
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
@@ -814,6 +814,12 @@ with tf.Session() as sess:
 #+END_SRC
 
 
+* Data structures in tensorflow
+  
+** TODO dictionary / hashtable
+   
+pydoc:tensorflow.contrib.lookup.HashTable
+pydoc:tensorflow.contrib.lookup.KeyValueTensorInitializer
 
 * Sorting and Unique elements in tensorflow
 
