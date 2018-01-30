@@ -1,7 +1,7 @@
 #+TITLE: I can haz differentiable programs?
 
 * About
-  
+
 There are a lot of things you have to learn to effectively write differentiable programs. This document uses [[https://orgmode.org/worg/org-contrib/org-drill.html][org-drill]] to provide a spaced repetition set of "flash cards" to help you get familiar with all the ideas and functions. It is a work in progress that eventually will cover:
 
 - [ ] Tensorflow
@@ -39,6 +39,9 @@ You can reset this document and clear all training data with this block.
 #+BEGIN_SRC emacs-lisp
 (org-drill-strip-all-data)
 #+END_SRC
+
+#+RESULTS:
+: Done.
 
 * Testing
 ** Python unittest
@@ -86,17 +89,8 @@ You can reset this document and clear all training data with this block.
  [assertTrue(x)] is used to check if something evaluates as truthy.
 
 *** unittest methods                                                           :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       3592c943-e7bf-48e3-a1d2-6b1b120c9b06
-    :DRILL_LAST_INTERVAL: 3.86
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 2
-    :DRILL_FAILURE_COUNT: 1
-    :DRILL_AVERAGE_QUALITY: 1.5
-    :DRILL_EASE: 2.36
-    :DRILL_LAST_QUALITY: 3
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:58]
     :END:
 
  [assertFalse(x)]	is used to check if something evaluates as falsey.
@@ -123,17 +117,8 @@ You can reset this document and clear all training data with this block.
  [assertIsNone(x)]	is used to check if something is None.
 
 *** unittest methods                                                           :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       d8c3909a-2588-4eec-85a1-49b64ac8bd7d
-    :DRILL_LAST_INTERVAL: 3.86
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 1
-    :DRILL_FAILURE_COUNT: 0
-    :DRILL_AVERAGE_QUALITY: 3.0
-    :DRILL_EASE: 2.36
-    :DRILL_LAST_QUALITY: 3
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:54]
     :END:
 
  [assertIsNotNone(x)]	is used to check if something is not None.
@@ -153,17 +138,8 @@ You can reset this document and clear all training data with this block.
  [assertNotIn(a, b)]	is used to check if an item is not in an iterable item.
 
 *** unittest methods                                                           :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       e1f5ace2-e294-44fe-b8ec-ebe086beb844
-    :DRILL_LAST_INTERVAL: 3.86
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 1
-    :DRILL_FAILURE_COUNT: 0
-    :DRILL_AVERAGE_QUALITY: 3.0
-    :DRILL_EASE: 2.36
-    :DRILL_LAST_QUALITY: 3
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
     :END:
 
  [assertIsInstance(a, b)] is used to check if an item is an instance of some class.
@@ -176,17 +152,8 @@ You can reset this document and clear all training data with this block.
  [assertNotIsInstance(a, b)] is used to check if an item is an instance of some class.
 
 *** unittest methods                                                           :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       5dbfde0c-7796-4035-8fd4-eff66605d112
-    :DRILL_LAST_INTERVAL: 4.0
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 1
-    :DRILL_FAILURE_COUNT: 0
-    :DRILL_AVERAGE_QUALITY: 4.0
-    :DRILL_EASE: 2.5
-    :DRILL_LAST_QUALITY: 4
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 09:53]
     :END:
 
  [assertRaises(exc, fun, *args, **kwds)] is used to check if a function raises an exception
@@ -206,17 +173,8 @@ You can reset this document and clear all training data with this block.
  [assertWarns(warn, fun, *args, **kwds)] is used to check if a function raises a warning.
 
 *** unittest methods                                                           :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       e431a2f2-fd2a-4cc0-ab26-b0fd3e148028
-    :DRILL_LAST_INTERVAL: 3.86
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 2
-    :DRILL_FAILURE_COUNT: 1
-    :DRILL_AVERAGE_QUALITY: 2.0
-    :DRILL_EASE: 2.36
-    :DRILL_LAST_QUALITY: 3
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:01]
     :END:
 
  [assertWarnsRegex(warn, r, fun, *args, **kwds)] is used to check if a function raises a warning that matches a regular expression.
@@ -282,7 +240,7 @@ You can reset this document and clear all training data with this block.
     :ID:       0c822959-b446-4402-82dd-8c16220782f2
     :END:
 
- 
+
 
  [assertNotRegex(s, r)] is used to check if a string does not match a regular expression.
 
@@ -291,7 +249,7 @@ You can reset this document and clear all training data with this block.
     :ID:       3a9df071-8d85-4535-8db0-b7527300d203
     :END:
 
- 
+
 
  [assertCountEqual(a, b)] is used to check if two iterables have the same numbers of each kind of element.
 
@@ -340,36 +298,19 @@ You can reset this document and clear all training data with this block.
 ** Tensorflow testing
 
 *** class inheritance                                                 :drill:
-    SCHEDULED: <2018-02-02 Fri>
     :PROPERTIES:
     :ID:       cc035da8-d6c7-4e6e-ad5a-95a8a7e47221
-    :DRILL_LAST_INTERVAL: 3.86
-    :DRILL_REPEATS_SINCE_FAIL: 2
-    :DRILL_TOTAL_REPEATS: 1
-    :DRILL_FAILURE_COUNT: 0
-    :DRILL_AVERAGE_QUALITY: 3.0
-    :DRILL_EASE: 2.36
-    :DRILL_LAST_QUALITY: 3
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
     :END:
-    
+
 Tensorflow test classes should inherit from the [tf.test.TestCase] class.
 
 *** test session                                                      :drill:
-    
+
 Use [with tf.test_session():] to create a test session to run tests in.
 
 *** tf.test.TestCase methods                                                           :drill:
     :PROPERTIES:
     :ID:       68b0265f-c1cb-4531-bbcb-28eea152d2ef
-    :DRILL_LAST_INTERVAL: 0.0
-    :DRILL_REPEATS_SINCE_FAIL: 1
-    :DRILL_TOTAL_REPEATS: 1
-    :DRILL_FAILURE_COUNT: 1
-    :DRILL_AVERAGE_QUALITY: 2.0
-    :DRILL_EASE: 2.5
-    :DRILL_LAST_QUALITY: 2
-    :DRILL_LAST_REVIEWED: [2018-01-29 Mon 10:02]
     :END:
 
 [assertAllClose(a, b, rtol, atol)||tensorflow] is used to check that two arrays or dictionaries have near values.
@@ -403,7 +344,7 @@ Use [with tf.test_session():] to create a test session to run tests in.
 [assertArrayNear(f1, f2, err)||tensorflow] is used to see if |f1 - f2| < err for all values.
 
 
-*** tf.test.TestCase methods                                          :drill:  
+*** tf.test.TestCase methods                                          :drill:
 
 [assertDictContainsSubset(expected, actual)] is used to see if a dictionary contains a subset.
 
@@ -551,30 +492,194 @@ Use [with tf.test_session():] to create a test session to run tests in.
 
 * Tensorflow
 ** core methods
-*** tensorflow core methods                                           :drill:   
+*** tensorflow core methods                                           :drill:
+    :PROPERTIES:
+    :ID:       F5EBCF63-C3AD-4A90-A54F-109340BB50D5
+    :END:
 
 [tf.floor(x, name=None)] Returns element-wise largest integer not greater than x.
 
-*** tensorflow core methods                                           :drill:   
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+f = tf.floor([-1.2, 0.1, 2.6])
+
+with tf.Session() as sess:
+    print(f.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[-2.  0.  2.]
+#+END_SRC
+
+*** tensorflow core methods                                           :drill:
+    :PROPERTIES:
+    :ID:       BD0B0B36-074B-4265-B621-1B339D950E60
+    :END:
 
 [tf.norm(tensor, ord='euclidean', axis=None, keepdims=None, name=None, keep_dims=None)] Computes the norm of vectors, matrices, and tensors. (deprecated arguments)
 
-*** tensorflow core methods                                           :drill:   
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+v = tf.constant([[1.0, 0.0],
+                 [2.0, 0.0]])
+
+f_all = tf.norm(v)
+f_ax0 = tf.norm(v, axis=0) # norm of columns
+f_ax1 = tf.norm(v, axis=1) # norm of rows
+
+with tf.Session() as sess:
+    print(f_all.eval())
+    print(f_ax0.eval())
+    print(f_ax1.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+2.23607
+[ 2.23606801  0.        ]
+[ 1.  2.]
+#+END_SRC
+
+*** tensorflow core methods                                           :drill:
+    :PROPERTIES:
+    :ID:       682D6790-F3C5-47A2-A454-B19D575FE67E
+    :END:
 
 [tf.range(start, limit, delta=1, dtype=None, name='range')] Creates a sequence of numbers.
 
-*** tensorflow core methods                                           :drill:   
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+r1 = tf.range(0, 5)
+r2 = tf.range(5, delta=2)
+
+with tf.Session():
+    print(r1.eval())
+    print(r2.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 1 2 3 4]
+[0 2 4]
+#+END_SRC
+
+
+*** tensorflow core methods                                           :drill:
+    :PROPERTIES:
+    :ID:       C9E8CF2A-AEB2-4D24-BAAF-291A5FD8202E
+    :END:
 
 [tf.round(x, name=None)] Rounds the values of a tensor to the nearest integer, element-wise.
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+r1 = tf.round([-0.9, -0.1, 0.1, 0.9])
+
+with tf.Session():
+    print(r1.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[-1.  0.  0.  1.]
+#+END_SRC
+
+*** tensorflow core methods                                           :drill:
+
+[tf.stack(values, axis=0, name='stack')] Stacks a list of rank-R tensors into one rank-(R+1) tensor.
+
+**** example code
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([1, 4])
+y = tf.constant([2, 5])
+z = tf.constant([3, 6])
+
+a = tf.stack([x, y, z])  # [[1, 4], [2, 5], [3, 6]] (Pack along first dim.)
+b = tf.stack([x, y, z], axis=1)  # [[1, 2, 3], [4, 5, 6]]
+
+with tf.Session():
+    print(a.eval())
+    print(b.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[1 4]
+     [2 5]
+     [3 6]]
+    [[1 2 3]
+     [4 5 6]]
+    #+END_SRC
+
+
+*** tensorflow core methods                                           :drill:
+
+[tf.unstack(value, num=None, axis=0, name='unstack')] Unpacks the given dimension of a rank-R tensor into rank-(R-1) tensors.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = tf.constant([1, 4])
+
+elements = tf.unstack(x)
+
+with tf.Session():
+    print(elements)
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [<tf.Tensor 'unstack:0' shape=() dtype=int32>, <tf.Tensor 'unstack:1' shape=() dtype=int32>]
+    #+END_SRC
+
+*** tensorflow core methods                                           :drill:
+
+[tf.concat(values, axis, name='concat')] Concatenates tensors along one dimension.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant(1)
+b = tf.constant([2, 3])
+
+c = tf.concat([[a], b], axis=0)
+
+with tf.Session():
+    print(c.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [1 2 3]
+    #+END_SRC
+
 ** tensor creation
-   
-*** tensorflow array creation                                         :drill:   
+
+*** tensorflow array creation                                         :drill:
 
 [tf.fill(dims, value, name=None)] will create a tensor with a default value.
 
 **** example
-     
+
 #+BEGIN_SRC tf :results output drawer org
 import tensorflow as tf
 
@@ -592,43 +697,43 @@ with tf.Session():
 
 ** Tensorflow iteration
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.map_fn(fn, elems, dtype=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] will apply a function to each element on dimension 0 of a tensor
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.scan(fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] scan a function on the list of tensors unpacked from elems on dimension 0.
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.while_loop(cond, body, loop_vars, shape_invariants=None, parallel_iterations=10, back_prop=True, swap_memory=False, name=None, maximum_iterations=None)] will do a while loop.
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_all(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical and" of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_any(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical or" of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_max(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the maximum of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_mean(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the mean of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_min(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the minimum of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_prod(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the product of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:      
+*** tensorflow iteration methods                                      :drill:
 
 [tf.reduce_sum(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the sum of elements across dimensions of a tensor. (deprecated arguments)
 
@@ -656,59 +761,353 @@ with tf.Session():
 
 [tf.add(x, y, name=None)] is used to element-wise add two tensors
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant(1)
+
+b = tf.add(a, 3)
+c = a + 3  # This syntax also usually works.
+a += 4 # This also sometimes works.
+
+with tf.Session():
+    print(b.eval())
+    print(c.eval())
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+4
+4
+5
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
 
 [tf.subtract(x, y, name=None)]
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant(1)
+
+b = tf.subtract(a, 3)
+c = a - 3  # This syntax also usually works.
+a -= 4 # This also sometimes works.
+
+with tf.Session():
+    print(b.eval())
+    print(c.eval())
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+-2
+-2
+-3
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
+    :PROPERTIES:
+    :ID:       8FC90C20-E5B5-4596-B433-C94C6EA0AF09
+    :END:
 
 [tf.div(x, y, name=None)] Divides x / y elementwise (using Python 2 division operator semantics).
+
+**** example code
+
+pydoc:tensorflow.div
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant(1)
+
+b = tf.div(a, 3)
+c = a // 3  # This syntax also usually works.
+a //= 4 # This also sometimes works.
+
+with tf.Session():
+    print(b.eval())
+    print(c.eval())
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+0
+0
+0
+#+END_SRC
 
 *** tensorflow methods                                                :drill:
 
 [tf.cross(a, b, name=None)] Compute the pairwise cross product.
 
+**** example code
+
+pydoc:tensorflow.cross
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+v0 = tf.constant([1, 0, 0])
+v1 = tf.constant([0, 1, 0])
+
+c = tf.cross(v0, v1)
+
+with tf.Session():
+    print(c.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 0 1]
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
 
 [tf.floormod(x, y, name=None)] Returns element-wise remainder of division.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.floormod(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[1 2 0 1 2]
+#+END_SRC
 
 *** tensorflow methods                                                :drill:
 
 [tf.truncatemod(x, y, name=None)] Returns element-wise remainder of division. This emulates C semantics.
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.truncatemod(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[1 2 0 1 2]
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
 
 [tf.floor_div(x, y, name=None)] Returns x // y element-wise.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.floordiv(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 0 1 1 1]
+#+END_SRC
 
 *** tensorflow methods                                                :drill:
 
 [tf.truncatediv(x, y, name=None)] Returns x / y element-wise for integer types.
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.truncatediv(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 0 1 1 1]
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
 
 [tf.realdiv(x, y, name=None)] Returns x / y element-wise for real types.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0, 3.0, 4.0, 5.0])
+
+fm = tf.realdiv(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0.33333334  0.66666669  1.          1.33333337  1.66666663]
+#+END_SRC
 
 *** tensorflow methods                                                :drill:
 
 [tf.floordiv(x, y, name=None)] Divides x / y elementwise, rounding toward the most negative integer.
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.floordiv(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[0 0 1 1 1]
+#+END_SRC
+
+
 *** tensorflow methods                                                :drill:
 
 [tf.truediv(x, y, name=None)] Divides x / y elementwise (using Python 3 division operator semantics).
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.truediv(a, 3)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0.33333333  0.66666667  1.          1.33333333  1.66666667]
+#+END_SRC
 
 *** tensorflow methods                                                :drill:
 
 [tf.divide(x, y, name=None)] Computes Python style division of x by y.
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+b = 2 * a
+
+c = tf.divide(a, b)
+d = a / b
+a /= b
+with tf.Session():
+    print(c.eval())
+    print(d.eval())
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0.5  0.5  0.5  0.5  0.5]
+[ 0.5  0.5  0.5  0.5  0.5]
+[ 0.5  0.5  0.5  0.5  0.5]
+#+END_SRC
+
 *** tensorflow methods                                                :drill:
 
 [tf.scalar_mul(scalar, x)] Multiplies a scalar times a Tensor or IndexedSlices object.
+
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+fm = tf.scalar_mul(3, a)
+
+with tf.Session():
+    print(fm.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 3  6  9 12 15]
+#+END_SRC
+
 
 *** tensorflow methods                                                :drill:
 
 [tf.multiply(x, y, name=None)] is used for element-wise multiplication of two tensors.
 
-* utilities
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+b = 2 * a
+
+c = tf.multiply(a, b)
+d = a * b
+a *= b
+with tf.Session():
+    print(c.eval())
+    print(d.eval())
+    print(a.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 2  8 18 32 50]
+[ 2  8 18 32 50]
+[ 2  8 18 32 50]
+#+END_SRC
+
+
+
+* elisp utilities
 
 I used this to clean up pasted strings.
 
@@ -718,7 +1117,7 @@ I used this to clean up pasted strings.
   (goto-char (line-beginning-position))
   (insert "[")
   (let ((r1 (point))
-	(r2 (re-search-forward ")"))) 
+	(r2 (re-search-forward ")")))
     (replace-regexp " \\|\\\\n\\|\\|
 " "" nil r1 r2)
     (replace-regexp "," ", " nil r1 r2))
