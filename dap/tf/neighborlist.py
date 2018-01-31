@@ -13,10 +13,16 @@
 # limitations under the License.
 """Neighborlist functions for tensorflow."""
 
+import os
+import warnings
 import tensorflow as tf
 
+tf.logging.set_verbosity(tf.logging.ERROR)
+warnings.filterwarnings('ignore')
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-def get_distances(config, positions, cell, atom_mask=None):
+
+def get_distances(config, positions, cell, atom_mask=None, bothways=True):
   """Get distances to neighboring atoms with periodic boundary conditions.
 
   The way this function works is it tiles a volume with unit cells to at least
@@ -72,7 +78,11 @@ def get_distances(config, positions, cell, atom_mask=None):
 
     # Now we generate a set of cell offsets. We start with the repeats in each
     # unit cell direction.
-    v0_range = tf.range(mins[0], maxs[0])
+    if bothways:
+      v0_start = mins[0]
+    else:
+      v0_start = 0
+    v0_range = tf.range(v0_start, maxs[0])
     v1_range = tf.range(mins[1], maxs[1])
     v2_range = tf.range(mins[2], maxs[2])
 
@@ -91,6 +101,20 @@ def get_distances(config, positions, cell, atom_mask=None):
         v2_range[None, None, :])
 
     offsets = tf.reshape(offsets, (-1, 3))
+
+    if not bothways:
+      # pick out the ones that don't meet the one-way conditions
+      n1 = offsets[:, 0]
+      n2 = offsets[:, 1]
+      n3 = offsets[:, 2]
+
+      mask = tf.logical_not(
+        tf.logical_and(
+          tf.equal(n1, 0), (tf.logical_or(
+            tf.less(n2, 0),
+            (tf.logical_and(tf.equal(n2, 0), (tf.less(n3, 0))))))))
+
+      offsets = tf.boolean_mask(offsets, mask)
 
     # Now we have a vector of unit cell offsets (offset_index, 3) in the inverse
     # unit cell basis. We convert that to cartesian coordinate offsets here.
@@ -120,3 +144,8 @@ def get_distances(config, positions, cell, atom_mask=None):
     adjusted = tf.where(zeros, tf.ones_like(distances2), distances2)
     distance = tf.sqrt(adjusted)
     return tf.where(zeros, tf.zeros_like(distance), distance)
+
+
+def get_neighbors(config, atom_index, positions, cell,
+                  atom_mask=None, bothways=True):
+  pass

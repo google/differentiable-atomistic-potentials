@@ -19,7 +19,8 @@ def get_distances(positions,
                   cell,
                   cutoff_radius,
                   skin=0.01,
-                  strain=np.zeros((3, 3))):
+                  strain=np.zeros((3, 3)),
+                  oneway=False):
   """Get distances to atoms in a periodic unitcell.
 
     Parameters
@@ -54,7 +55,11 @@ def get_distances(positions,
   maxs = np.max(np.ceil(fractional_coords + num_repeats), axis=0)
 
   # Now we generate a set of cell offsets
-  v0_range = np.arange(mins[0], maxs[0])
+  if oneway:
+    v0_start = 0
+  else:
+    v0_start = mins[0]
+  v0_range = np.arange(v0_start, maxs[0])
   v1_range = np.arange(mins[1], maxs[1])
   v2_range = np.arange(mins[2], maxs[2])
 
@@ -70,6 +75,14 @@ def get_distances(positions,
       v0_range[:, None, None] + v1_range[None, :, None] +
       v2_range[None, None, :])
   offsets = offsets.reshape(-1, 3)
+
+  if oneway:
+    n1 = offsets[:, 0]
+    n2 = offsets[:, 1]
+    n3 = offsets[:, 2]
+
+    mask = ~((n1 == 0) & ((n2 < 0) | ((n2 == 0) & (n3 < 0))))
+    offsets = offsets[mask]
 
   # Now we have a vector of unit cell offsets (offset_index, 3)
   # We convert that to cartesian coordinate offsets
@@ -93,7 +106,43 @@ def get_distances(positions,
   adjusted = np.where(zeros, np.ones_like(d2), d2)
   d = np.where(zeros, np.zeros_like(d2), np.sqrt(adjusted))
 
-  return np.where(d <= cutoff_radius + skin, d, np.zeros_like(d))
+  return np.where(d <= cutoff_radius + skin, d, np.zeros_like(d)), offsets
+
+
+def get_neighbors(i, distances, offsets, oneway=False):
+  """Return the indices and distances to atom i.
+
+  Parameters
+  ----------
+  i: int, atom index
+  distances is from `get_distances`.
+
+  Returns
+  -------
+  A list of indices and distances.
+  """
+
+  d_i = distances[i]
+
+  oneway_indices = []
+  if oneway:
+    for j, n in enumerate(offsets):
+      d = d_i[:, j]
+      natoms = len(distances)
+      indices = np.arange(natoms)
+      within_r = np.where(d > 0)
+      inds = indices[within_r]
+      if np.all(n == [0, 0, 0]):
+        inds = inds[inds > i]
+      oneway_indices = np.concatenate([oneway_indices, inds])
+
+    return oneway_indices.astype(int), []
+  else:
+    within_r = np.where(d_i > 0)
+    natoms = len(distances)
+    indices = np.arange(natoms)
+
+    return indices[within_r[0]], d_i[within_r]
 
 
 def get_neighbors_oneway(positions,
@@ -116,7 +165,10 @@ def get_neighbors_oneway(positions,
     -------
     indices, offsets
 
-    """
+  Note: This function works with autograd, but it is not easy to convert to
+  tensorflow.
+
+  """
 
   strain_tensor = np.eye(3) + strain
   cell = np.dot(strain_tensor, cell.T).T

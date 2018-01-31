@@ -1,5 +1,167 @@
 #+TITLE: Autograd modules
 
+* Neighborlists
+
+The neighborlist module provides vectorized functions for computing neighborlists for systems with periodic boundary conditions.
+
+The pydoc:dap.ag.neighborlist.get_distances takes some getting used to. It returns a multidimensional array of distances with a shape of (atom_i, atom_j, distance). The elements that are outside the cutoff radius are set to 0.0, and the distance for an atom to itself is also 0.0.
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+from dap.ag.neighborlist import get_distances
+
+from ase.build import molecule
+
+atoms = molecule('H2O')
+atoms.set_cell(20 * np.eye(3))
+
+print(atoms)
+
+Rc = 3
+d = get_distances(atoms.positions, atoms.cell, Rc)
+
+#print(d)
+
+# Count neighbors
+mask = (d < Rc) & (d > 0)
+nneighbors = mask.sum((1, 2))
+print(nneighbors)
+
+natoms = len(atoms)
+indices = np.arange(natoms)
+
+inds = (d > 0)
+
+
+for i in range(natoms):
+    di = d[i]
+    inds = (di > 0)
+    within_r = np.where(inds)
+    print(indices[within_r[0]])
+    print(di[within_r])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atoms(symbols='OH2', pbc=False, cell=[20.0, 20.0, 20.0])
+[2 2 2]
+[1 2]
+[ 0.96856502  0.96856502]
+[0 2]
+[ 0.96856502  1.526478  ]
+[0 1]
+[ 0.96856502  1.526478  ]
+:END:
+
+
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+from dap.ag.neighborlist import get_distances, get_neighbors
+
+from ase.build import molecule
+
+atoms = molecule('H2O')
+atoms.set_cell(20 * np.eye(3))
+
+print(atoms)
+
+Rc = 3
+d = get_distances(atoms.positions, atoms.cell, Rc)
+
+for i in range(len(atoms)):
+    print(get_neighbors(i, d))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atoms(symbols='OH2', pbc=False, cell=[20.0, 20.0, 20.0])
+(array([1, 2]), array([ 0.96856502,  0.96856502]))
+(array([0, 2]), array([ 0.96856502,  1.526478  ]))
+(array([0, 1]), array([ 0.96856502,  1.526478  ]))
+:END:
+
+** bothways
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+from ase.neighborlist import NeighborList
+from dap.ag.neighborlist import get_distances, get_neighbors
+
+from ase.build import bulk
+
+a = 3.6
+atoms = bulk('Cu', 'fcc', a=a).repeat((2, 1, 1))
+
+print(atoms)
+
+Rc = a / np.sqrt(2)
+d = get_distances(atoms.positions, atoms.cell, Rc)
+
+for i in range(len(atoms)):
+    print(get_neighbors(i, d)[0])
+
+nl = NeighborList([Rc / 2] * len(atoms), skin=0.01,
+                  bothways=True, self_interaction=False)
+nl.update(atoms)
+for i in range(len(atoms)):
+    print(nl.get_neighbors(i)[0])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atoms(symbols='Cu2', pbc=True, cell=[[0.0, 3.6, 3.6], [1.8, 0.0, 1.8], [1.8, 1.8, 0.0]])
+[0 0 0 0 0 0 1 1 1 1 1 1]
+[0 0 0 0 0 0 1 1 1 1 1 1]
+[1 0 0 0 0 0 0 1 1 1 1 1]
+[0 1 1 0 1 0 0 0 0 1 1 1]
+:END:
+
+** oneway test
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+from ase.neighborlist import NeighborList
+from dap.ag.neighborlist import get_distances, get_neighbors
+
+from ase.build import bulk
+
+a = 3.6
+atoms = bulk('Cu', 'fcc', a=a).repeat((3, 1, 1))
+atoms.rattle()
+print(atoms)
+
+Rc = a / np.sqrt(2) + 0.01
+d, o = get_distances(atoms.positions, atoms.cell, Rc, oneway=True)
+
+print('\nag')
+for i in range(len(atoms)):
+    print(get_neighbors(i, d, o, True)[0])
+
+print('\nase:')
+nl = NeighborList([Rc / 2] * len(atoms), skin=0.01,
+                  bothways=False, self_interaction=False)
+nl.update(atoms)
+for i in range(len(atoms)):
+    print(nl.get_neighbors(i)[0])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atoms(symbols='Cu3', pbc=True, cell=[[0.0, 5.4, 5.4], [1.8, 0.0, 1.8], [1.8, 1.8, 0.0]])
+
+ag
+[1 0 0 0]
+[2 0 1 1 0 1]
+[1 2 2 1 2 0 0 0]
+
+ase:
+[1 0 1 0 0]
+[2 1 0 1 1]
+[1 2 2 1 2 0 0 0]
+:END:
+
+
 * Training the Lennard Jones parameters
 
 There is a database of DFT calculations of Ar in [[./argon.db]]. Here is a brief description of the database. It contains five structures at three different volumes each. For each volume and structure the atoms were randomly displaced many times, and the energy and forces were computed using DFT (Vasp).
