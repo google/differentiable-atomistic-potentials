@@ -22,6 +22,8 @@ from amp.utilities import hash_images
 
 from dap.ag.neighborlist import get_distances
 from dap.py.bpnn import pad, cosine_cutoff, G2
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestPadding(unittest.TestCase):
@@ -80,7 +82,7 @@ class TestG2(unittest.TestCase):
         axis=1).astype(int)
 
     config = {'cutoff_radius': 6.5}
-    d = get_distances(positions, cell, config['cutoff_radius'])
+    d, _ = get_distances(positions, cell, config['cutoff_radius'])
 
     g0 = G2(0, 0.05, 0.0)
     g1 = G2(1, 0.05, 0.0)
