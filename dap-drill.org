@@ -67,175 +67,175 @@ You can reset this document and clear all training data with this block.
 
  Use the [tearDown] class method to run code after every test.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertEqual]                                    :drill:
     :PROPERTIES:
     :ID:       ac2c1abb-6d30-4204-bed9-84f0d7d45a88
     :END:
 
  [assertEqual(a, b)] is used to check if two things are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertNotEqual]                                 :drill:
     :PROPERTIES:
     :ID:       d4933280-7246-451e-94bb-94e2386eca41
     :END:
 
  [assertNotEqual(a, b)]	is used to check if two things are not equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertTrue]                                     :drill:
     :PROPERTIES:
     :ID:       e12e353f-79ea-4a69-8fc9-40876e3d2469
     :END:
 
  [assertTrue(x)] is used to check if something evaluates as truthy.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertFalse]                                    :drill:
     :PROPERTIES:
     :ID:       3592c943-e7bf-48e3-a1d2-6b1b120c9b06
     :END:
 
  [assertFalse(x)]	is used to check if something evaluates as falsey.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIs]                                       :drill:
     :PROPERTIES:
     :ID:       cfac9f9e-0576-4dc2-bdeb-babb29cb7939
     :END:
 
  [assertIs(a, b)]	is used to check if one thing is the same as another.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIsNot]                                    :drill:
     :PROPERTIES:
     :ID:       9932c836-ca1a-4e61-a03f-c053260f1b02
     :END:
 
  [assertIsNot(a, b)]	is used to check if one thing is not the same as another.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIsNone]                                   :drill:
     :PROPERTIES:
     :ID:       4ac24e57-9aea-439a-9a49-1c0997f83020
     :END:
 
  [assertIsNone(x)]	is used to check if something is None.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIsNotNone]                                :drill:
     :PROPERTIES:
     :ID:       d8c3909a-2588-4eec-85a1-49b64ac8bd7d
     :END:
 
  [assertIsNotNone(x)]	is used to check if something is not None.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIn]                                       :drill:
     :PROPERTIES:
     :ID:       e8079664-0ea6-487c-9482-96a3d704535d
     :END:
 
  [assertIn(a, b)]	is used to check if an item is in an iterable item.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertNotIn]                                    :drill:
     :PROPERTIES:
     :ID:       a668d954-7297-4ba7-a726-1bdfcec412b4
     :END:
 
  [assertNotIn(a, b)]	is used to check if an item is not in an iterable item.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertIsInstance]                               :drill:
     :PROPERTIES:
     :ID:       e1f5ace2-e294-44fe-b8ec-ebe086beb844
     :END:
 
  [assertIsInstance(a, b)] is used to check if an item is an instance of some class.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertNotIsInstance]                            :drill:
     :PROPERTIES:
     :ID:       26ab4a9b-ec5b-46cb-a802-d262b0704c0d
     :END:
 
  [assertNotIsInstance(a, b)] is used to check if an item is an instance of some class.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertRaises]                                   :drill:
     :PROPERTIES:
     :ID:       5dbfde0c-7796-4035-8fd4-eff66605d112
     :END:
 
  [assertRaises(exc, fun, *args, **kwds)] is used to check if a function raises an exception
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertRaisesRegex]                              :drill:
     :PROPERTIES:
     :ID:       bb4401ae-eec3-4866-91fc-99c7884c0af1
     :END:
 
  [assertRaisesRegex(exc, r, fun, *args, **kwds)] is used to check if a function raises an exception with a message matching a regular expression.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertWarns]                                    :drill:
     :PROPERTIES:
     :ID:       92958672-be92-44ff-a383-5df50b484831
     :END:
 
  [assertWarns(warn, fun, *args, **kwds)] is used to check if a function raises a warning.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertWarnsRegex]                               :drill:
     :PROPERTIES:
     :ID:       e431a2f2-fd2a-4cc0-ab26-b0fd3e148028
     :END:
 
  [assertWarnsRegex(warn, r, fun, *args, **kwds)] is used to check if a function raises a warning that matches a regular expression.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertLogs]                                     :drill:
     :PROPERTIES:
     :ID:       c72fc02c-47fb-49fd-b933-e475da30953a
     :END:
 
  [assertLogs(logger, level)] is used to make sure a block of code runs a logger at some minimum level
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertAlmostEqual]                              :drill:
     :PROPERTIES:
     :ID:       c0a122e3-b58e-4724-8ca6-15f10554b100
     :END:
 
  [assertAlmostEqual(a, b, places=7)] is used to see if two things are equal to some number of decimal places.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertNotAlmostEqual]                           :drill:
     :PROPERTIES:
     :ID:       1af89b9e-332c-4aa4-9a07-6de59c61fc8b
     :END:
 
  [assertNotAlmostEqual(a, b, places=7)]is used to see if two things are not equal to some number of decimal places.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertGreater]                                  :drill:
     :PROPERTIES:
     :ID:       7e196a17-46ba-4a9f-9c78-48628d020b2c
     :END:
 
  [assertGreater(a, b)] is used to see if one thing is greater than another thing.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertGreaterEqual]                             :drill:
     :PROPERTIES:
     :ID:       a15e2fdd-20de-42e0-98cd-c5b466b921ed
     :END:
 
  [assertGreaterEqual(a, b)] is used to see if one thing is greater than or equal to another thing.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertLess]                                     :drill:
     :PROPERTIES:
     :ID:       a0498a67-5c9b-4565-bd3b-8bfec5e5da18
     :END:
 
  [assertLess(a, b)] is used to see if one thing is less than another thing.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertLessEqual]                                :drill:
     :PROPERTIES:
     :ID:       63c31019-c2f2-4010-8464-e9d6c9d67885
     :END:
 
  [assertLessEqual(a, b)] is used to see if one thing is less than or equal to another thing.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertRegex]                                    :drill:
     :PROPERTIES:
     :ID:       b921a129-0155-43b8-b3c3-55f349265e08
     :END:
 
  [assertRegex(s, r)] is used to check if a string matches a regular expression.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertNotRegex]                                 :drill:
     :PROPERTIES:
     :ID:       0c822959-b446-4402-82dd-8c16220782f2
     :END:
@@ -244,56 +244,54 @@ You can reset this document and clear all training data with this block.
 
  [assertNotRegex(s, r)] is used to check if a string does not match a regular expression.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertCountEqual]                               :drill:
     :PROPERTIES:
     :ID:       3a9df071-8d85-4535-8db0-b7527300d203
     :END:
 
-
-
  [assertCountEqual(a, b)] is used to check if two iterables have the same numbers of each kind of element.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertMultiLineEqual]                           :drill:
     :PROPERTIES:
     :ID:       7e688d35-489c-4692-b56b-23e2dff90c8e
     :END:
 
- [assertMultiLineEqual(a, b)|unittest] is used to see if two strings are equal.
+ [assertMultiLineEqual(a, b)] is used to see if two strings are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertSequenceEqual]                            :drill:
     :PROPERTIES:
     :ID:       1c87dc7a-ecc9-475a-905c-e30102053a57
     :END:
 
- [assertSequenceEqual(a, b)|unittest] is used to check if two sequences are equal.
+ [assertSequenceEqual(a, b)] is used to check if two sequences are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertListEqual]                                :drill:
     :PROPERTIES:
     :ID:       f8e36a78-700f-45d1-81d1-45c679f2c24c
     :END:
 
- [assertListEqual(a, b)|unittest] is used to check if two lists are equal.
+ [assertListEqual(a, b)] is used to check if two lists are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertTupleEqual]                               :drill:
     :PROPERTIES:
     :ID:       89a96ca0-cd41-4591-968d-89dc2d5ccf8f
     :END:
 
- [assertTupleEqual(a, b)|unittest] is used to check if two tuples are equal.
+ [assertTupleEqual(a, b)] is used to check if two tuples are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertSetEqual]                                 :drill:
     :PROPERTIES:
     :ID:       5a48c8e1-47e6-4f44-b070-d254a46351ea
     :END:
 
- [assertSetEqual(a, b)|unittest] is used to check if two sets are equal.
+ [assertSetEqual(a, b)] is used to check if two sets are equal.
 
-*** unittest methods                                                           :drill:
+*** unittest methods [assertDictEqual]                                :drill:
     :PROPERTIES:
     :ID:       b219a807-e149-42bd-838c-31a5376f0429
     :END:
 
- [assertDictEqual(a, b)|unittest] is used to check if two dictionaries are equal.
+ [assertDictEqual(a, b)] is used to check if two dictionaries are equal.
 
 ** Tensorflow testing
 
@@ -305,38 +303,41 @@ You can reset this document and clear all training data with this block.
 Tensorflow test classes should inherit from the [tf.test.TestCase] class.
 
 *** test session                                                      :drill:
+    :PROPERTIES:
+    :ID:       83a8e435-ff65-48bf-aa4f-2e8d8b81fefe
+    :END:
 
 Use [with tf.test_session():] to create a test session to run tests in.
 
-*** tf.test.TestCase methods                                                           :drill:
+*** tf.test.TestCase methods [assertAllClose]                         :drill:
     :PROPERTIES:
     :ID:       68b0265f-c1cb-4531-bbcb-28eea152d2ef
     :END:
 
-[assertAllClose(a, b, rtol, atol)||tensorflow] is used to check that two arrays or dictionaries have near values.
+[assertAllClose(a, b, rtol, atol)] is used to check that two arrays or dictionaries have near values.
 
-*** tf.test.TestCase methods                                                           :drill:
+*** tf.test.TestCase methods [assertAllEqual]                         :drill:
     :PROPERTIES:
     :ID:       e8cc12b5-bd00-4142-9182-7a6791386676
     :END:
 
-[assertAllEqual(a, b)|tensorflow] is used to check if two arrays are equal.
+[assertAllEqual(a, b)] is used to check if two arrays are equal.
 
-*** tf.test.TestCase methods                                                           :drill:
+*** tf.test.TestCase methods [assertAlmostEqual]                      :drill:
     :PROPERTIES:
     :ID:       08b8b13e-b3d3-4303-9716-595ff2c405b7
     :END:
 
-[assertAlmostEqual(a, b, places)||tensorflow] is used to see if two objects are almost equal to some number of places.
+[assertAlmostEqual(a, b, places)] is used to see if two objects are almost equal to some number of places.
 
-*** tf.test.TestCase methods                                                           :drill:
+*** tf.test.TestCase methods [assertAlmostEquals]                     :drill:
     :PROPERTIES:
     :ID:       a88b30d8-53e3-4676-8b4a-9d159dd83fd3
     :END:
 
-[assertAlmostEquals(a, b, places)||tensorflow] is used to see if two arrays are almost equal to some number of places.
+[assertAlmostEquals(a, b, places)] is used to see if two arrays are almost equal to some number of places.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertArrayNear]                        :drill:
     :PROPERTIES:
     :ID:       a33a214c-8e4c-4f61-970c-960587ed24b1
     :END:
@@ -344,147 +345,281 @@ Use [with tf.test_session():] to create a test session to run tests in.
 [assertArrayNear(f1, f2, err)||tensorflow] is used to see if |f1 - f2| < err for all values.
 
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertDictContainsSubset]               :drill:
+    :PROPERTIES:
+    :ID:       0c9e9249-58dc-4aa4-8610-28d46ad7f197
+    :END:
 
 [assertDictContainsSubset(expected, actual)] is used to see if a dictionary contains a subset.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertDictEqual]                        :drill:
+    :PROPERTIES:
+    :ID:       8e68e7a8-7bb3-418c-885a-4e80b597deae
+    :END:
 
 [assertDictEqual(d1, d2)] is used to check if two dictionaries are equal
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertEqual]                            :drill:
+    :PROPERTIES:
+    :ID:       def892e8-8e8b-4e25-8bbc-efd4f86a44e2
+    :END:
 
 [assertEqual(first, second)] is used to see if first == second.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertEquals]                           :drill:
+    :PROPERTIES:
+    :ID:       11aa6700-2fc1-43fd-ae22-21189a42f5ca
+    :END:
 
 [assertEquals(first, second)] is used to see if first == second.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertFalse]                            :drill:
+    :PROPERTIES:
+    :ID:       945136af-573f-43d3-8006-f2db5b85e245
+    :END:
 
 [assertFalse(expr)] is used to check if an expression is falsey.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertGreater]                          :drill:
+    :PROPERTIES:
+    :ID:       f249b96b-1f83-4570-8b19-32f3f2e0732c
+    :END:
 
 [assertGreater(a, b)] is used to see if a > b.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertGreaterEqual]                     :drill:
+    :PROPERTIES:
+    :ID:       a4ec0a32-49b1-4ab1-9c8f-8dabbc1df7cd
+    :END:
 
 [assertGreaterEqual(a, b)] is used to see if a >= b
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIn]                               :drill:
+    :PROPERTIES:
+    :ID:       b423f78b-0b31-4ab4-9da7-789b926062bf
+    :END:
 
 [assertIn(member, container)] is used to see if a member is in a container.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIs]                               :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       2d61c96b-98fc-4e86-827f-57ab826059ef
+    :DRILL_LAST_INTERVAL: 4.0
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 4.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 4
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:02]
+    :END:
 
 [assertIs(expr1, expr2)] is used to see if expr1 is expr2.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIsInstance]                       :drill:
+    :PROPERTIES:
+    :ID:       366c6a0d-94f2-4e0c-b6d9-8fa8bce4bcfa
+    :END:
 
 [assertIsInstance(obj, cls)] is used to see if an object is an instance of a class.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIsNone]                           :drill:
+    :PROPERTIES:
+    :ID:       5210cccb-db82-4b6d-93b4-0bc5f82c0806
+    :END:
 
 [assertIsNone(obj)] is used to see if an object is None.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIsNot]                            :drill:
+    :PROPERTIES:
+    :ID:       d632dc6e-10dc-44e5-be4d-3621cb626d89
+    :END:
 
 [assertIsNot(expr1, expr)] is used to see if expr1 is not expr2.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertIsNotNone]                        :drill:
+    :PROPERTIES:
+    :ID:       47019a0e-79d8-4bb8-9978-7640afe22ea5
+    :END:
 
 [assertIsNotNone(obj)] is used to see if an object is not None.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertItemsEqual]                       :drill:
+    :PROPERTIES:
+    :ID:       09cbe1c7-0add-4271-b64c-b82e31b22632
+    :END:
 
 [assertItemsEqual(expected_seq, actual_seq)] is used to see if two sequences have the same element counts in any order.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertLess]                             :drill:
+    :PROPERTIES:
+    :ID:       9d9017bb-eaa1-4bd9-9a5f-894d8fe58b36
+    :END:
 
 [assertLess(a, b)] is used to see if a < b.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertLessEqual]                        :drill:
+    :PROPERTIES:
+    :ID:       394646fa-28dc-4e73-80ba-88cad8675402
+    :END:
 
 [assertLessEqual(a, b)] is used to see if a <= b.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertListEqual]                        :drill:
+    :PROPERTIES:
+    :ID:       1759ea97-7954-4315-b017-531d55409d76
+    :END:
 
 [assertListEqual(list1, list2, msg=None)] is used to see if two lists are equal.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertMultiLineEqual]                   :drill:
+    :PROPERTIES:
+    :ID:       2d64d4cc-d58c-4b19-9244-5d7cbea79d2e
+    :END:
 
 [assertMultiLineEqual(first, second, msg=None)] is used to see if two multiline strings are equal.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNDArrayNear]                      :drill:
+    :PROPERTIES:
+    :ID:       d058d771-cb2c-441b-b76c-eea3890add00
+    :END:
 
 [assertNDArrayNear(ndarray1, ndarray2, err)] is used to see if two arrays are the same within an error.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotAlmostEqual]                   :drill:
+    :PROPERTIES:
+    :ID:       e6b76959-9adc-4ec0-a4e1-f0f836c55ebd
+    :END:
 
 [assertNotAlmostEqual(first, second, places=None, msg=None, delta=None)] is used to see if two arrays are not equal to a specified number of decimal places.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotAlmostEquals]                  :drill:
+    :PROPERTIES:
+    :ID:       9b946545-94e4-4969-a166-6f5dda03376f
+    :END:
 
 [assertNotAlmostEquals(first, second, places=None, msg=None, delta=None)] is used to see if two arrays are not equal to a specified number of decimal places.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotEqual]                         :drill:
+    :PROPERTIES:
+    :ID:       a96e47c3-c171-4a1b-a048-6462dede752a
+    :END:
 
 [assertNotEqual(first, second, msg=None)] is used to see if first != second.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotEquals]                        :drill:
+    :PROPERTIES:
+    :ID:       ccccdccd-dc3a-41f1-83a6-4f8922720fd9
+    :END:
 
 [assertNotEquals(first, second, msg=None)] is used to see if first != second.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotIn]                            :drill:
+    :PROPERTIES:
+    :ID:       56ffa367-6546-4d41-9ca1-a83f0439b12c
+    :END:
 
 [assertNotIn(member, container, msg=None)] checks if member is in container.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotIsInstance]                    :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       552363d2-b975-48c0-ad9a-d5fa67067491
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:02]
+    :END:
 
 [assertNotIsInstance(obj, cls, msg=None)] checks if an object is not an instance of a class.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertNotRegexpMatches]                 :drill:
+    :PROPERTIES:
+    :ID:       4c92321b-2f2c-45af-a175-34720af3ebc8
+    :END:
 
 [assertNotRegexpMatches(text, unexpected_regexp, msg=None)] is used to check if string does not match a regular expression.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertRaises]                           :drill:
+    :PROPERTIES:
+    :ID:       7a7f04a5-ec29-4e69-85c6-d90205c38b6f
+    :END:
 
 [assertRaises(excClass, callableObj=None, *args, **kwargs)] checks if a function raises an exception.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertRaisesRegexp]                     :drill:
+    :PROPERTIES:
+    :ID:       a2275d68-d337-42ae-96c5-8ba9eb910bd2
+    :END:
 
 [assertRaisesRegexp(expected_exception, expected_regexp, callable_obj=None, *args, **kwargs)] checks if the message from an exception matches a regular expression.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertRegexpMatches]                    :drill:
+    :PROPERTIES:
+    :ID:       b4eafc19-ffd2-41a9-8992-2039fd308359
+    :END:
 
 [assertRegexpMatches(text, expected_regexp, msg=None)] checks if a string matches a regular expression.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertSequenceEqual]                    :drill:
+    :PROPERTIES:
+    :ID:       ae35867b-bfb0-4e35-8fcd-34727d1b3ced
+    :END:
 
 [assertSequenceEqual(seq1, seq2, msg=None, seq_type=None)] checks if two ordered sequences are equal.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertSetEqual]                         :drill:
+    :PROPERTIES:
+    :ID:       f038e506-a64d-4431-ad82-ab9cbcd54677
+    :END:
 
 [assertSetEqual(set1, set2, msg=None)] checks if two sets are equal.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertShapeEqual]                       :drill:
+    :PROPERTIES:
+    :ID:       e82e488a-0b15-4559-881c-4564a7a40f99
+    :END:
 
 [assertShapeEqual(np_array, tf_tensor)] checks if a numpy array and tensorflow tensor have the same shape.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertStartsWith]                       :drill:
+    :PROPERTIES:
+    :ID:       a73a6713-11a2-4065-b70f-0f4cd6f6f94f
+    :END:
 
 [assertStartsWith(actual, expected_start, msg=None)] checks if string startswith something.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertTrue]                             :drill:
+    :PROPERTIES:
+    :ID:       4e7fc3b9-8ae6-442b-8dd3-64059b98af2c
+    :DRILL_LAST_INTERVAL: 0.0
+    :DRILL_REPEATS_SINCE_FAIL: 1
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 1
+    :DRILL_AVERAGE_QUALITY: 2.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 2
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:01]
+    :END:
 
 [assertTrue(expr, msg=None)] checks if an expression is truthy.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assertTupleEqual]                       :drill:
+    :PROPERTIES:
+    :ID:       d42a4dd1-ef84-4fa9-aadb-edf7dfb75bbb
+    :END:
 
 [assertTupleEqual(tuple1, tuple2, msg=None)] Checks if two tuples are equal.
 
-*** tf.test.TestCase methods                                          :drill:
+*** tf.test.TestCase methods [assert_]                                :drill:
+    :PROPERTIES:
+    :ID:       e012b81b-22c6-4b08-adfa-20d2506ff3a1
+    :END:
 
 [assert_(expr, msg=None)] checks if an expression is truthy.
 
@@ -492,7 +627,7 @@ Use [with tf.test_session():] to create a test session to run tests in.
 
 * Tensorflow
 ** core methods
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.floor]                                :drill:
     :PROPERTIES:
     :ID:       F5EBCF63-C3AD-4A90-A54F-109340BB50D5
     :END:
@@ -515,7 +650,7 @@ with tf.Session() as sess:
 [-2.  0.  2.]
 #+END_SRC
 
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.norm]                                 :drill:
     :PROPERTIES:
     :ID:       BD0B0B36-074B-4265-B621-1B339D950E60
     :END:
@@ -547,7 +682,7 @@ with tf.Session() as sess:
 [ 1.  2.]
 #+END_SRC
 
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.range]                                :drill:
     :PROPERTIES:
     :ID:       682D6790-F3C5-47A2-A454-B19D575FE67E
     :END:
@@ -574,7 +709,7 @@ with tf.Session():
 #+END_SRC
 
 
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.round]                                :drill:
     :PROPERTIES:
     :ID:       C9E8CF2A-AEB2-4D24-BAAF-291A5FD8202E
     :END:
@@ -597,7 +732,10 @@ with tf.Session():
 [-1.  0.  0.  1.]
 #+END_SRC
 
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.stack]                                :drill:
+    :PROPERTIES:
+    :ID:       02804a53-535c-4ac0-a3c8-7567624a3e1a
+    :END:
 
 [tf.stack(values, axis=0, name='stack')] Stacks a list of rank-R tensors into one rank-(R+1) tensor.
 
@@ -627,7 +765,10 @@ with tf.Session():
     #+END_SRC
 
 
-*** tensorflow core methods                                           :drill:
+*** tensorflow core methods [tf.unstack]                              :drill:
+    :PROPERTIES:
+    :ID:       f230071b-7abe-47c5-ac66-beded3323263
+    :END:
 
 [tf.unstack(value, num=None, axis=0, name='unstack')] Unpacks the given dimension of a rank-R tensor into rank-(R-1) tensors.
 
@@ -640,7 +781,7 @@ x = tf.constant([1, 4])
 
 elements = tf.unstack(x)
 
-with tf.Session():
+with tf.Session() as sess:
     print(elements)
     #+END_SRC
 
@@ -649,7 +790,12 @@ with tf.Session():
     [<tf.Tensor 'unstack:0' shape=() dtype=int32>, <tf.Tensor 'unstack:1' shape=() dtype=int32>]
     #+END_SRC
 
-*** tensorflow core methods                                           :drill:
+The code above shows that elements consists of a list of tensors.
+
+*** tensorflow core methods [tf.concat]                               :drill:
+    :PROPERTIES:
+    :ID:       4084c918-ee37-4ec5-a283-5e2e9bd8ccc4
+    :END:
 
 [tf.concat(values, axis, name='concat')] Concatenates tensors along one dimension.
 
@@ -672,9 +818,215 @@ with tf.Session():
     [1 2 3]
     #+END_SRC
 
-** tensor creation
 
-*** tensorflow array creation                                         :drill:
+*** tensorflow core methods [tf.gather]                               :drill:
+    :PROPERTIES:
+    :ID:       1607186e-db4f-4c1b-8f26-fa0a248cca3c
+    :END:
+
+[tf.gather(params, indices, validate_indices=None, name=None, axis=0)]
+
+Gather slices from params axis according to indices.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(10)
+
+indices = tf.range(1, 10, delta=2)
+
+p0 = tf.gather(a, indices)
+p1 = tf.gather(a, [1, 5, 3, 7, 9])
+with tf.Session():
+    print(p0.eval())
+    print(p1.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [1 3 5 7 9]
+    [1 5 3 7 9]
+    #+END_SRC
+
+*** tensorflow core methods [tf.gather_nd]                            :drill:
+    :PROPERTIES:
+    :ID:       3e808e2a-5186-476b-b34c-a5caaf80fd59
+    :END:
+
+[tf.gather_nd(params, indices, name=None)] Gather slices from params into a Tensor with shape specified by indices.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+params = tf.constant([['a', 'b'], 
+                      ['c', 'd']])
+
+
+p0 = tf.gather_nd(params, [[0, 0], [1, 1]]) # specific elements
+p1 = tf.gather_nd(params, [[1], [0]])  # rows
+with tf.Session():
+    print(p0.eval())
+    print(p1.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [b'a' b'd']
+    [[b'c' b'd']
+     [b'a' b'b']]
+    #+END_SRC
+
+
+*** tensorflow core methods [tf.count_nonzero]                        :drill:
+    :PROPERTIES:
+    :ID:       69e76534-35a6-4a35-930a-8be6037f303a
+    :END:
+
+[tf.count_nonzero(input_tensor, axis=None, keepdims=None, dtype=tf.int64, name=None, reduction_indices=None, keep_dims=None)]
+
+Computes number of nonzero elements across dimensions of a tensor. (deprecated arguments)
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+x = tf.constant([[0, 1, 0], [1, 1, 0]])
+
+
+with tf.Session():
+    print(tf.count_nonzero(x).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+3
+#+END_SRC
+
+** tensor creation
+*** tensorflow tensor creation [tf.ones]                              :drill:
+    :PROPERTIES:
+    :ID:       e5e8e160-bc7a-4f25-ac00-fb225d5fc2ec
+    :END:
+[tf.ones(shape, dtype=tf.float32, name=None)] Creates a tensor with all elements set to 1.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+resf = tf.ones((3, 3))
+resi = tf.ones((3, 3), dtype=tf.int32)
+
+with tf.Session():
+    print(resf.eval())
+    print(resi.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[1. 1. 1.]
+     [1. 1. 1.]
+     [1. 1. 1.]]
+    [[1 1 1]
+     [1 1 1]
+     [1 1 1]]
+    #+END_SRC
+
+*** tensorflow tensor creation [tf.ones_like]                         :drill:
+    :PROPERTIES:
+    :ID:       cfe209a9-b6ef-4b59-be78-b50a4aac6eac
+    :END:
+
+[tf.ones_like(tensor, dtype=None, name=None, optimize=True)] Creates a tensor with all elements set to 1 like another tensor.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+resi = tf.ones_like(a)
+
+a = tf.range(5, dtype=tf.float32)
+resf = tf.ones_like(a)
+
+with tf.Session():
+    print(resi.eval())
+    print(resf.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [1 1 1 1 1]
+    [1. 1. 1. 1. 1.]
+    #+END_SRC
+
+*** tensorflow tensor creation [tf.zeros]                             :drill:
+    :PROPERTIES:
+    :ID:       585ea613-4779-44b0-9345-93eaa046bf94
+    :END:
+[tf.zeros(shape, dtype=tf.float32, name=None)] Creates a tensor with all elements set to 0.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+resf = tf.zeros((3, 3))
+resi = tf.zeros((3, 3), dtype=tf.int32)
+
+with tf.Session():
+    print(resf.eval())
+    print(resi.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[0. 0. 0.]
+     [0. 0. 0.]
+     [0. 0. 0.]]
+    [[0 0 0]
+     [0 0 0]
+     [0 0 0]]
+    #+END_SRC
+
+*** tensorflow tensor creation [tf.zeros_like]                        :drill:
+    :PROPERTIES:
+    :ID:       354eec97-49c3-4aad-acf7-bc960cd86140
+    :END:
+
+[tf.zeros_like(tensor, dtype=None, name=None, optimize=True)] Creates a tensor with all elements set to zero like another tensor.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+resi = tf.zeros_like(a)
+
+a = tf.range(5, dtype=tf.float32)
+resf = tf.zeros_like(a)
+
+with tf.Session():
+    print(resi.eval())
+    print(resf.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [0 0 0 0 0]
+    [0. 0. 0. 0. 0.]
+    #+END_SRC
+
+*** tensorflow tensor creation [tf.fill]                              :drill:
+    :PROPERTIES:
+    :ID:       4c5a253e-2d5a-45ba-aa0d-917b340b207d
+    :END:
 
 [tf.fill(dims, value, name=None)] will create a tensor with a default value.
 
@@ -695,69 +1047,724 @@ with tf.Session():
  [9 9 9]]
 #+END_SRC
 
+
+
+*** tensorflow tensor creation [tf.scatter_nd]                        :drill:
+    :PROPERTIES:
+    :ID:       4ef050fe-b5aa-412e-a841-2c8f96c523a4
+    :END:
+
+
+
+[tf.scatter_nd(indices, updates, shape, name=None)] Scatter updates into a new (initially zero) tensor according to indices.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+indices = tf.constant([[4], [3], [1], [7]])
+updates = tf.constant([9, 10, 11, 12])
+shape = tf.constant([8])
+scatter = tf.scatter_nd(indices, updates, shape)
+with tf.Session() as sess:
+    print(sess.run(scatter))
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ 0 11  0 10  9  0  0 12]
+    #+END_SRC
+
+
+*** tensorflow tensor creation [tf.meshgrid]                          :drill:
+    :PROPERTIES:
+    :ID:       5dcdffde-a5a8-44c6-9fc6-72a80e315e5d
+    :END:
+
+[tf.meshgrid(*args, **kwargs)]
+
+Broadcasts parameters for evaluation on an N-D grid.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+x = [1, 2, 3]
+y = [4, 5, 6]
+X, Y = tf.meshgrid(x, y)
+
+with tf.Session():
+    print(X.eval())
+    print(Y.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[1 2 3]
+     [1 2 3]
+     [1 2 3]]
+    [[4 4 4]
+     [5 5 5]
+     [6 6 6]]
+    #+END_SRC
+
+
+*** tensorflow tensor creation [tf.convert_to_tensor]                 :drill:
+    :PROPERTIES:
+    :ID:       11a1f1c6-1795-4583-b996-a5112fad5ec1
+    :END:
+
+[tf.convert_to_tensor(value, dtype=None, name=None, preferred_dtype=None)]
+
+Converts the given value to a Tensor.
+
+** tensor modification
+   
+*** tensorflow modification   [tf.reshape]                            :drill:
+    :PROPERTIES:
+    :ID:       4e8c590e-3008-4163-996a-0bb80c56a983
+    :END:
+    
+[tf.reshape(tensor, shape, name=None)] Reshapes a tensor.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5, 6, 7, 8, 9])
+r = tf.reshape(a, (-1, 3))
+
+with tf.Session() as sess:
+    print(sess.run(r))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 2 3]
+ [4 5 6]
+ [7 8 9]]
+#+END_SRC
+
+Use -1 to "fill" in one dimension.
+
+
+*** tensorflow modification [tf.scatter_add]                          :drill:
+    :PROPERTIES:
+    :ID:       da60af5a-175b-43ee-989a-3c42c2fa14a3
+    :END:
+
+[tf.scatter_add(ref, indices, updates, use_locking=False, name=None)]
+
+Adds sparse updates to a variable reference.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+var = tf.Variable(tf.constant([0, 1, 2]))
+
+update = tf.scatter_add(var, [1], [1])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(update.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [0 2 2]
+    #+END_SRC
+
+*** tensorflow modification [tf.scatter_sub]                          :drill:
+    :PROPERTIES:
+    :ID:       ac747337-afa1-4889-b39a-68ad53bfb99d
+    :END:
+
+[tf.scatter_sub(ref, indices, updates, use_locking=False, name=None)]
+
+Subtracts sparse updates to a variable reference.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+var = tf.Variable(tf.constant([0, 1, 2]))
+
+update = tf.scatter_sub(var, [1], [1])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(update.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [0 0 2]
+    #+END_SRC
+
+*** tensorflow modification [tf.scatter_mul]                          :drill:
+    :PROPERTIES:
+    :ID:       be7d4b43-408b-46f4-95c7-8e513724468e
+    :END:
+
+[tf.scatter_mul(ref, indices, updates, use_locking=False, name=None)]
+
+Multiplies sparse updates into a variable reference.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+var = tf.Variable(tf.constant([0, 1, 2]))
+
+update = tf.scatter_mul(var, [1], [3])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(update.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [0 3 2]
+    #+END_SRC
+
+*** tensorflow modification [tf.scatter_div]                          :drill:
+    :PROPERTIES:
+    :ID:       3ede032d-3695-440e-a026-ade75cde9794
+    :END:
+
+[tf.scatter_div(ref, indices, updates, use_locking=False, name=None)]
+
+Divides a variable reference by sparse updates.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+var = tf.Variable(tf.constant([0.0, 1.0, 2.0]))
+
+update = tf.scatter_div(var, [1], [3])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(update.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [0.         0.33333334 2.        ]
+    #+END_SRC
+
+*** tensorflow modification [tf.scatter_update]                       :drill:
+    :PROPERTIES:
+    :ID:       2f555acb-a730-4382-82b6-2d0a658da26c
+    :END:
+
+[tf.scatter_update(ref, indices, updates, use_locking=True, name=None)]
+Applies sparse updates to a variable reference.
+
+**** example
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+var = tf.Variable(tf.constant([0, 1, 2]))
+
+update = tf.scatter_update(var, [1], [-1])
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(update.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ 0 -1  2]
+    #+END_SRC
+
 ** Tensorflow iteration
 
-*** tensorflow iteration methods                                      :drill:
+*** tensorflow iteration methods [tf.map_fn]                          :drill:
+    :PROPERTIES:
+    :ID:       b0aadc00-ae77-49f6-a174-efda8063f957
+    :END:
 
 [tf.map_fn(fn, elems, dtype=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] will apply a function to each element on dimension 0 of a tensor
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+     
+Accumulates a list, like list comprehension. Each value is evaluated on its own, with no access to other values.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+X = tf.range(5)
+res = tf.map_fn(lambda x: x**2, X)
+
+with tf.Session() as sess:
+    print(sess.run(res))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
+
+*** tensorflow iteration methods [tf.scan]                            :drill:
+    :PROPERTIES:
+    :ID:       e629b31b-b51b-47f7-bf2b-8c64bd6737bd
+    :END:
 
 [tf.scan(fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, infer_shape=True, name=None)] scan a function on the list of tensors unpacked from elems on dimension 0.
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+     
+Accumulates a list like list comprehension. You can use previous iteration results in this function.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+res = tf.scan(lambda acc, curr: curr**2, tf.range(5))
+
+with tf.Session() as sess:
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 0  1  4  9 16]
+#+END_SRC
+
+*** tensorflow iteration methods [tf.foldl]                           :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       4ec165ed-5044-43ec-b7d2-c87e8b2549f8
+    :DRILL_LAST_INTERVAL: 4.14
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 5.0
+    :DRILL_EASE: 2.6
+    :DRILL_LAST_QUALITY: 5
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:02]
+    :END:
+
+[tf.foldl(fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, name=None)] foldl on the list of tensors unpacked from elems on dimension 0.
+
+**** example code
+     
+This traverses the tensor from left to right, so this code returns the last element.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([0, 1, 2, 3, 4])
+
+def f(acc, curr):
+    return curr
+
+res = tf.foldl(f, a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+4
+#+END_SRC
+
+*** tensorflow iteration methods [tf.foldr]                           :drill:
+    :PROPERTIES:
+    :ID:       4116a490-e3b4-499d-984d-bd41c97b87c5
+    :END:
+
+[tf.foldr(fn, elems, initializer=None, parallel_iterations=10, back_prop=True, swap_memory=False, name=None)] foldr on the list of tensors unpacked from elems on dimension 0.
+
+**** example code
+     
+This traverses the tensor from right to left, so it returns the first element (or the last from the right).
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([0, 1, 2, 3, 4])
+
+def f(acc, curr):
+    return curr
+
+res = tf.foldr(f, a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+0
+#+END_SRC
+
+*** tensorflow iteration methods [tf.while_loop]                      :drill:
+    :PROPERTIES:
+    :ID:       80e9a7b8-a3a6-45cb-9c58-3d08cdd21ae8
+    :END:
 
 [tf.while_loop(cond, body, loop_vars, shape_invariants=None, parallel_iterations=10, back_prop=True, swap_memory=False, name=None, maximum_iterations=None)] will do a while loop.
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+# We have to initialize these
+i = tf.constant(0)
+sum = tf.constant(0)
+
+def cond(i, _sum): 
+    return i < 5
+
+def body(i, _sum):
+    _sum = _sum + i
+    i = i + 1
+    return i, _sum
+
+i, sum = tf.while_loop(cond, body, [i, sum])
+with tf.Session() as sess:
+    print(sess.run(sum))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_all]                      :drill:
+    :PROPERTIES:
+    :ID:       c376db59-c677-4157-91d5-80eb02198e5c
+    :END:
 
 [tf.reduce_all(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical and" of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([False, False, True])
+res = tf.reduce_all(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+False
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_any]                      :drill:
+    :PROPERTIES:
+    :ID:       8dc4f552-ee0a-4340-8a98-78764921e7fe
+    :END:
 
 [tf.reduce_any(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the "logical or" of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([False, False, True])
+res = tf.reduce_any(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+True
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_max]                      :drill:
+    :PROPERTIES:
+    :ID:       a4ebc5b7-8ab2-4ca3-8832-f04daf6a7bb1
+    :END:
 
 [tf.reduce_max(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the maximum of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0, 3.0, 4.0])
+res = tf.reduce_max(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+4.0
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_mean]                     :drill:
+    :PROPERTIES:
+    :ID:       e9dba120-ca49-42c7-ad18-6a032b4308a7
+    :END:
 
 [tf.reduce_mean(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the mean of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1.0, 2.0, 3.0, 4.0])
+res = tf.reduce_mean(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+2.5
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_min]                      :drill:
+    :PROPERTIES:
+    :ID:       a66808b9-b348-4f82-8e0a-9dc544f4e674
+    :END:
 
 [tf.reduce_min(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the minimum of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4])
+res = tf.reduce_min(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+1
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_prod]                     :drill:
+    :PROPERTIES:
+    :ID:       a5a0cb7b-f658-4918-bd73-528321bef70f
+    :END:
 
 [tf.reduce_prod(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the product of elements across dimensions of a tensor. (deprecated arguments)
 
-*** tensorflow iteration methods                                      :drill:
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4])
+res = tf.reduce_prod(a)
+
+with tf.Session():
+    print(res.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+24
+#+END_SRC
+
+*** tensorflow iteration methods [tf.reduce_sum]                      :drill:
+    :PROPERTIES:
+    :ID:       1ef331fe-f0b8-4e10-9960-e7f013f18238
+    :END:
 
 [tf.reduce_sum(input_tensor, axis=None, keepdims=None, name=None, reduction_indices=None, keep_dims=None)] Computes the sum of elements across dimensions of a tensor. (deprecated arguments)
 
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4])
+s = tf.reduce_sum(a)
+
+with tf.Session():
+    print(s.eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+10
+#+END_SRC
+
+*** tensorflow iteration methods [tf.cum_sum]                         :drill:
+    :PROPERTIES:
+    :ID:       28adc4cb-0c16-4b2a-8f6c-5b51146b2b80
+    :END:
+
+[tf.cumsum(x, axis=0, exclusive=False, reverse=False, name=None)]
+
+Compute the cumulative sum of the tensor x along axis.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(5)
+
+with tf.Session():
+    print(tf.cumsum(a).eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ 0  1  3  6 10]
+    #+END_SRC
+
+*** tensorflow iteration methods [tf.cum_prod]                        :drill:
+    :PROPERTIES:
+    :ID:       d467b698-144a-4f1e-a128-3cfc92aa133a
+    :END:
+
+[tf.cumprod(x, axis=0, exclusive=False, reverse=False, name=None)]
+
+Compute the cumulative product of the tensor x along axis.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.range(1, 5)
+
+with tf.Session():
+    print(tf.cumprod(a).eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ 1  2  6 24]
+    #+END_SRC
+
+*** tensorflow iteration methods [tf.einsum]                          :drill:
+    :PROPERTIES:
+    :ID:       5da51eb0-8f3f-4f46-9c33-7ee5f4887744
+    :END:
+
+[tf.einsum(equation, *inputs, **kwargs)]
+
+A generalized contraction between tensors of arbitrary dimension.
+
+**** example
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3])
+
+dot = tf.einsum('i,i->i', a, a)
+
+outer = tf.einsum('i,j -> ij', a, a)
+
+with tf.Session():
+    print(dot.eval())
+    print(outer.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [1 4 9]
+    [[1 2 3]
+     [2 4 6]
+     [3 6 9]]
+    #+END_SRC
+
 ** Linear algebra
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.matmul]                                    :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       93227b87-dd7b-4561-9dbd-c5e63db60f58
+    :DRILL_LAST_INTERVAL: 4.0
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 4.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 4
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 11:13]
+    :END:
 
-[tf.matmulmatmul(a, b, transpose_a=False, transpose_b=False, adjoint_a=False, adjoint_b=False, a_is_sparse=False, b_is_sparse=False, name=None)] is used to multiply two tensors.
+[tf.matmul(a, b, transpose_a=False, transpose_b=False, adjoint_a=False, adjoint_b=False, a_is_sparse=False, b_is_sparse=False, name=None)] is used to multiply two tensors.
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.matrix_determinant]                        :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       de55cb19-8485-4992-9d31-063ce37ec237
+    :DRILL_LAST_INTERVAL: 4.0
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 4.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 4
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 11:13]
+    :END:
 
 [tf.matrix_determinant(input, name=None)] is used to compute the determinant of a tensor
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.matrix_transpose]                          :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       c8dec230-5bd8-4dae-b01e-17e983cb4e34
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 11:13]
+    :END:
 
 [tf.matrix_transpose(a, name='matrix_transpose', conjugate=False)] is used to transpose a tensor.
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.matrix_inverse]                            :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       932e822c-d8c3-4ec7-ad43-886dc6974038
+    :DRILL_LAST_INTERVAL: 4.0
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 4.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 4
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 11:13]
+    :END:
 
 [tf.matrix_inverse(input, adjoint=False, name=None)] is used to get the inverse of a square tensor.
 
 ** Element-wise operations
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.add]                                       :drill:
+    :PROPERTIES:
+    :ID:       8341142f-34bf-463f-9fd7-268f4fb418d6
+    :END:
 
 [tf.add(x, y, name=None)] is used to element-wise add two tensors
 
@@ -785,7 +1792,46 @@ with tf.Session():
 5
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+
+*** tensorflow methods [tf.add_n]                                     :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       409e2ab4-1c46-4aa6-99b8-49d6b7681106
+    :DRILL_LAST_INTERVAL: 4.14
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 5.0
+    :DRILL_EASE: 2.6
+    :DRILL_LAST_QUALITY: 5
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:01]
+    :END:
+
+[tf.add_n(inputs, name=None)]
+
+Adds all input tensors element-wise.
+
+**** example
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([0, 1, 2])
+b = tf.constant([3, 4, 5])
+c = tf.constant([6, 7, 8])
+
+with tf.Session():
+    print(tf.add_n([a, b, c]).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ 9 12 15]
+#+END_SRC
+
+*** tensorflow methods [tf.subtract]                                  :drill:
+    :PROPERTIES:
+    :ID:       b403493b-150e-48e4-aab0-fda42c28d98b
+    :END:
 
 [tf.subtract(x, y, name=None)]
 
@@ -813,7 +1859,7 @@ with tf.Session():
 -3
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.div]                                       :drill:
     :PROPERTIES:
     :ID:       8FC90C20-E5B5-4596-B433-C94C6EA0AF09
     :END:
@@ -846,7 +1892,10 @@ with tf.Session():
 0
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.cross]                                     :drill:
+    :PROPERTIES:
+    :ID:       ee4c898d-c1b2-46e2-b2c8-725fc99ea671
+    :END:
 
 [tf.cross(a, b, name=None)] Compute the pairwise cross product.
 
@@ -871,7 +1920,10 @@ with tf.Session():
 [0 0 1]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.floormod]                                  :drill:
+    :PROPERTIES:
+    :ID:       e86b7483-8ac7-406a-91ee-b552850de459
+    :END:
 
 [tf.floormod(x, y, name=None)] Returns element-wise remainder of division.
 
@@ -893,7 +1945,18 @@ with tf.Session():
 [1 2 0 1 2]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.truncatemod]                               :drill:
+    :PROPERTIES:
+    :ID:       eb30432b-6d98-454e-a3b0-a5e4d937e021
+    :DRILL_LAST_INTERVAL: 0.0
+    :DRILL_REPEATS_SINCE_FAIL: 1
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 1
+    :DRILL_AVERAGE_QUALITY: 2.0
+    :DRILL_EASE: 2.5
+    :DRILL_LAST_QUALITY: 2
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:01]
+    :END:
 
 [tf.truncatemod(x, y, name=None)] Returns element-wise remainder of division. This emulates C semantics.
 
@@ -915,7 +1978,10 @@ with tf.Session():
 [1 2 0 1 2]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.floor_div]                                 :drill:
+    :PROPERTIES:
+    :ID:       4ad22d38-3cd6-4af5-9efd-7e0d3ee61849
+    :END:
 
 [tf.floor_div(x, y, name=None)] Returns x // y element-wise.
 
@@ -937,7 +2003,10 @@ with tf.Session():
 [0 0 1 1 1]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.truncatediv]                               :drill:
+    :PROPERTIES:
+    :ID:       318b5e74-30ba-470e-b3fd-80de48d49a05
+    :END:
 
 [tf.truncatediv(x, y, name=None)] Returns x / y element-wise for integer types.
 
@@ -959,7 +2028,10 @@ with tf.Session():
 [0 0 1 1 1]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.realdiv]                                   :drill:
+    :PROPERTIES:
+    :ID:       0d3801ad-6ecf-40a0-90a8-b8167d707608
+    :END:
 
 [tf.realdiv(x, y, name=None)] Returns x / y element-wise for real types.
 
@@ -981,7 +2053,10 @@ with tf.Session():
 [ 0.33333334  0.66666669  1.          1.33333337  1.66666663]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.floordiv]                                  :drill:
+    :PROPERTIES:
+    :ID:       d3aa0526-fabe-4288-9427-834ece490429
+    :END:
 
 [tf.floordiv(x, y, name=None)] Divides x / y elementwise, rounding toward the most negative integer.
 
@@ -1004,7 +2079,10 @@ with tf.Session():
 #+END_SRC
 
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.truediv]                                   :drill:
+    :PROPERTIES:
+    :ID:       b354b0b0-8f1e-46da-9f1a-659bf02a5c4f
+    :END:
 
 [tf.truediv(x, y, name=None)] Divides x / y elementwise (using Python 3 division operator semantics).
 
@@ -1026,7 +2104,10 @@ with tf.Session():
 [ 0.33333333  0.66666667  1.          1.33333333  1.66666667]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.divide]                                    :drill:
+    :PROPERTIES:
+    :ID:       5d12e32e-0522-446f-a120-55a953647840
+    :END:
 
 [tf.divide(x, y, name=None)] Computes Python style division of x by y.
 
@@ -1054,7 +2135,10 @@ with tf.Session():
 [ 0.5  0.5  0.5  0.5  0.5]
 #+END_SRC
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.scalar_mul]                                :drill:
+    :PROPERTIES:
+    :ID:       25d86585-3db3-4196-a8e1-70d4f432901b
+    :END:
 
 [tf.scalar_mul(scalar, x)] Multiplies a scalar times a Tensor or IndexedSlices object.
 
@@ -1077,7 +2161,10 @@ with tf.Session():
 #+END_SRC
 
 
-*** tensorflow methods                                                :drill:
+*** tensorflow methods [tf.multiply]                                  :drill:
+    :PROPERTIES:
+    :ID:       141daf46-cec4-46aa-9105-7c7a2527f1a5
+    :END:
 
 [tf.multiply(x, y, name=None)] is used for element-wise multiplication of two tensors.
 
@@ -1106,6 +2193,458 @@ with tf.Session():
 #+END_SRC
 
 
+
+*** tensorflow methods [tf.less]                                      :drill:
+    :PROPERTIES:
+    :ID:       629404bc-8718-4508-b313-04c5cf579da7
+    :END:
+
+[tf.less(x, y, name=None)] Returns the truth value of (x < y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.less(a, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    print(sess.run(a < 3))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ True  True False False False]
+[ True  True False False False]
+#+END_SRC
+
+
+*** tensorflow methods [tf.less_equal]                                :drill:
+    :PROPERTIES:
+    :ID:       f2cff03a-9cfa-41ea-8141-8e955df497ee
+    :END:
+    
+[tf.less_equal(x, y, name=None)] Returns the truth value of (x <= y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.less_equal(a, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    print(sess.run(a <= 3))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ True  True  True False False]
+[ True  True  True False False]
+#+END_SRC
+
+*** tensorflow methods [tf.equal]                                     :drill:
+    :PROPERTIES:
+    :ID:       d431e1b0-2df5-4f44-a5b6-905a19df9005
+    :END:
+
+    
+[tf.equal(x, y, name=None)] Returns the truth value of (x == y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.equal(da, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    # print(sess.run(a == 3))  # This does not work.
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[False False  True False False]
+#+END_SRC
+
+
+*** tensorflow methods [tf.not_equal]                                 :drill:
+    SCHEDULED: <2018-02-03 Sat>
+    :PROPERTIES:
+    :ID:       92daff18-c3fb-4db5-ad73-cd322d266fdf
+    :DRILL_LAST_INTERVAL: 3.86
+    :DRILL_REPEATS_SINCE_FAIL: 2
+    :DRILL_TOTAL_REPEATS: 1
+    :DRILL_FAILURE_COUNT: 0
+    :DRILL_AVERAGE_QUALITY: 3.0
+    :DRILL_EASE: 2.36
+    :DRILL_LAST_QUALITY: 3
+    :DRILL_LAST_REVIEWED: [2018-01-30 Tue 16:02]
+    :END:
+
+    
+[tf.not_equal(x, y, name=None)] Returns the truth value of (x != y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.not_equal(a, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    #print(sess.run(a != 3))  # This does not work.
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[ True  True False  True  True]
+#+END_SRC
+
+
+
+*** tensorflow methods [tf.greater]                                   :drill:
+    :PROPERTIES:
+    :ID:       5b6b2a86-685f-4c57-b9e4-ea5a175dc37e
+    :END:
+
+[tf.greater(x, y, name=None)] Returns the truth value of (x > y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.greater(a, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    print(sess.run(a > 3))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[False False False  True  True]
+[False False False  True  True]
+#+END_SRC
+
+
+*** tensorflow methods [tf.greater_equal]                             :drill:
+    :PROPERTIES:
+    :ID:       50aa58d5-3927-4883-b091-dbc5f65f41af
+    :END:
+
+
+[tf.greater_equal(x, y, name=None)] Returns the truth value of (x >= y) element-wise.
+    
+**** example code
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([1, 2, 3, 4, 5])
+
+res = tf.greater_equal(a, 3)
+
+with tf.Session() as sess:
+    print(res.eval())
+    print(sess.run(a >= 3))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[False False  True  True  True]
+[False False  True  True  True]
+#+END_SRC
+
+
+
+
+*** tensorflow methods [tf.logical_and]                               :drill:
+    :PROPERTIES:
+    :ID:       c9f60fa0-a5ce-4321-8348-18a91d74139c
+    :END:
+
+[tf.logical_and(x, y, name=None)] Returns the truth value of x AND y element-wise.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([True, True])
+b = tf.constant([True, False])
+
+res = tf.logical_and(a, b)
+
+with tf.Session():
+    print(res.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ True False]
+    #+END_SRC
+
+
+*** tensorflow methods [tf.logical_or]                               :drill:
+    :PROPERTIES:
+    :ID:       fced9fac-7d9f-4195-b83a-813147975f43
+    :END:
+
+[tf.logical_or(x, y, name=None)] Returns the truth value of x OR y element-wise.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([True, True, False])
+b = tf.constant([True, False, False])
+
+res = tf.logical_or(a, b)
+
+with tf.Session():
+    print(res.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [ True  True False]
+    #+END_SRC
+
+
+*** tensorflow methods [tf.logical_xor]                               :drill:
+    :PROPERTIES:
+    :ID:       89b4ab29-b5d9-450d-bfb4-7ca7800232d7
+    :END:
+
+[tf.logical_xor(x, y, name=None)] Returns the truth value of x XOR y element-wise.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([True, True, False])
+b = tf.constant([True, False, False])
+
+res = tf.logical_xor(a, b)
+
+with tf.Session():
+    print(res.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [False  True False]
+    #+END_SRC
+
+
+*** tensorflow methods [tf.logical_not]                               :drill:
+    :PROPERTIES:
+    :ID:       72e3e90a-8719-4229-ac35-bf21eee33e74
+    :END:
+
+[tf.logical_not(x, y, name=None)] Returns the truth value of NOT x  element-wise.
+
+**** example code
+     
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([True, True, False])
+
+res = tf.logical_not(a)
+
+with tf.Session():
+    print(res.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [False False  True]
+    #+END_SRC
+
+
+    
+*** tensorflow methods [tf.where]                                     :drill:
+    :PROPERTIES:
+    :ID:       3a9e05aa-8470-43b5-b26e-e02d3b5a7055
+    :END:
+
+[tf.where(condition, x=None, y=None, name=None)] Return the elements, either from x or y, depending on the condition.
+
+**** example code
+     
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([3, 4, 5, 6, 7])
+
+res0 = tf.where(a >= 5)  # These are coordinates
+res1 = tf.where(a >= 5, a, tf.zeros_like(a)) # this masks the false values 
+with tf.Session():
+    print(res0.eval())
+    print(res1.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[2]
+     [3]
+     [4]]
+    [0 0 5 6 7]
+    #+END_SRC
+
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+cond = tf.constant([[True,  False], 
+                    [False, True]])
+
+t = tf.constant([[1, 2], 
+                 [3, 4]])
+
+e = tf.constant([[5, 6],
+                 [7, 8]])
+
+#        
+res = tf.where(cond, t, e) 
+
+with tf.Session():
+    print(res.eval())
+    #+END_SRC
+
+    #+RESULTS:
+    #+BEGIN_SRC org
+    [[1 6]
+     [7 4]]
+    #+END_SRC
+
+** Tensor properties
+
+*** tensorflow properties [tf.size]                                   :drill:
+    :PROPERTIES:
+    :ID:       a0f4afcf-c622-46e2-b7e5-4e26f3776164
+    :END:
+
+[tf.size(input, name=None, out_type=tf.int32)] 
+Returns the size of a tensor.
+
+**** example
+     
+This really the number of elements in the tensor.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+t = tf.constant([[[1, 1, 1], [2, 2, 2]], [[3, 3, 3], [4, 4, 4]]])
+
+
+with tf.Session():
+    print(tf.size(t).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+12
+#+END_SRC
+
+*** tensorflow properties [tf.shape]                                  :drill:
+    :PROPERTIES:
+    :ID:       8bd71d59-346f-4183-8f4e-e6b532755fb7
+    :END:
+
+[tf.shape(input, name=None, out_type=tf.int32)]
+  Returns the shape of a tensor.
+
+**** example
+     
+This returns a tensor for the shape.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+t = tf.constant([[[1, 1, 1], 
+                  [2, 2, 2]], 
+                 [[3, 3, 3], 
+                  [4, 4, 4]]])
+
+
+with tf.Session():
+    print(tf.shape(t).eval())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[2 2 3]
+#+END_SRC
+
+
+*** tensorflow properties [tf.shape_n]                                :drill:
+    :PROPERTIES:
+    :ID:       b9327c1b-5c99-43e5-a508-8befeaddb002
+    :END:
+
+[tf.shape_n(input, out_type=tf.int32, name=None)]
+Returns shape of tensors.
+
+
+**** example
+     
+This returns a tensor for the shape.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+t = tf.constant([[[1, 1, 1], 
+                  [2, 2, 2]], 
+                 [[3, 3, 3], 
+                  [4, 4, 4]]])
+
+t2 = tf.constant([1, 2, 3])
+
+
+with tf.Session() as sess:
+    print(sess.run(tf.shape_n([t, t2])))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[array([2, 2, 3], dtype=int32), array([3], dtype=int32)]
+#+END_SRC
+
+
+
+** misc
+   
+*** tensorflow misc [tf.global_variables_initializer()]               :drill:
+    :PROPERTIES:
+    :ID:       0cebef3f-121f-4af9-ad3c-f6cf9325e383
+    :END:
+
+[tf.global_variables_initializer()] Returns an Op that initializes global variables.
+
+**** Notes
+     
+This should usually be one of the last ops defined in a graph.
 
 * elisp utilities
 
