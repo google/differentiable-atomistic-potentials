@@ -67,9 +67,53 @@ pydoc:tensorflow.reshape
 
 pydoc:tensorflow.where
 
+pydoc:tensorflow.split
+
+** tf.tile
+   
 pydoc:tensorflow.tile
 
-pydoc:tensorflow.split
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+n = tf.constant([1, 2, 3])
+
+with tf.Session() as sess:
+    print(sess.run(tf.tile(n[None, :], (5, 1))))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 2 3]
+ [1 2 3]
+ [1 2 3]
+ [1 2 3]
+ [1 2 3]]
+#+END_SRC
+
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+inds = tf.constant([1, 2, 3])
+
+n = tf.constant([1, 2, 3])
+
+d = tf.tile(tf.ones_like(inds)[None, :], (tf.size(inds), 1))
+
+ds = d * n[None, :]
+with tf.Session() as sess:
+    print(sess.run(ds))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 2 3]
+ [1 2 3]
+ [1 2 3]]
+#+END_SRC
+
+
 
 ** Make tensor from values and indices with a default value
 
@@ -1288,3 +1332,69 @@ plt.savefig('sensitivity-analysis.png')
 #+END_SRC
 
 [[./sensitivity-analysis.png]]
+* Miscellaneous
+ 
+** tf.squeeze
+   
+pydoc:tensorflow.squeeze
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.constant([[[1, 2], [3, 4]]])
+
+with tf.Session() as sess:
+    print(sess.run(tf.squeeze(a)))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[[1 2]
+ [3 4]]
+#+END_SRC
+
+
+** tf.Print
+   
+
+pydoc:tensorflow.Print is hard to understand from the documentation. The idea is that the "input" op is passed through to whatever it is assigned to, and when that op is evaluated, the data will be printed. This is necessary because it forces the op to be part of the graph that is executed.  Furthermore, it prints to stderr of the Tensorflow runtime server, so it is currently not compatible with Jupyter or org-mode.
+
+For completeness, here is a program that uses tf.Print. When you run it at the command line, it will print the the string we put in, the value of a, and the value of 3*a. That output is invisible in orgmode for some reason.
+
+#+BEGIN_SRC tf :results output drawer org :tangle tfprint.py
+import tensorflow as tf
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # ignore irritating log messages
+
+a = tf.constant(2)
+
+a = tf.Print(a, ['something for me', a, 3 * a])
+
+b = a * a
+
+with tf.Session() as sess:
+  print(sess.run(b))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+4
+
+#+END_SRC
+
+Here is a way to get the output from a shell command into orgmode.
+
+#+BEGIN_SRC sh :results org
+exec 2>&1
+python tfprint.py
+:
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+[something for me][2][6]
+4
+#+END_SRC
+
+
+That is overall on the irritating side of things to use. You have to define a tensor, then define a tf.Print op that passes the tensor through to get it to evaluate. A lisp would let you write a macro around that. Just saying.
