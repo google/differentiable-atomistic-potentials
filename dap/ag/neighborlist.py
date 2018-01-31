@@ -17,7 +17,7 @@ import autograd.numpy as np
 
 def get_distances(positions,
                   cell,
-                  cutoff_radius,
+                  cutoff_distance,
                   skin=0.01,
                   strain=np.zeros((3, 3))):
   """Get distances to atoms in a periodic unitcell.
@@ -27,8 +27,8 @@ def get_distances(positions,
 
     positions: atomic positions. array-like (natoms, 3)
     cell: unit cell. array-like (3, 3)
-    cutoff_radius: Maximum radius to get neighbor distances for. float
-    skin: A tolerance for the cutoff_radius. float
+    cutoff_distance: Maximum distance to get neighbor distances for. float
+    skin: A tolerance for the cutoff_distance. float
     strain: array-like (3, 3)
 
     Returns
@@ -37,7 +37,9 @@ def get_distances(positions,
     distances : an array of dimension (atom_i, atom_j, distance) The shape is
     (natoms, natoms, nunitcells) where nunitcells is the total number of unit
     cells required to tile the space to be sure all neighbors will be found. The
-    atoms that are outside the cutoff radius are zeroed.
+    atoms that are outside the cutoff distance are zeroed.
+
+    offsets
 
     """
   positions = np.array(positions)
@@ -47,7 +49,7 @@ def get_distances(positions,
   positions = np.dot(strain_tensor, positions.T).T
 
   inverse_cell = np.linalg.inv(cell)
-  num_repeats = cutoff_radius * np.linalg.norm(inverse_cell, axis=0)
+  num_repeats = cutoff_distance * np.linalg.norm(inverse_cell, axis=0)
 
   fractional_coords = np.dot(positions, inverse_cell) % 1
   mins = np.min(np.floor(fractional_coords - num_repeats), axis=0)
@@ -69,8 +71,8 @@ def get_distances(positions,
   offsets = (
       v0_range[:, None, None] + v1_range[None, :, None] +
       v2_range[None, None, :])
-  offsets = offsets.reshape(-1, 3)
 
+  offsets = np.int_(offsets.reshape(-1, 3))
   # Now we have a vector of unit cell offsets (offset_index, 3)
   # We convert that to cartesian coordinate offsets
   cart_offsets = np.dot(offsets, cell)
@@ -80,7 +82,7 @@ def get_distances(positions,
   shifted_cart_coords = positions[:, None] + cart_offsets[None, :]
 
   # Next, we subtract each position from the array of positions
-  # (atom_i, atom_j, positionvector, xhat)
+  # (atom_i, atom_j, positionvector, 3)
   pv = shifted_cart_coords - positions[:, None, None]
 
   # This is the distance squared
@@ -93,7 +95,36 @@ def get_distances(positions,
   adjusted = np.where(zeros, np.ones_like(d2), d2)
   d = np.where(zeros, np.zeros_like(d2), np.sqrt(adjusted))
 
-  return np.where(d <= cutoff_radius + skin, d, np.zeros_like(d))
+  distances = np.where(d < (cutoff_distance + skin), d, np.zeros_like(d))
+  return distances, offsets
+
+
+def get_neighbors(i, distances, offsets, oneway=False):
+  """Get the indices and distances of neighbors to atom i.
+
+  Parameters
+  ----------
+
+  i: int, index of the atom to get neighbors for.
+  distances: the distances returned from `get_distances`.
+
+  Returns
+  -------
+  indices: a list of indices for the neighbors corresponding to the index of the
+  original atom list.
+  offsets: a list of unit cell offsets to generate the position of the neighbor.
+  """
+
+  di = distances[i]
+
+  within_cutoff = di > 0.0
+
+  indices = np.arange(len(distances))
+
+  inds = indices[np.where(within_cutoff)[0]]
+  offs = offsets[np.where(within_cutoff)[1]]
+
+  return inds, np.int_(offs)
 
 
 def get_neighbors_oneway(positions,
@@ -116,7 +147,12 @@ def get_neighbors_oneway(positions,
     -------
     indices, offsets
 
-    """
+  Note: this function works with autograd, but it has been very difficult to
+  translate to Tensorflow. The challenge is because TF treats iteration
+  differently, and does not like when you try to modify variables outside the
+  iteration scope.
+
+  """
 
   strain_tensor = np.eye(3) + strain
   cell = np.dot(strain_tensor, cell.T).T
