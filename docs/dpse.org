@@ -338,8 +338,7 @@ a = tf.Variable(tf.ones((3, 3)))
 
 u = tf.scatter_nd_update(a, [[0, 1]], [2])
 
-with tf.Session() as sess:
-    sess.run(tf.global_variables_initializer())
+with tf.Session() as sess:    
     sess.run(tf.global_variables_initializer())
     print('Before:\n', a.eval())
     sess.run(u)
