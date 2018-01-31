@@ -18,12 +18,15 @@ from ase.build import bulk
 from ase.neighborlist import NeighborList
 from ase.calculators.lj import LennardJones
 
-from dap.ag.neighborlist import get_distances, get_neighbors_oneway
+from dap.ag.neighborlist import (get_distances, get_neighbors,
+                                 get_neighbors_oneway)
 from dap.ag.lennardjones import (energy, forces, stress, energy_oneway,
                                  forces_oneway, stress_oneway)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
-class TestAGNeighborList(unittest.TestCase):
+class TestAGNeighborListBothways(unittest.TestCase):
 
   def test0(self):
     """Check the fcc cell neighbors in a variety of repeats."""
@@ -41,7 +44,7 @@ class TestAGNeighborList(unittest.TestCase):
         nl.update(atoms)
         nns_ase = [len(nl.get_neighbors(i)[0]) for i in range(len(atoms))]
 
-        d = get_distances(atoms.positions, atoms.cell, cutoff_radius)
+        d, _ = get_distances(atoms.positions, atoms.cell, cutoff_radius)
         inds = (d <= (cutoff_radius + 0.01)) & (d > 0.00)
         nns = inds.sum((1, 2))
 
