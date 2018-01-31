@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Tests for tensorflow module."""
 import itertools
 import numpy as np
@@ -20,6 +19,8 @@ import tensorflow as tf
 from dap.tf.utils import (tri, triu_indices, tril_indices, triu_indices_from,
                           tril_indices_from, combinations,
                           slices_values_to_sparse_tensor)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestTFUtils_tri(tf.test.TestCase):

@@ -12,11 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 import numpy as np
 import tensorflow as tf
 
 from dap.tf.chebyshev import (chebvander_py, chebvander)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestTFChebyshev(tf.test.TestCase):

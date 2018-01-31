@@ -21,6 +21,8 @@ import tensorflow as tf
 from ase.build import bulk
 from ase.neighborlist import NeighborList
 from dap.tf.neighborlist import (get_distances)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestNeighborlist(tf.test.TestCase):

@@ -21,6 +21,8 @@ import autograd.numpy as np
 from ase.build import bulk
 from ase.calculators.emt import EMT
 from dap.ag.emt import (energy, forces, stress)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestAgEmt(unittest.TestCase):

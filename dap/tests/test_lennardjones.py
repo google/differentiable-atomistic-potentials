@@ -20,6 +20,8 @@ import tensorflow as tf
 from ase.build import bulk
 from ase.calculators.lj import LennardJones
 from dap.tf.lennardjones import (energy, forces, stress)
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 
 class TestLJ(tf.test.TestCase):
