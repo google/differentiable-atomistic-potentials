@@ -1417,25 +1417,38 @@ with tf.Session() as sess:
 
 pydoc:tensorflow.Print is hard to understand from the documentation. The idea is that the "input" op is passed through to whatever it is assigned to, and when that op is evaluated, the data will be printed. This is necessary because it forces the op to be part of the graph that is executed.  Furthermore, it prints to stderr of the Tensorflow runtime server, so it is currently not compatible with Jupyter or org-mode.
 
-For completeness, here is a program that uses tf.Print. When you run it at the command line, it will print the the string we put in, the value of a, and the value of 3*a. That output is invisible in orgmode for some reason.
-
-You can run this to make python capture the stderr. I don't know if this causes any other issues in orgmode.
-
-#+BEGIN_SRC emacs-lisp
-;; capture stderr on stdout
-(setq org-babel-python-command "exec 2>&1; python")
-#+END_SRC
-
-#+RESULTS:
-: exec 2>&1; python
-
-#+BEGIN_SRC emacs-lisp
-;; Restore python behavior.
-(setq org-babel-python-command "python")
-#+END_SRC
+For completeness, here is a program that uses tf.Print. When you run it at the command line, it will print the the string we put in, the value of a, and the value of 3*a. Note that out of the box the tf.Print output is invisible to Emacs since it ignores stderr.
 
 
 #+BEGIN_SRC tf :results output drawer org :tangle tfprint.py
+import tensorflow as tf
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # ignore irritating log messages
+
+a = tf.constant(2)
+
+a = tf.Print(a, ['something for me', a, 3 * a])
+
+b = a * a
+
+with tf.Session() as sess:
+  print(sess.run(b))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+4
+#+END_SRC
+
+You can modify the Python executable in a header arg like this:
+
+#+BEGIN_EXAMPLE
+:python exec 2>&1; python
+#+END_EXAMPLE
+
+And then it will capture the stderr.
+
+#+BEGIN_SRC tf :python exec 2>&1; python :results output drawer org :tangle tfprint.py
 import tensorflow as tf
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # ignore irritating log messages
@@ -1456,7 +1469,7 @@ with tf.Session() as sess:
 4
 #+END_SRC
 
-If you don't want to mess with the python command, here is a way to get the output from a shell command into orgmode.
+If you don't want to mess with the python command, here is a way to get the output from a shell command into orgmode. Of course, if you run this at the command line, you will see everything in the Terminal.
 
 #+BEGIN_SRC sh :results org
 exec 2>&1
