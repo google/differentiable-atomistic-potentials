@@ -681,6 +681,65 @@ with tf.Session() as sess:
 [5, 10]
 #+END_SRC
 
+*** Using namedtuples in loops
+
+Consider this while_loop example (derived from https://www.tensorflow.org/api_docs/python/tf/while_loop). We want to compute two values, j, and k, where j starts at 1, and k starts at 2. For each step, we compute j = j + k and k = j - k, for 10 steps.
+
+It works, but we have to make up names for the loop variables inside the loop.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+lvars0 = (tf.constant(0), tf.constant(1), tf.constant(2))
+
+def cond(*vars):
+    return vars[0] < 10
+
+def body(*vars):
+    i, j, k = vars
+    return (i + 1, j + k, j - k)
+
+lvars1 = tf.while_loop(cond, body, lvars0)
+
+with tf.Session() as sess:
+    print(sess.run(lvars1))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+(10, 32, 64)
+#+END_SRC
+
+A way around this is the use of a namedtuple. There are some subtleties, like you have to set loop_vars to a list or tuple. But, you can access information by named fields with this.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+import collections
+
+Pair = collections.namedtuple('Pair', 'i, j, k')
+
+# initialize the input,  Must be a tuple or list.
+ijk_0 = (Pair(tf.constant(0), tf.constant(1), tf.constant(2)),)
+
+def cond(p):
+ return p.i < 10  # access the counter by name
+
+def body(p):
+    p = Pair(p.i + 1, (p.j + p.k), (p.j - p.k))
+    return p, # You have to return a tuple
+
+ijk_final = tf.while_loop(cond, body, ijk_0)
+
+with tf.Session() as sess:
+    print(sess.run(ijk_final))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+(Pair(i=10, j=32, k=64),)
+#+END_SRC
+
 
 ** Accumulating a list
 
@@ -1360,6 +1419,22 @@ pydoc:tensorflow.Print is hard to understand from the documentation. The idea is
 
 For completeness, here is a program that uses tf.Print. When you run it at the command line, it will print the the string we put in, the value of a, and the value of 3*a. That output is invisible in orgmode for some reason.
 
+You can run this to make python capture the stderr. I don't know if this causes any other issues in orgmode.
+
+#+BEGIN_SRC emacs-lisp
+;; capture stderr on stdout
+(setq org-babel-python-command "exec 2>&1; python")
+#+END_SRC
+
+#+RESULTS:
+: exec 2>&1; python
+
+#+BEGIN_SRC emacs-lisp
+;; Restore python behavior.
+(setq org-babel-python-command "python")
+#+END_SRC
+
+
 #+BEGIN_SRC tf :results output drawer org :tangle tfprint.py
 import tensorflow as tf
 import os
@@ -1377,11 +1452,11 @@ with tf.Session() as sess:
 
 #+RESULTS:
 #+BEGIN_SRC org
+[something for me][2][6]
 4
-
 #+END_SRC
 
-Here is a way to get the output from a shell command into orgmode.
+If you don't want to mess with the python command, here is a way to get the output from a shell command into orgmode.
 
 #+BEGIN_SRC sh :results org
 exec 2>&1
@@ -1397,3 +1472,103 @@ python tfprint.py
 
 
 That is overall on the irritating side of things to use. You have to define a tensor, then define a tf.Print op that passes the tensor through to get it to evaluate. A lisp would let you write a macro around that. Just saying.
+
+I did find this [[https://gist.github.com/vihari/f9b361058825e16d390f0e443bfdffc7][gist]] that shows a way to get tf.Print to print to stdout using a pyfunc. It looks like this should be ok for differentiability. 
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+import sys
+
+def tf_print(op, tensors, message=None):
+
+    def print_message(x):
+        sys.stdout.write(message + " %s\n" % x)
+        return x
+
+    prints = [tf.py_func(print_message, [tensor], tensor.dtype) 
+              for tensor in tensors]
+    with tf.control_dependencies(prints):
+        op = tf.identity(op)
+    return op
+
+x = tf.constant([1, 2, 3])
+y = tf.constant([5, 6])
+p = x * x
+p = tf_print(p, [x, y], "hello")
+
+with tf.Session() as sess:
+    p.eval()
+    print(sess.run(tf.gradients(p, x)))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+hello [5 6]
+hello [1 2 3]
+[array([2, 4, 6], dtype=int32)]
+#+END_SRC
+
+
+
+** tf.app
+   
+Here is a way to use tf.app to make it easy to pass values at the command line.
+
+#+BEGIN_SRC tf :results output drawer org :tangle test.py
+import tensorflow as tf
+
+tf.app.flags.DEFINE_boolean("your_flag", False, "A boolean")
+
+FLAGS = tf.app.flags.FLAGS
+
+def main(_):
+    print(FLAGS.your_flag)
+    a = tf.constant(4)
+    a = tf.Print(a, ['Got it'])
+    sess = tf.Session()
+    print(sess.run(a * a))
+    return 
+
+if __name__ == '__main__':
+    tf.app.run(main)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+False
+16
+#+END_SRC
+
+#+BEGIN_SRC sh
+python test.py
+#+END_SRC
+
+#+RESULTS:
+| False |
+|    16 |
+
+#+BEGIN_SRC sh
+python test.py --your_flag=True
+#+END_SRC
+
+#+RESULTS:
+| True |
+|   16 |
+
+The help prints on stderr, so we redirect it here.
+#+BEGIN_SRC sh :results output
+exec 2>&1
+python test.py --help
+:
+#+END_SRC
+
+#+RESULTS:
+: 
+:        USAGE: test.py [flags]
+: flags:
+: 
+: test.py:
+:   --[no]your_flag: A boolean
+:     (default: 'false')
+: 
+: Try --helpfull to get a list of all flags.
