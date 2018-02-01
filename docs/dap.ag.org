@@ -1,5 +1,289 @@
 #+TITLE: Autograd modules
 
+* Neighborlists
+
+Neighborlists are one of the most critical components of molecular simulation. They are challenging to implement in vectorized code that is compatible with Tensorflow. This module implements some in Python that are compatible with autograd.
+
+** Bothways neighbor lists
+   
+In  a bothways list, you get all the neighbors within a cutoff distance of each atom in the system. That means each atom will be the neighbor of another atom, and vice versa, so if you loop over all of them there will be double counting. It is however, exactly what you want for descriptors of local environments.
+   
+For reference, here is what a neighborlist from pydoc:ase.neighborlist.NeighborList looks like. It returns a list of indices and offsets to generate the positions. You have to construct the position vectors to each neighbor afterwards.
+
+#+BEGIN_SRC python :results output org drawer
+from ase.build import molecule
+from ase.neighborlist import NeighborList
+
+atoms = molecule('H2O')
+atoms.set_cell((20, 20, 20))
+
+nl = NeighborList([3.0 / 2] * len(atoms), skin=0, 
+                  bothways=True, self_interaction=False)
+nl.update(atoms)
+
+indices, offsets = nl.get_neighbors(0)
+
+print(f'ase inds: {indices}')
+print(f'ase offsets:\n{offsets}')
+print('Positions of neighbors')
+
+for i, offset in zip(indices, offsets):
+    print(atoms.positions[i] + offset @ atoms.get_cell())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+ase inds: [1 2]
+ase offsets:
+[[0 0 0]
+ [0 0 0]]
+Positions of neighbors
+[ 0.        0.763239 -0.477047]
+[ 0.       -0.763239 -0.477047]
+:END:
+
+pydoc:dap.ag.neighborlist.get_distances returns a multidimensional array of distances, and offset vectors. Distances that are greater than the cutoff distance are masked to zero. Here is an example output for the distance array for a water molecule.
+
+#+BEGIN_SRC python :results output org drawer
+from ase.build import molecule
+from dap.ag.neighborlist import get_distances
+
+atoms = molecule('H2O')
+atoms.set_cell((20, 20, 20))
+atoms.center()
+
+
+dists, offsets = get_distances(atoms.positions, atoms.cell, 3.0)
+print(dists)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[[[0.        ]
+  [0.96856502]
+  [0.96856502]]
+
+ [[0.96856502]
+  [0.        ]
+  [1.526478  ]]
+
+ [[0.96856502]
+  [1.526478  ]
+  [0.        ]]]
+:END:
+
+It is sometimes easier to work more directly with the neighborlist, e.g. to get a list of the equivalent indices, and offset vectors. pydoc:dap.ag.neighborlist.get_neighbors provides some tools for that.
+
+
+#+BEGIN_SRC python :results output org drawer
+from ase.build import molecule
+from dap.ag.neighborlist import get_distances, get_neighbors
+
+atoms = molecule('H2O')
+atoms.set_cell((20, 20, 20))
+atoms.center()
+
+dists, offsets = get_distances(atoms.positions, atoms.cell, 3.0)
+
+inds, offs = get_neighbors(0, dists, offsets)
+
+print(inds)
+print(offs)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+[1 2]
+[[0 0 0]
+ [0 0 0]]
+:END:
+
+*** on a real periodic system
+
+In ASE:
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+
+from ase.build import bulk
+from ase.neighborlist import NeighborList
+
+a = 3.6
+Rc = a / np.sqrt(2) / 2
+cutoff_distance = 2 * Rc
+
+atoms = bulk('Cu', 'fcc', a=a).repeat((2, 1, 1))
+atoms.rattle()
+nl = NeighborList([Rc] * len(atoms), skin=0.01, 
+                  bothways=True, self_interaction=False)
+nl.update(atoms)
+
+indices, offsets = nl.get_neighbors(0)
+
+isort = np.argsort(offsets.view('f8,f8,f8'), axis=0, 
+                   order=['f0', 'f1', 'f2']).flatten()
+
+print(f'ase inds: {indices[isort]}')
+print(f'ase offsets:')
+print(offsets[isort])
+print('Positions of neighbors')
+
+for i, offset in zip(indices[isort], offsets[isort]):
+    print(atoms.positions[i] + offset @ atoms.get_cell())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+ase inds: [1 0 1 0 0 0 0 1 0 1 1 1]
+ase offsets:
+[[ 0  0  0]
+ [ 0  0  1]
+ [ 0  0 -1]
+ [ 0  0 -1]
+ [ 0  1  0]
+ [ 0  1 -1]
+ [ 0 -1  0]
+ [ 0 -1  0]
+ [ 0 -1  1]
+ [-1  0  0]
+ [-1  0  1]
+ [-1  1  0]]
+Positions of neighbors
+[0.002 1.8   1.8  ]
+[1.8   1.8   0.001]
+[-1.798 -0.     1.8  ]
+[-1.8   -1.8    0.001]
+[ 1.8   -0.     1.801]
+[ 0.    -1.8    1.801]
+[-1.8   -0.    -1.799]
+[-1.798  1.8   -0.   ]
+[ 0.     1.8   -1.799]
+[ 0.002 -1.8   -1.8  ]
+[ 1.802 -0.    -1.8  ]
+[ 1.802 -1.8   -0.   ]
+:END:
+
+Here is the version from this module. The order of the neighbors may differ.
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+np.set_printoptions(precision=3, suppress=True)
+
+from ase.build import bulk
+from dap.ag.neighborlist import get_distances, get_neighbors
+
+a = 3.6
+Rc = a / np.sqrt(2) / 2
+cutoff_distance = 2 * Rc
+
+atoms = bulk('Cu', 'fcc', a=a).repeat((2, 1, 1))
+atoms.rattle()
+
+dists, doffsets = get_distances(atoms.positions, atoms.cell, cutoff_distance)
+
+indices, offsets = get_neighbors(0, dists, doffsets)
+
+isort = np.argsort(offsets.view('f8,f8,f8'), axis=0, 
+                   order=['f0', 'f1', 'f2']).flatten()
+
+print(f'ase inds: {indices[isort]}')
+print(f'ase offsets:')
+print(offsets[isort])
+print('Positions of neighbors')
+
+for i, offset in zip(indices[isort], offsets[isort]):
+    print(atoms.positions[i] + offset @ atoms.get_cell())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+ase inds: [1 0 0 1 0 0 0 1 0 1 1 1]
+ase offsets:
+[[ 0  0  0]
+ [ 0  0  1]
+ [ 0  0 -1]
+ [ 0  0 -1]
+ [ 0  1  0]
+ [ 0  1 -1]
+ [ 0 -1  0]
+ [ 0 -1  0]
+ [ 0 -1  1]
+ [-1  0  0]
+ [-1  0  1]
+ [-1  1  0]]
+Positions of neighbors
+[0.002 1.8   1.8  ]
+[1.8   1.8   0.001]
+[-1.8   -1.8    0.001]
+[-1.798 -0.     1.8  ]
+[ 1.8   -0.     1.801]
+[ 0.    -1.8    1.801]
+[-1.8   -0.    -1.799]
+[-1.798  1.8   -0.   ]
+[ 0.     1.8   -1.799]
+[ 0.002 -1.8   -1.8  ]
+[ 1.802 -0.    -1.8  ]
+[ 1.802 -1.8   -0.   ]
+:END:
+
+** Oneway lists
+
+There is a "one-way" concept in a neighborlist. In the "bothways" approach, each pair of atoms has two distances: one from atom i to j, and one from j to i. It is not always desirable to double count these.
+
+Here is a one-way list in ASE.
+
+#+BEGIN_SRC python :results output org drawer
+from ase.build import molecule
+from ase.neighborlist import NeighborList
+
+atoms = molecule('H2O')
+atoms.set_cell((20, 20, 20))
+
+nl = NeighborList([3.0 / 2] * len(atoms), skin=0, 
+                  bothways=False, self_interaction=False)
+nl.update(atoms)
+
+for i, atom in enumerate(atoms):
+    indices, offsets = nl.get_neighbors(i)
+    print(f'Atom {i}')
+    print(f'  ase inds: {indices}')
+    print(f'  ase offsets:\n{offsets}')
+    print('  Positions of neighbors')
+
+    for j, offset in zip(indices, offsets):
+        print('  ', atoms.positions[j] + offset @ atoms.get_cell())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Atom 0
+  ase inds: [1 2]
+  ase offsets:
+[[0 0 0]
+ [0 0 0]]
+  Positions of neighbors
+   [ 0.        0.763239 -0.477047]
+   [ 0.       -0.763239 -0.477047]
+Atom 1
+  ase inds: [2]
+  ase offsets:
+[[0 0 0]]
+  Positions of neighbors
+   [ 0.       -0.763239 -0.477047]
+Atom 2
+  ase inds: []
+  ase offsets:
+[]
+  Positions of neighbors
+:END:
+
+*** get_neighbors_oneway
+
+This is a near direct translation of the one-way algorithm from ase, and it returns the same results. It is used in the dap.ag.emt module, and it is differentiable. It is not that easy, however, to implement in Tensorflow.
+    
+
+
 * Training the Lennard Jones parameters
 
 There is a database of DFT calculations of Ar in [[./argon.db]]. Here is a brief description of the database. It contains five structures at three different volumes each. For each volume and structure the atoms were randomly displaced many times, and the energy and forces were computed using DFT (Vasp).
