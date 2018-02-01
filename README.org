@@ -27,6 +27,23 @@ This project is complementary to those projects. We share a common goal of open-
 
 - TensorMol https://github.com/jparkhill/TensorMol is an open source package focused on molecular properties. It also uses TensorFlow.
 
+- DiffiQult https://github.com/aspuru-guzik-group/DiffiQult  (https://arxiv.org/abs/1711.08127) is an open source autodifferentiable quantum chemistry package.
+
+- DeePMD https://arxiv.org/abs/1707.09571 Deep Potential Molecular Dynamics: a scalable model with the accuracy of quantum mechanics
+   
+** Automatic differentiation toolkits
+
+Here are a few of the AD toolkits that are currently around. 
+   
+- [[https://github.com/HIPS/autograd][autograd]] :: A Numpy/Python framework
+- [[https://www.tensorflow.org/][Tensorflow]] :: An open-source machine learning framework for everyone
+- [[https://github.com/google/tangent][tangent]] :: Source-to-Source Debuggable Derivatives in Pure Python
+
+I have not tried these
+- [[https://pypi.python.org/pypi/algopy][algopy]] ::  a tool for Algorithmic Differentiation (AD) and Taylor polynomial approximations.
+- pytorch :: Another machine learning framework in Python
+- Chainer :: Another machine learning framework in Python
+	     
 * Roadmap
 
 These projects are planned in the future.
