@@ -116,6 +116,12 @@ class TestNeighborlist(tf.test.TestCase):
 
 
 class TestOneWayNeighborlist(tf.test.TestCase):
+  """These tests are a pain. 
+
+  The actual neighbors are pretty sensitive to the unit cell, and it is hard to
+get exact agreement on the number of neighbors.
+
+  """
 
   def test0(self):
     a = 3.6
@@ -140,3 +146,5 @@ class TestOneWayNeighborlist(tf.test.TestCase):
 
         self.assertAllClose(ase_inds, these_inds)
         self.assertAllClose(ase_offs, these_offs)
+
+  # TODO write more tests. I know this fails on some crystal structures.

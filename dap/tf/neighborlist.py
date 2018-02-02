@@ -216,11 +216,11 @@ def get_neighbors_oneway(positions,
       tf.TensorShape(None), tf.TensorShape(None), tf.TensorShape(None),
       tf.TensorShape([None, 3]))
 
-  # This is a loop over the offsets.
   def outer_cond(nt):
     return tf.less(nt.n, noffsets)
 
   def outer_body(nt):
+    """This is the loop over the offsets."""
     n = nt.n
 
     n1, n2, n3 = tf.unstack(N[n])
@@ -232,6 +232,7 @@ def get_neighbors_oneway(positions,
       return tf.less(nt.a, natoms)
 
     def inner_body(nt):
+      """This is a loop over each atom."""
 
       d = tf.norm(positions0 + displacement - positions0[nt.a], axis=1)
       i = tf.boolean_mask(indices, d < cutoff_distance + skin)
