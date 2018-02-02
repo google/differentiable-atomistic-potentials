@@ -45,6 +45,21 @@
 "))
 
 
+(defun dap-run-test-in-shell ()
+  "Run the test that point is in in a shell.
+Assumes the test is in a class in a file in dap/tests/"
+  (interactive)
+  (let (cmd file class method)
+    (save-excursion
+      (re-search-backward "^class \\(.*\\)(")
+      (setq class (s-trim (match-string 1))))
+    (save-excursion
+      (re-search-backward "def \\(.*\\)(")
+      (setq method (match-string 1)))
+    (setq file (file-name-base (buffer-file-name)))
+    (setq cmd (format "python -m unittest dap.tests.%s.%s.%s" file class method))
+    (message (shell-command-to-string cmd))))
+
 (provide 'dap)
 
 ;;; dap.el ends here
