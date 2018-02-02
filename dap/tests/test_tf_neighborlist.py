@@ -20,7 +20,7 @@ import numpy as np
 import tensorflow as tf
 from ase.build import bulk
 from ase.neighborlist import NeighborList
-from dap.tf.neighborlist import (get_distances)
+from dap.tf.neighborlist import (get_distances, get_neighbors_oneway)
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -113,3 +113,30 @@ class TestNeighborlist(tf.test.TestCase):
 
     with self.test_session():
       self.assertTrue(np.all(ase_nau == nau.eval()))
+
+
+class TestOneWayNeighborlist(tf.test.TestCase):
+
+  def test0(self):
+    a = 3.6
+    Rc = 5
+    atoms = bulk('Cu', 'bcc', a=a).repeat((1, 1, 1))
+    atoms.rattle(0.02)
+    nl = NeighborList(
+        [Rc] * len(atoms), skin=0.0, self_interaction=False, bothways=False)
+    nl.update(atoms)
+
+    inds, N = get_neighbors_oneway(
+        atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
+
+    with self.test_session() as sess:
+      inds, N = sess.run([inds, N])
+
+      for i in range(len(atoms)):
+        ase_inds, ase_offs = nl.get_neighbors(i)
+
+        these_inds = np.array([x[1] for x in inds if x[0] == i])
+        these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+
+        self.assertAllClose(ase_inds, these_inds)
+        self.assertAllClose(ase_offs, these_offs)
