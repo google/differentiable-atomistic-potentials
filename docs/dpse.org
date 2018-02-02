@@ -792,7 +792,7 @@ We can also  use a while_loop op.
 
 pydoc:tensorflow.while_loop
 
-We use the tf.while_loop to achieve this. The while_loop is tricky. The following code does what we want, but it is not intuitive to me why it is required. Since we have a list we are accumulating that will change size, we need to use the shape_invariants option in the tf.while_loop. You have to specify some information about each loop variable. The counter i will not change shape, so we just get its shape. The list will change, but we have only one dimension, so we specify the shape in that dimension to be None, indicating we are not saying how big it will get.
+We use the tf.while_loop to achieve this. Since we have a list we are accumulating that will change size, we need to use the shape_invariants option in the tf.while_loop. You have to specify some information about each loop variable. The counter i will not change shape, so we just get its shape. The list will change, but we have only one dimension, so we specify the shape in that dimension to be None, indicating we are not saying how big it will get.
 
 The body of this loop took several unsuccessful iterations of more obvious approaches that didn't work. For example, you cannot use standard "if" conditional statements. The tf.cond op here does what we want, calling a true_fn on the condition that i is even, and the false_fn otherwise.
 
@@ -917,6 +917,97 @@ with tf.Session() as sess:
  [0 2]
  [1 2]]
 #+END_SRC
+
+
+For fun, we look at an example with a namedtuple, where we will accumulate both even and odd numbers. Here we map over a range of numbers, collecting the odd numbers in one place, and the even numbers in another. This was subtle. We have arrays changing shape inside a named tuple, so we have to use shape_invariants. What was not obvious (or possibly even documented?) is you have to put the shape invariants inside another namedtuple.
+
+#+BEGIN_SRC tf :results output drawer org
+import collections
+import tensorflow as tf
+
+LV = collections.namedtuple('LoopVariables', 'i, odd, even')
+
+lv0 = LV(tf.constant(0, dtype=tf.int32),
+         tf.Variable([], dtype=tf.int32),
+         tf.Variable([], dtype=tf.int32))
+
+def cond(nt):
+    return nt.i < 11
+
+def body(nt):
+
+    def truef():
+        return LV(nt.i + 1, nt.odd, tf.concat([nt.even, [nt.i]], axis=0))
+
+    def falsef():
+        return LV(nt.i + 1, tf.concat([nt.odd, [nt.i]], axis=0), nt.even)
+
+    res = tf.cond(tf.equal(tf.mod(nt.i, 2), 0),
+                  true_fn=truef,
+                  false_fn=falsef)
+    return res,
+
+
+lv1, = tf.while_loop(cond, body, [lv0], shape_invariants=[LV(
+    lv0.i.get_shape(), tf.TensorShape(None), tf.TensorShape(None))])
+
+
+with tf.Session() as sess:
+    print(sess.run(lv1))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+LoopVariables(i=11, odd=array([1, 3, 5, 7, 9], dtype=int32), even=array([ 0,  2,  4,  6,  8, 10], dtype=int32))
+#+END_SRC
+
+Finally, what if want to collect numbers into a dynamically determined number of locations? Here we try to split a tensor into N tensors based on the value of each element mod N. We want this to be dynamic, e.g. that we can change N. I don't know a way to access loopvars by either an index, or a named field in Tensorflow, so we have a single list here that we store the index and value, and then after the loop construct the tensors we want. This idea came from Steve Kearnes. Thanks Steve!
+
+#+BEGIN_SRC tf :results output drawer org
+import collections
+import tensorflow as tf
+
+N = 4
+
+LV = collections.namedtuple('LoopVariables', 'i, tuples')
+
+loopvars = [tf.constant(0, dtype=tf.int32), 
+            tf.Variable(tf.zeros((0, 2), dtype=tf.int32), dtype=tf.int32)]
+
+lv0 = LV(*loopvars)
+
+shiv = LV(loopvars[0].get_shape(), tf.TensorShape([None, 2]))
+
+def cond(nt):
+    return nt.i < 21
+
+def body(nt):
+    i = nt.i   
+    n = tf.mod(nt.i, N)
+    v = tf.concat([nt.tuples, [[n, i]]], axis=0)
+    
+    return LV(i + 1, v),
+
+res, = tf.while_loop(cond, body, [lv0], [shiv])
+
+arrs = [tf.gather(res.tuples, tf.where(tf.equal(res.tuples[:, 0], i)))[:, :, 1]
+        for i in range(N)]
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    _arrs = sess.run(arrs)
+    for i in range(N):
+        print(i, _arrs[i].flatten())
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+0 [ 0  4  8 12 16 20]
+1 [ 1  5  9 13 17]
+2 [ 2  6 10 14 18]
+3 [ 3  7 11 15 19]
+#+END_SRC
+
 
 
 * Data structures in tensorflow
@@ -1585,3 +1676,118 @@ python test.py --help
 :     (default: 'false')
 : 
 : Try --helpfull to get a list of all flags.
+
+** Saving and restoring
+   
+Suppose we have this simple TF script. 
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+a = tf.Variable(tf.constant(4))
+x = tf.placeholder(tf.int32)
+
+y = a * x**2
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    print(sess.run(y, feed_dict={x: 5}))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+100
+#+END_SRC
+
+It would be nice if we could save it in a way that would allow us to reuse it later. Here is an example of saving some ops from a graph for reuse later.
+
+It seems to be important that you define the saver last to capture all the variables. 
+
+#+BEGIN_SRC tf :results silent
+import tensorflow as tf
+
+a = tf.Variable(tf.constant(4))
+x = tf.placeholder(tf.int32)
+
+y = a * x**2
+
+tf.add_to_collection('ops', x)
+tf.add_to_collection('ops', y)
+
+saver = tf.train.Saver()
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())   
+    saver.save(sess, './square')
+#+END_SRC
+
+Now, we can restore the graph and get the relevant ops like this.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+checkpoints_file_name = './square'
+saver = tf.train.import_meta_graph(checkpoints_file_name + '.meta')
+
+
+with tf.Session() as sess:
+    saver.restore(sess, checkpoints_file_name)
+    x, y = tf.get_collection('ops')
+    print(sess.run(y, feed_dict={x: 25}))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+2500
+#+END_SRC
+
+Here is an alternative approach to save/restore using named tensors instead of the collection.
+
+#+BEGIN_SRC tf :results silent
+import tensorflow as tf
+
+a = tf.Variable(tf.constant(4), name='a')
+x = tf.placeholder(tf.int32, name='x_ph')
+
+# use a tf op to give it a name
+y = tf.multiply(a, x**3, name='y')
+
+saver = tf.train.Saver()
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())   
+    saver.save(sess, './cubed')
+#+END_SRC
+
+Here we restore the graph, and show all the nodes in it. Then, we recreate the tensors needed to run the ops. We run them, then assign the var a new value, and run it again.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+checkpoints_file_name = './cubed'
+saver = tf.train.import_meta_graph(checkpoints_file_name + '.meta')
+
+print([n.name for n in tf.get_default_graph().as_graph_def().node])
+print()
+with tf.Session() as sess:
+    saver.restore(sess, checkpoints_file_name)    
+    g = tf.get_default_graph()
+    var = g.get_tensor_by_name('a:0')
+    x_ph = g.get_tensor_by_name('x_ph:0')
+    y = g.get_tensor_by_name('y:0')
+    print(sess.run(y, feed_dict={x_ph: 5}))
+    print(sess.run(var))
+    # give a a new value
+    print(sess.run(tf.assign(var, 1)))
+    print(sess.run(y, feed_dict={x_ph: 5}))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+['Const', 'a', 'a/Assign', 'a/read', 'x_ph', 'pow/y', 'pow', 'y', 'save/Const', 'save/SaveV2/tensor_names', 'save/SaveV2/shape_and_slices', 'save/SaveV2', 'save/control_dependency', 'save/RestoreV2/tensor_names', 'save/RestoreV2/shape_and_slices', 'save/RestoreV2', 'save/Assign', 'save/restore_all', 'init']
+
+500
+4
+1
+125
+#+END_SRC
+
+
