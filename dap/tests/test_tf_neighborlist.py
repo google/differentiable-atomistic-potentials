@@ -55,7 +55,8 @@ class TestNeighborlist(tf.test.TestCase):
 
   def test_structure_repeats(self):
     'Check several structures and repeats for consistency with ase.'
-    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
+    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1),
+                   (1, 1, 2), (1, 2, 3), (4, 1, 1)):
       for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
         a = 3.6
         # Float tolerances are tricky. The 0.01 in the next line is important.
@@ -116,7 +117,7 @@ class TestNeighborlist(tf.test.TestCase):
 
 
 class TestOneWayNeighborlist(tf.test.TestCase):
-  """These tests are a pain. 
+  """These tests are a pain.
 
   The actual neighbors are pretty sensitive to the unit cell, and it is hard to
 get exact agreement on the number of neighbors.
@@ -147,4 +148,81 @@ get exact agreement on the number of neighbors.
         self.assertAllClose(ase_inds, these_inds)
         self.assertAllClose(ase_offs, these_offs)
 
-  # TODO write more tests. I know this fails on some crystal structures.
+  def test_molecules(self):
+    """Tests oneway list on a bunch of molecules.
+
+    These are in large unit cells, so they don't have periodic boundary
+    conditions.
+
+    """
+    from ase.build import molecule
+    from ase.collections import g2
+
+    with self.test_session() as sess:
+      for mlc in g2.names:
+        atoms = molecule(mlc)
+        atoms.set_cell((50, 50, 50))
+        atoms.center()
+
+        if len(atoms) < 2:
+          continue
+
+        Rc = 2.0
+        nl = NeighborList([Rc] * len(atoms),skin=0.0,
+                          bothways=False, self_interaction=0)
+        nl.update(atoms)
+
+        inds, N = get_neighbors_oneway(
+          atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
+
+        inds, N = sess.run([inds, N])
+
+        for i in range(len(atoms)):
+          ase_inds, ase_offs = nl.get_neighbors(i)
+
+          these_inds = np.array([x[1] for x in inds if x[0] == i])
+          these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+
+          # Check indices are the same
+          self.assertAllClose(ase_inds, these_inds)
+
+          # Check offsets are the same
+          if ase_offs.shape[0] > 0:
+            self.assertAllClose(ase_offs, these_offs)
+
+  # def test_structure_repeats(self):
+  #   'Check several structures and repeats for consistency with ase.'
+
+  #   for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
+  #     for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
+  #       print(structure, repeat)
+  #       a = 3.6
+  #       # Float tolerances are tricky. The 0.01 in the next line is important.
+  #       # This test fails without it due to subtle differences in computed
+  #       # positions.
+  #       Rc = 2 * a + 0.01
+  #       atoms = bulk('Cu', structure, a=a).repeat(repeat)
+  #       atoms.rattle(0.02)
+  #       nl = NeighborList(
+  #           [Rc] * len(atoms), skin=0.0, self_interaction=False, bothways=False)
+  #       nl.update(atoms)
+
+  #       with tf.Session() as sess:
+
+  #         inds, N = get_neighbors_oneway(
+  #           atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
+
+  #         inds, N = sess.run([inds, N])
+
+  #         for i in range(len(atoms)):
+  #           ase_inds, ase_offs = nl.get_neighbors(i)
+
+  #           these_inds = np.array([x[1] for x in inds if x[0] == i])
+  #           these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+
+  #           # Check indices are the same
+  #           self.assertAllClose(ase_inds, these_inds)
+
+  #           # Check offsets are the same
+  #           if ase_offs.shape[0] > 0:
+  #             self.assertAllClose(ase_offs, these_offs)
