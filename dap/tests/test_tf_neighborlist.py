@@ -20,6 +20,11 @@ import numpy as np
 import tensorflow as tf
 from ase.build import bulk
 from ase.neighborlist import NeighborList
+
+# import sys
+# sys.path.insert(0, '.')
+# from .ase_nl import NeighborList
+
 from dap.tf.neighborlist import (get_distances, get_neighbors_oneway)
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
@@ -55,8 +60,8 @@ class TestNeighborlist(tf.test.TestCase):
 
   def test_structure_repeats(self):
     'Check several structures and repeats for consistency with ase.'
-    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1),
-                   (1, 1, 2), (1, 2, 3), (4, 1, 1)):
+    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3), (4, 1,
+                                                                           1)):
       for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
         a = 3.6
         # Float tolerances are tricky. The 0.01 in the next line is important.
@@ -125,6 +130,9 @@ get exact agreement on the number of neighbors.
   """
 
   def test0(self):
+    import warnings
+    warnings.filterwarnings('ignore')
+
     a = 3.6
     Rc = 5
     atoms = bulk('Cu', 'bcc', a=a).repeat((1, 1, 1))
@@ -168,12 +176,12 @@ get exact agreement on the number of neighbors.
           continue
 
         Rc = 2.0
-        nl = NeighborList([Rc] * len(atoms),skin=0.0,
-                          bothways=False, self_interaction=0)
+        nl = NeighborList(
+            [Rc] * len(atoms), skin=0.0, bothways=False, self_interaction=0)
         nl.update(atoms)
 
         inds, N = get_neighbors_oneway(
-          atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
+            atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
         inds, N = sess.run([inds, N])
 
@@ -190,39 +198,101 @@ get exact agreement on the number of neighbors.
           if ase_offs.shape[0] > 0:
             self.assertAllClose(ase_offs, these_offs)
 
-  # def test_structure_repeats(self):
-  #   'Check several structures and repeats for consistency with ase.'
+  def test_structure_repeats(self):
+    'Check several structures and repeats for consistency with ase.'
+    import warnings
+    warnings.filterwarnings('ignore')
 
-  #   for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
-  #     for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
-  #       print(structure, repeat)
-  #       a = 3.6
-  #       # Float tolerances are tricky. The 0.01 in the next line is important.
-  #       # This test fails without it due to subtle differences in computed
-  #       # positions.
-  #       Rc = 2 * a + 0.01
-  #       atoms = bulk('Cu', structure, a=a).repeat(repeat)
-  #       atoms.rattle(0.02)
-  #       nl = NeighborList(
-  #           [Rc] * len(atoms), skin=0.0, self_interaction=False, bothways=False)
-  #       nl.update(atoms)
+    import numpy as np
+    np.set_printoptions(precision=3, suppress=True)
 
-  #       with tf.Session() as sess:
+    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
+      for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
+        print('\n', structure, repeat, '\n')
+        print('============================\n')
+        a = 3.6
+        Rc = 2 * a + 0.01
+        atoms = bulk('Cu', structure, a=a).repeat(repeat)
+        atoms.rattle(0.02)
+        nl = NeighborList(
+            [Rc] * len(atoms), skin=0.0, self_interaction=False, bothways=False)
+        nl.update(atoms)
 
-  #         inds, N = get_neighbors_oneway(
-  #           atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
+        with tf.Session() as sess:
 
-  #         inds, N = sess.run([inds, N])
+          inds, dists, N = get_neighbors_oneway(
+              atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
-  #         for i in range(len(atoms)):
-  #           ase_inds, ase_offs = nl.get_neighbors(i)
+          inds, dists, N = sess.run([inds, dists, N])
+          #print(f'Ninds = {len(inds)}. len offs = {len(N)}')
 
-  #           these_inds = np.array([x[1] for x in inds if x[0] == i])
-  #           these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+          for i in range(len(atoms)):
+            ase_inds, ase_offs = nl.get_neighbors(i)
 
-  #           # Check indices are the same
-  #           self.assertAllClose(ase_inds, these_inds)
+            these_inds = np.array([x[1] for x in inds if x[0] == i])
+            these_offs = np.array(
+                [offset for x, offset in zip(inds, N) if x[0] == i])
 
-  #           # Check offsets are the same
-  #           if ase_offs.shape[0] > 0:
-  #             self.assertAllClose(ase_offs, these_offs)
+            # Check indices are the same
+            #print('Indices are equal: ', np.all(ase_inds == these_inds))
+            #print(ase_inds)
+            #print(these_inds)
+            self.assertAllClose(ase_inds, these_inds)
+
+            # Check offsets are the same
+            if ase_offs.shape[0] > 0:
+              #print(ase_offs[1], these_offs[1])
+              #print('\n\nOffset differences:\n', ase_offs - these_offs, '\n\n')
+              #print('****** offsets:\n',
+              self.assertAllClose(ase_offs, these_offs)
+
+  def test_structure_repeats_2(self):
+    """This test was put in to debug the LJ oneway calculator.
+
+    I noticed that for some unit cells the forces were not correct, and this is
+    to check that it is not due to the neighborlist. If this test is passing,
+    the neighborlist from tf and the one from ase are in agreement.
+
+    """
+    import warnings
+    warnings.filterwarnings('ignore')
+
+    import numpy as np
+    np.set_printoptions(precision=3, suppress=True)
+
+    for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
+      for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
+        for a in [3.0, 4.0]:
+          print('\n', structure, repeat, a, '\n')
+          print('============================\n')
+          atoms = bulk('Ar', structure, a=a).repeat(repeat)
+          atoms.rattle()
+          print(atoms)
+          Rc = 3.0
+
+          nl = NeighborList(
+              [Rc] * len(atoms),
+              skin=0.3,
+              self_interaction=False,
+              bothways=False)
+          nl.update(atoms)
+
+          with tf.Session() as sess:
+
+            inds, dists, N = get_neighbors_oneway(
+                atoms.positions, atoms.cell, 2 * Rc, skin=0.3)
+
+            inds, dists, N = sess.run([inds, dists, N])
+
+            for i in range(len(atoms)):
+              ase_inds, ase_offs = nl.get_neighbors(i)
+
+              these_inds = np.array([x[1] for x in inds if x[0] == i])
+              these_offs = np.array(
+                  [offset for x, offset in zip(inds, N) if x[0] == i])
+
+              self.assertAllClose(ase_inds, these_inds)
+
+              # Check offsets are the same
+              if ase_offs.shape[0] > 0:
+                self.assertAllClose(ase_offs, these_offs)
