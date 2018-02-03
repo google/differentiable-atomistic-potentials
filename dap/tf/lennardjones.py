@@ -18,6 +18,7 @@ This is a standalone module by design.
 
 import numpy as np
 import tensorflow as tf
+from dap.tf.neighborlist import get_neighbors_oneway
 
 
 def get_Rij(positions, cell, mask, cutoff_radius):
@@ -193,7 +194,7 @@ def energy(positions, cell, mask=None, strain=None):
       d = get_Rij(strained_positions, strained_cell, mask, rc)
 
       neighbor_mask = tf.less_equal(d, tf.ones_like(d) * rc)
-      energy -= e0 * tf.reduce_sum(tf.cast(neighbor_mask, tf.float64))
+      energy -= e0 * tf.reduce_sum(tf.cast(neighbor_mask, e0.dtype))
       c6 = (sigma**2 / tf.boolean_mask(d, neighbor_mask)**2)**3
       c12 = c6**2
       energy += tf.reduce_sum(4 * epsilon * (c12 - c6))
@@ -333,3 +334,110 @@ def stress_batch(POSITIONS,
       stress(positions, cell, mask, strain)
       for positions, cell, mask in zip(POSITIONS, CELLS, MASKS)
   ])
+
+
+def energy_1way(positions, cell, mask=None, strain=None):
+  """Compute the energy of a Lennard-Jones system.
+
+  Args:
+    positions: array-like shape=(numatoms, 3)
+      Array of cartesian coordinates of atoms in a unit cell.
+    cell: array-like shape=(3, 3)
+      Array of unit cell vectors in cartesian basis. Each row is a unit cell
+      vector.
+    mask: array-like (numatoms,)
+      ones for atoms, zero for padded positions.
+    strain: array-like shape=(3, 3)
+      Array of strains to compute the energy at.
+
+  Returns: float
+    The total energy from the Lennard Jones potential.
+  """
+
+  with tf.name_scope("LennardJones"):
+    with tf.name_scope("setup"):
+      positions = tf.convert_to_tensor(positions)
+      cell = tf.convert_to_tensor(cell)
+      if mask is None:
+        mask = tf.ones_like(positions[:, 0])
+      mask = tf.convert_to_tensor(mask)
+      if strain is None:
+        strain = tf.zeros_like(cell)
+
+      strain = tf.convert_to_tensor(strain)
+
+      strained_cell = tf.matmul(cell, tf.eye(3, dtype=cell.dtype) + strain)
+      strained_positions = tf.matmul(positions,
+                                     tf.eye(3, dtype=cell.dtype) + strain)
+
+      with tf.variable_scope("sigma", reuse=tf.AUTO_REUSE):
+        sigma = tf.get_variable(
+            "sigma",
+            dtype=cell.dtype,
+            initializer=tf.constant(1.0, dtype=cell.dtype))
+
+      with tf.variable_scope("epsilon", reuse=tf.AUTO_REUSE):
+        epsilon = tf.get_variable(
+            "epsilon",
+            dtype=cell.dtype,
+            initializer=tf.constant(1.0, dtype=cell.dtype))
+
+      rc = 3 * sigma
+
+    with tf.name_scope("calculate_energy"):
+      e0 = 4 * epsilon * ((sigma / rc)**12 - (sigma / rc)**6)
+      energy = 0.0
+
+      inds, _, displacements = get_neighbors_oneway(
+          strained_positions, strained_cell, rc, skin=0.3)
+
+      p0 = tf.gather(positions, inds[:, 1])
+      cells = tf.cast(displacements, cell.dtype) @ cell
+      d = p0 + cells - tf.gather(positions, inds[:, 0])
+
+      r2 = tf.reduce_sum(d**2, axis=1)
+      # r2 = tf.Print(r2, [r2], "r2: ")
+      #dists = tf.Print(dists, [dists], "dists: ", summarize=100)
+      #_m = tf.equal(dists, 0.0)
+      #_dists = tf.where(_m, tf.ones_like(dists), dists)
+
+      #c6 = tf.where(_m, tf.zeros_like(dists), (sigma**2 / _dists**2)**3)
+      c6 = (sigma**2 / r2)**3
+      c12 = c6**2
+
+      #c12 = tf.Print(c12, [c12], "tf c12:", summarize=1000)
+      n = tf.ones_like(r2)
+      #n = tf.Print(n, [n, e0 * n, "# of neighbors, n * e0"])
+      energy -= tf.reduce_sum(e0 * n)
+      energy += tf.reduce_sum(4 * epsilon * (c12 - c6))
+
+      return energy
+
+
+def forces_1way(positions, cell, mask=None, strain=None):
+  """Compute the forces.
+
+  Args:
+    positions: array-like shape=(numatoms, 3)
+      Array of cartesian coordinates of atoms in a unit cell.
+    cell: array-like shape=(3, 3)
+      Array of unit cell vectors in cartesian basis. Each row is a unit cell 
+      vector.
+    mask: array-like (numatoms,)
+      ones for atoms, zero for padded positions.
+    strain: array-like shape=(3, 3)
+      Array of strains to compute the energy at.
+
+  Returns:
+    array: shape=(natoms, 3)
+  """
+  with tf.name_scope("forces"):
+    positions = tf.convert_to_tensor(positions)
+    cell = tf.convert_to_tensor(cell)
+    if mask is None:
+      mask = tf.ones_like(positions[:, 0])
+    mask = tf.convert_to_tensor(mask)
+    if strain is None:
+      strain = tf.zeros_like(cell)
+    f = tf.gradients(-energy_1way(positions, cell, mask, strain), positions)[0]
+    return tf.convert_to_tensor(f)
