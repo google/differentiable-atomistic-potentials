@@ -159,11 +159,17 @@ def get_neighbors_oneway(positions,
   h = 1 / tf.norm(inverse_cell, axis=0)
   N = tf.floor(cutoff_distance / h) + 1
 
+  #  N = tf.Print(N, [N], ' tf  N: ')
+
   scaled = tf.matmul(positions, inverse_cell)
   scaled0 = tf.matmul(positions, inverse_cell) % 1.0
 
-  offsets = tf.round(scaled - scaled0)
+  offsets = tf.round(scaled0 - scaled)
+  #  offsets = tf.Print(offsets, [offsets], ' tf offsets:', summarize=100)
+
   positions0 = positions + tf.matmul(offsets, cell)
+  # positions0 = tf.Print(
+  #     positions0, [positions0], ' tf positions: ', summarize=100)
 
   v0_range = tf.range(0, N[0] + 1)
   v1_range = tf.range(-N[1], N[1] + 1)
@@ -194,6 +200,7 @@ def get_neighbors_oneway(positions,
               tf.less(n2, 0.0),
               tf.logical_and(tf.equal(n2, 0.0), tf.less(n3, 0.0)))))
   N = tf.boolean_mask(N, mask)
+  #  N = tf.Print(N, [N], 'tf offsets', summarize=20)
   noffsets = tf.shape(N)[0]
   natoms = positions.get_shape().as_list()[0]
 
@@ -204,17 +211,26 @@ def get_neighbors_oneway(positions,
   # n is a counter for offsets
   # a is a counter for atom index
   # k is a counter for neighbors
-  # indices contains a list of (a, index, offset_index): the index of the neighbor of atom a.
-  LV = namedtuple('LoopVariables', 'n, a, k, indices')
+  # indices contains a list of (a, index): the index of the neighbor of atom a.
+  # displacements is a list of (n1, n2, n3) corresponding to displacements for
+  # each neighbor.
+  LV = namedtuple('LoopVariables', 'n, a, k, indices, distances, displacements')
 
   lv0 = LV(
-      tf.constant(0, dtype=tf.int32), tf.constant(0, dtype=tf.int32),
-      tf.constant(0, dtype=tf.int32),
-      tf.Variable(tf.zeros((0, 3), dtype=tf.int32), dtype=tf.int32))
+      tf.constant(0, dtype=tf.int32),  # n counter
+      tf.constant(0, dtype=tf.int32),  # a counter
+      tf.constant(0, dtype=tf.int32),  # offset counter
+      tf.Variable(tf.zeros((0, 2), dtype=tf.int32), dtype=tf.int32),  # indices
+      # distances
+      tf.Variable(tf.zeros((0,), dtype=positions.dtype), dtype=positions.dtype),
+      tf.Variable(tf.zeros((0, 3), dtype=tf.int32),
+                  dtype=tf.int32)  # displacements
+  )
 
   shiv = LV(
       tf.TensorShape(None), tf.TensorShape(None), tf.TensorShape(None),
-      tf.TensorShape([None, 3]))
+      tf.TensorShape([None, 2]), tf.TensorShape(None), tf.TensorShape([None,
+                                                                       3]))
 
   def outer_cond(nt):
     return tf.less(nt.n, noffsets)
@@ -227,15 +243,25 @@ def get_neighbors_oneway(positions,
 
     displacement = tf.matmul(tf.cast(N[n][None, :], dtype=cell.dtype), cell)
 
+    # displacement = tf.Print(displacement, [n, displacement],
+    # 'tf displacement: ')
+
     # Now we loop over each atom
     def inner_cond(nt):
       return tf.less(nt.a, natoms)
 
     def inner_body(nt):
       """This is a loop over each atom."""
+      _p = positions0 + displacement - positions0[nt.a]
+      _p2 = tf.reduce_sum(_p**2, axis=1)
+      _m0 = tf.equal(_p2, 0.0)
+      _mp = tf.where(_m0, tf.ones_like(_p2), _p2)
+      _d = tf.sqrt(_mp)
+      d = tf.where(_m0, tf.zeros_like(_p2), _d)
 
-      d = tf.norm(positions0 + displacement - positions0[nt.a], axis=1)
-      i = tf.boolean_mask(indices, d < cutoff_distance + skin)
+      #d = tf.norm(positions0 + displacement - positions0[nt.a], axis=1)
+      i = tf.boolean_mask(indices,
+                          tf.logical_and(d > 0.0, d < (cutoff_distance + skin)))
 
       # ug. you have to specify the shape here since i, and hence m is not know
       # in advance. Without it you get:
@@ -262,21 +288,38 @@ def get_neighbors_oneway(positions,
 
       n_inds = tf.shape(i)[0]
 
+      disp = N[n][None, :]
+      disp += tf.gather(offsets, i)
+      disp -= offsets[nt.a]
+
       def nind_cond(nt):
         return tf.less(nt.k, n_inds)
 
       def nind_body(nt):
-        tups = tf.concat([nt.indices, [(nt.a, i[nt.k], nt.n)]], axis=0)
+        tups = tf.concat(
+            [
+                nt.indices,
+                [(
+                    nt.a,  # atom to get neighbors for
+                    i[nt.k],  # index of neighbor equivalent atom.
+                )]
+            ],
+            axis=0)
 
-        return LV(nt.n, nt.a, nt.k + 1, tups),
+        dists = tf.concat([nt.distances, [d[nt.k]]], axis=0)
+
+        disps = tf.concat(
+            [nt.displacements, [tf.cast(disp[nt.k], tf.int32)]], axis=0)
+
+        return LV(nt.n, nt.a, nt.k + 1, tups, dists, disps),
 
       nt, = tf.while_loop(nind_cond, nind_body, [nt], [shiv])
-      return LV(nt.n, nt.a + 1, 0, nt.indices),
+      return LV(nt.n, nt.a + 1, 0, nt.indices, nt.distances, nt.displacements),
 
     nt, = tf.while_loop(inner_cond, inner_body, [nt], [shiv])
 
-    return LV(nt.n + 1, 0, 0, nt.indices),
+    return LV(nt.n + 1, 0, 0, nt.indices, nt.distances, nt.displacements),
 
   lv1, = tf.while_loop(outer_cond, outer_body, [lv0], [shiv])
 
-  return lv1.indices, N
+  return lv1.indices, lv1.distances, lv1.displacements
