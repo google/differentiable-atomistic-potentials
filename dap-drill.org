@@ -552,12 +552,58 @@ Use [with tf.test_session():] to create a test session to run tests in.
 
 [assertRaises(excClass, callableObj=None, *args, **kwargs)] checks if a function raises an exception.
 
+**** example code
+
+This is a context manager.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+
+class TestName(tf.test.TestCase):
+  def test_func(self):
+    with self.assertRaises(ValueError):
+      a = tf.constant([1])
+      b = a[2]  # Out of range, so we get an error.
+
+
+tf.test.main()
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+#+END_SRC
+
 *** tf.test.TestCase methods [assertRaisesRegexp]                     :drill:
     :PROPERTIES:
     :ID:       a2275d68-d337-42ae-96c5-8ba9eb910bd2
     :END:
 
 [assertRaisesRegexp(expected_exception, expected_regexp, callable_obj=None, *args, **kwargs)] checks if the message from an exception matches a regular expression.
+
+**** example code
+
+This is a context manager.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+
+class TestName(tf.test.TestCase):
+  def test_func(self):
+    with self.assertRaisesRegexp(Exception, "you got"):
+      a = tf.constant([1])
+      raise Exception("you got me.")
+
+
+tf.test.main()
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+#+END_SRC
+
+
 
 *** tf.test.TestCase methods [assertRegexpMatches]                    :drill:
     :PROPERTIES:
