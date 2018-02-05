@@ -341,13 +341,12 @@ def stress_batch(POSITIONS,
 
 
 class LennardJones(Calculator):
-  implemented_properties = ["energy", "forces"]
+  implemented_properties = ["energy", "forces", "stress"]
 
   default_parameters = {"sigma": 1.0, "epsilon": 1.0}
 
   def __init__(self, **kwargs):
     Calculator.__init__(self, **kwargs)
-    print(kwargs)
     self.sess = tf.Session()
 
     with tf.variable_scope("sigma", reuse=tf.AUTO_REUSE):
@@ -451,6 +450,42 @@ class LennardJones(Calculator):
                        positions)[0]
       return tf.convert_to_tensor(f)
 
+  def _stress(self, positions, cell, mask=None, strain=None):
+    """Compute the stress.
+
+    Args:
+      positions: array-like shape=(numatoms, 3)
+        Array of cartesian coordinates of atoms in a unit cell.
+      cell: array-like shape=(3, 3)
+        Array of unit cell vectors in cartesian basis. Each row is a unit cell 
+        vector.
+      mask: array-like (numatoms,)
+        ones for atoms, zero for padded positions
+      strain: array-like shape=(3, 3)
+        Array of strains to compute the stress at.
+
+    Returns:
+      The stress components [sxx, syy, szz, syz, sxz, sxy]
+      array: shape=(6,)
+    """
+    with tf.name_scope("stress"):
+      with tf.name_scope("setup"):
+        positions = tf.convert_to_tensor(positions)
+        cell = tf.convert_to_tensor(cell)
+        if mask is None:
+          mask = tf.ones_like(positions[:, 0])
+        mask = tf.convert_to_tensor(mask)
+        if strain is None:
+          strain = tf.zeros_like(cell)
+
+      with tf.name_scope("get_stress"):
+        volume = tf.abs(tf.matrix_determinant(cell))
+        g = tf.gradients(self._energy(positions, cell,
+                                      mask, strain), strain)
+        stress = tf.convert_to_tensor(g[0])
+        stress /= volume
+        return tf.gather(tf.reshape(stress, (9,)), [0, 4, 8, 5, 2, 1])
+      
   def calculate(self,
                 atoms=None,
                 properties=["energy"],
@@ -464,3 +499,20 @@ class LennardJones(Calculator):
                                           atoms.cell).eval(session=self.sess)
     self.results["forces"] = self._forces(atoms.positions,
                                           atoms.cell).eval(session=self.sess)
+
+    self.results["stress"] = self._stress(atoms.positions,
+                                          atoms.cell).eval(session=self.sess)
+
+  def save(self, label):
+    "Save the graph and variables."
+    saver = tf.train.Saver()
+    saver.save(self.sess, label)
+
+  def load(self, label):
+    "Load variables from label."
+    saver = tf.train.import_meta_graph(label + ".meta")
+    self.sess.run(saver.restore(self.sess, label + ".meta"))
+    g = tf.get_default_graph()
+    self.sigma = g.get_tensor_by_name("sigma:0")
+    self.epsilon = g.get_tensor_by_name("epsilon:0")
+    print(f'Loaded {self.sigma} and {self.epsilon}')

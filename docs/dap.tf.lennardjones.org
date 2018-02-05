@@ -263,3 +263,28 @@ Created new window in existing browser session.
 :END:
 
 
+* The Lennard Jones calculator
+  
+
+#+BEGIN_SRC python :results output org drawer
+from dap.tf.lennardjones import LennardJones
+from ase.build import bulk
+
+
+atoms = bulk('Ar', 'fcc', a=2.5).repeat((2, 1, 1))
+atoms.rattle()
+atoms.set_calculator(LennardJones())
+
+print(atoms.get_potential_energy())          
+print(atoms.get_forces())   
+print(atoms.get_stress())       
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+-1.5205998507878264
+[[-0.0041116   0.00362234  0.00403562]
+ [ 0.0041116  -0.00362234 -0.00403562]]
+[ 4.01225582e-01  4.01225198e-01  4.01225601e-01 -1.81750310e-07
+ -5.36816118e-07  9.27398348e-08]
+:END:
