@@ -1,0 +1,30 @@
+#+TITLE: Hookean Spring in Tensorflow
+
+This is a model calculator to show how to use Tensorflow in an ASE style calculator.
+
+Here is an example usage.
+
+#+BEGIN_SRC python :results output org drawer
+import numpy as np
+from ase.build import molecule
+from dap.tf.hooke import HookeanSpring
+
+
+atoms = molecule('H2')
+atoms.set_calculator(HookeanSpring())
+
+print('Analytical energy: ', 0.5 * 1.0 * (1 - atoms.get_distance(0, 1))**2)
+print('Hookean energy:    ', atoms.get_potential_energy())
+
+print('Analytical force magnitude: ', np.abs(-1.0 * (1 - atoms.get_distance(0, 1))))
+print('Hookean forces:             ', [np.linalg.norm(f) 
+                                       for f in atoms.get_forces()])
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+Analytical energy:  0.034540855778
+Hookean energy:     0.034540855778
+Analytical force magnitude:  0.262834
+Hookean forces:              [0.262834, 0.262834]
+:END:
