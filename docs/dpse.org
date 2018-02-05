@@ -1699,9 +1699,13 @@ with tf.Session() as sess:
 100
 #+END_SRC
 
-It would be nice if we could save it in a way that would allow us to reuse it later. Here is an example of saving some ops from a graph for reuse later.
+It would be nice if we could save it in a way that would allow us to reuse it later. 
 
-It seems to be important that you define the saver last to capture all the variables. 
+*** Saving/restoring with collections
+
+Here is an example of saving some ops from a graph for reuse later.
+
+It seems to be important that you define the saver last to capture all the variables.  
 
 #+BEGIN_SRC tf :results silent
 import tensorflow as tf
@@ -1740,6 +1744,8 @@ with tf.Session() as sess:
 2500
 #+END_SRC
 
+*** Saving/restoring with named tensors
+    
 Here is an alternative approach to save/restore using named tensors instead of the collection.
 
 #+BEGIN_SRC tf :results silent
@@ -1790,4 +1796,53 @@ with tf.Session() as sess:
 125
 #+END_SRC
 
+*** Using tf.identity to give operations names
 
+In the example above we had to use a specific syntax like:
+
+=y = tf.multiply(a, x**3, name='y')=
+
+to give the op a name. Here we wrap that in an identity op to achieve the same result, with the more concise syntax.
+
+#+BEGIN_SRC tf :results silent
+import tensorflow as tf
+
+a = tf.Variable(tf.constant(4), name='a')
+x = tf.placeholder(tf.int32, name='x_ph')
+
+
+y = tf.identity(a * x**3, name='y')
+
+saver = tf.train.Saver()
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())   
+    saver.save(sess, './cubed_i')
+#+END_SRC
+
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+checkpoints_file_name = './cubed_i'
+saver = tf.train.import_meta_graph(checkpoints_file_name + '.meta')
+
+with tf.Session() as sess:
+    saver.restore(sess, checkpoints_file_name)    
+    g = tf.get_default_graph()
+    var = g.get_tensor_by_name('a:0')
+    x_ph = g.get_tensor_by_name('x_ph:0')
+    y = g.get_tensor_by_name('y:0')
+    print(sess.run(y, feed_dict={x_ph: 5}))
+    print(sess.run(var))
+    # give a a new value
+    print(sess.run(tf.assign(var, 1)))
+    print(sess.run(y, feed_dict={x_ph: 5}))
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+500
+4
+1
+125
+#+END_SRC
