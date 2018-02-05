@@ -388,29 +388,28 @@ def energy_1way(positions, cell, mask=None, strain=None):
       e0 = 4 * epsilon * ((sigma / rc)**12 - (sigma / rc)**6)
       energy = 0.0
 
-      inds, _, displacements = get_neighbors_oneway(
-          strained_positions, strained_cell, rc, skin=0.3)
+      inds, dists, displacements = get_neighbors_oneway(strained_positions,
+                                                        strained_cell, rc)
 
-      p0 = tf.gather(positions, inds[:, 1])
-      cells = tf.cast(displacements, cell.dtype) @ cell
-      d = p0 + cells - tf.gather(positions, inds[:, 0])
+      # dists = tf.Print(
+      #     dists,
+      #     [tf.size(dists),
+      #      tf.reduce_sum(dists**2), dists, "num neighbors"],
+      #     summarize=100)
 
-      r2 = tf.reduce_sum(d**2, axis=1)
-      # r2 = tf.Print(r2, [r2], "r2: ")
-      #dists = tf.Print(dists, [dists], "dists: ", summarize=100)
-      #_m = tf.equal(dists, 0.0)
-      #_dists = tf.where(_m, tf.ones_like(dists), dists)
-
-      #c6 = tf.where(_m, tf.zeros_like(dists), (sigma**2 / _dists**2)**3)
+      m = dists < rc
+      m.set_shape([None])
+      r2 = tf.boolean_mask(dists, m)**2
       c6 = (sigma**2 / r2)**3
       c12 = c6**2
-
-      #c12 = tf.Print(c12, [c12], "tf c12:", summarize=1000)
       n = tf.ones_like(r2)
-      #n = tf.Print(n, [n, e0 * n, "# of neighbors, n * e0"])
+
       energy -= tf.reduce_sum(e0 * n)
       energy += tf.reduce_sum(4 * epsilon * (c12 - c6))
-
+      # energy = tf.Print(
+      #     energy,
+      #     [tf.reduce_sum(e0 * n),
+      #      tf.reduce_sum(4 * epsilon * (c12 - c6))])
       return energy
 
 

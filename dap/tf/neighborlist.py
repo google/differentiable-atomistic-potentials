@@ -15,6 +15,7 @@
 
 from collections import namedtuple
 import tensorflow as tf
+import numpy as np
 
 
 def get_distances(config, positions, cell, atom_mask=None):
@@ -123,14 +124,12 @@ def get_distances(config, positions, cell, atom_mask=None):
     return tf.where(zeros, tf.zeros_like(distance), distance)
 
 
-import numpy as np
-
-
 def get_neighbors_oneway(positions,
                          cell,
                          cutoff_distance,
                          skin=0.01,
-                         strain=np.zeros((3, 3))):
+                         strain=np.zeros((3, 3)),
+                         debug=False):
   """Oneway neighborlist.
 
 
@@ -140,8 +139,6 @@ def get_neighbors_oneway(positions,
   indices_tuples: a list of tuples (atom_index, neighbor_index, offset_index),
   i.e. the atom at neighbor_index is a neighbor of the atom at atom_index and it
   is located at the offset in offset_index.
-
-
 
   Adapted from
   https://wiki.fysik.dtu.dk/ase/_modules/ase/neighborlist.html#NeighborList.
@@ -159,17 +156,20 @@ def get_neighbors_oneway(positions,
   h = 1 / tf.norm(inverse_cell, axis=0)
   N = tf.floor(cutoff_distance / h) + 1
 
-  #  N = tf.Print(N, [N], ' tf  N: ')
+  if debug:
+    N = tf.Print(N, [N], ' tf  N: ')
 
   scaled = tf.matmul(positions, inverse_cell)
   scaled0 = tf.matmul(positions, inverse_cell) % 1.0
 
   offsets = tf.round(scaled0 - scaled)
-  #  offsets = tf.Print(offsets, [offsets], ' tf offsets:', summarize=100)
+  if debug:
+    offsets = tf.Print(offsets, [offsets], ' tf offsets:', summarize=100)
 
   positions0 = positions + tf.matmul(offsets, cell)
-  # positions0 = tf.Print(
-  #     positions0, [positions0], ' tf positions: ', summarize=100)
+  if debug:
+    positions0 = tf.Print(
+        positions0, [positions0], ' tf positions: ', summarize=100)
 
   v0_range = tf.range(0, N[0] + 1)
   v1_range = tf.range(-N[1], N[1] + 1)
@@ -200,7 +200,8 @@ def get_neighbors_oneway(positions,
               tf.less(n2, 0.0),
               tf.logical_and(tf.equal(n2, 0.0), tf.less(n3, 0.0)))))
   N = tf.boolean_mask(N, mask)
-  #  N = tf.Print(N, [N], 'tf offsets', summarize=20)
+  if debug:
+    N = tf.Print(N, [N], 'tf offsets', summarize=20)
   noffsets = tf.shape(N)[0]
   natoms = positions.get_shape().as_list()[0]
 
@@ -217,9 +218,9 @@ def get_neighbors_oneway(positions,
   LV = namedtuple('LoopVariables', 'n, a, k, indices, distances, displacements')
 
   lv0 = LV(
-      tf.constant(0, dtype=tf.int32),  # n counter
-      tf.constant(0, dtype=tf.int32),  # a counter
-      tf.constant(0, dtype=tf.int32),  # offset counter
+      tf.constant(0, dtype=tf.int32),  # n, unit cell offset counter
+      tf.constant(0, dtype=tf.int32),  # a, counter for atom index
+      tf.constant(0, dtype=tf.int32),  # k, neighbor counter
       tf.Variable(tf.zeros((0, 2), dtype=tf.int32), dtype=tf.int32),  # indices
       # distances
       tf.Variable(tf.zeros((0,), dtype=positions.dtype), dtype=positions.dtype),
@@ -237,14 +238,14 @@ def get_neighbors_oneway(positions,
 
   def outer_body(nt):
     """This is the loop over the offsets."""
-    n = nt.n
 
-    n1, n2, n3 = tf.unstack(N[n])
+    n1, n2, n3 = tf.unstack(N[nt.n])
 
-    displacement = tf.matmul(tf.cast(N[n][None, :], dtype=cell.dtype), cell)
+    displacement = tf.matmul(tf.cast(N[nt.n][None, :], dtype=cell.dtype), cell)
 
-    # displacement = tf.Print(displacement, [n, displacement],
-    # 'tf displacement: ')
+    if debug:
+      displacement = tf.Print(displacement, [n, displacement],
+                              'tf displacement: ')
 
     # Now we loop over each atom
     def inner_cond(nt):
@@ -257,11 +258,15 @@ def get_neighbors_oneway(positions,
       _m0 = tf.equal(_p2, 0.0)
       _mp = tf.where(_m0, tf.ones_like(_p2), _p2)
       _d = tf.sqrt(_mp)
+
+      # These are the distances to the neighbors
       d = tf.where(_m0, tf.zeros_like(_p2), _d)
 
-      #d = tf.norm(positions0 + displacement - positions0[nt.a], axis=1)
-      i = tf.boolean_mask(indices,
-                          tf.logical_and(d > 0.0, d < (cutoff_distance + skin)))
+      # get indices where the distance is within the cutoff distance
+      # skip self (d == 0).
+      neighbor_mask = tf.logical_and(d > 0.0, d < (cutoff_distance + skin))
+      i = tf.boolean_mask(indices, neighbor_mask)
+      d = tf.boolean_mask(d, neighbor_mask)
 
       # ug. you have to specify the shape here since i, and hence m is not know
       # in advance. Without it you get:
@@ -274,21 +279,21 @@ def get_neighbors_oneway(positions,
       def self_interaction():
         m = tf.greater(i, nt.a)
         m.set_shape([None])
-        return tf.boolean_mask(i, m)
+        return tf.boolean_mask(i, m), tf.boolean_mask(d, m)
 
-      i = tf.cond(
+      i, d = tf.cond(
           tf.reduce_all([tf.equal(n1, 0),
                          tf.equal(n2, 0),
                          tf.equal(n3, 0)]),
           true_fn=self_interaction,
-          false_fn=lambda: i)
+          false_fn=lambda: (i, d))
 
       # Now we need to add tuples of (nt.a, ind) for ind in i if there is
       # anything in i, and also the index of the offset.
 
       n_inds = tf.shape(i)[0]
 
-      disp = N[n][None, :]
+      disp = N[nt.n][None, :]
       disp += tf.gather(offsets, i)
       disp -= offsets[nt.a]
 

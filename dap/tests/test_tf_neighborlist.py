@@ -141,17 +141,17 @@ get exact agreement on the number of neighbors.
         [Rc] * len(atoms), skin=0.0, self_interaction=False, bothways=False)
     nl.update(atoms)
 
-    inds, N = get_neighbors_oneway(
+    inds, dists, N = get_neighbors_oneway(
         atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
     with self.test_session() as sess:
-      inds, N = sess.run([inds, N])
+      inds, dists, N = sess.run([inds, dists, N])
 
       for i in range(len(atoms)):
         ase_inds, ase_offs = nl.get_neighbors(i)
 
         these_inds = np.array([x[1] for x in inds if x[0] == i])
-        these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+        these_offs = N[np.where(inds[:, 0] == i)]
 
         self.assertAllClose(ase_inds, these_inds)
         self.assertAllClose(ase_offs, these_offs)
@@ -159,8 +159,8 @@ get exact agreement on the number of neighbors.
   def test_molecules(self):
     """Tests oneway list on a bunch of molecules.
 
-    These are in large unit cells, so they don't have periodic boundary
-    conditions.
+    These are in large unit cells, so practically they don't have periodic
+    boundary conditions.
 
     """
     from ase.build import molecule
@@ -180,7 +180,7 @@ get exact agreement on the number of neighbors.
             [Rc] * len(atoms), skin=0.0, bothways=False, self_interaction=0)
         nl.update(atoms)
 
-        inds, N = get_neighbors_oneway(
+        inds, _, N = get_neighbors_oneway(
             atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
         inds, N = sess.run([inds, N])
@@ -189,7 +189,7 @@ get exact agreement on the number of neighbors.
           ase_inds, ase_offs = nl.get_neighbors(i)
 
           these_inds = np.array([x[1] for x in inds if x[0] == i])
-          these_offs = np.array([N[x[2]] for x in inds if x[0] == i])
+          these_offs = N[np.where(inds[:, 0] == i)]
 
           # Check indices are the same
           self.assertAllClose(ase_inds, these_inds)
@@ -224,7 +224,6 @@ get exact agreement on the number of neighbors.
               atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
           inds, dists, N = sess.run([inds, dists, N])
-          #print(f'Ninds = {len(inds)}. len offs = {len(N)}')
 
           for i in range(len(atoms)):
             ase_inds, ase_offs = nl.get_neighbors(i)
@@ -272,7 +271,7 @@ get exact agreement on the number of neighbors.
 
           nl = NeighborList(
               [Rc] * len(atoms),
-              skin=0.3,
+              skin=0.0,
               self_interaction=False,
               bothways=False)
           nl.update(atoms)
@@ -280,7 +279,7 @@ get exact agreement on the number of neighbors.
           with tf.Session() as sess:
 
             inds, dists, N = get_neighbors_oneway(
-                atoms.positions, atoms.cell, 2 * Rc, skin=0.3)
+                atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
 
             inds, dists, N = sess.run([inds, dists, N])
 
@@ -288,8 +287,7 @@ get exact agreement on the number of neighbors.
               ase_inds, ase_offs = nl.get_neighbors(i)
 
               these_inds = np.array([x[1] for x in inds if x[0] == i])
-              these_offs = np.array(
-                  [offset for x, offset in zip(inds, N) if x[0] == i])
+              these_offs = N[np.where(inds[:, 0] == i)]
 
               self.assertAllClose(ase_inds, these_inds)
 
