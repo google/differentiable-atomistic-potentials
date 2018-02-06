@@ -395,11 +395,11 @@ class LennardJones(Calculator):
           _energy -= tf.reduce_sum(e0 * n)
           _energy += tf.reduce_sum(4 * epsilon * (c12 - c6))
 
-          self._energy = _energy
+          self._energy = tf.identity(_energy, name='_energy')
 
     with tf.name_scope("forces"):
       f = tf.gradients(-self._energy, self._positions)[0]
-      self._forces = tf.convert_to_tensor(f)
+      self._forces = tf.identity(tf.convert_to_tensor(f), name='_forces')
           
 
     with tf.name_scope("stress"):
@@ -408,7 +408,8 @@ class LennardJones(Calculator):
         g = tf.gradients(self._energy, self._strain)
         stress = tf.convert_to_tensor(g[0])
         stress /= volume
-        self._stress = tf.gather(tf.reshape(stress, (9,)), [0, 4, 8, 5, 2, 1])
+        stress = tf.gather(tf.reshape(stress, (9,)), [0, 4, 8, 5, 2, 1])
+        self._stress = tf.identity(stress, name='_stress')
       
   def calculate(self,
                 atoms=None,
