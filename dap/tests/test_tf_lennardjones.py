@@ -112,6 +112,7 @@ class TestLJ_1way(tf.test.TestCase):
     for structure in ('fcc', 'bcc', 'hcp', 'diamond', 'sc'):
       for repeat in ((1, 1, 1), (2, 2, 2), (2, 1, 1), (1, 2, 3)):
         for a in [2.0, 3.0]:
+          print(f'{structure} {repeat} {a}')
           atoms = bulk('Ar', structure, a=a).repeat(repeat)
           atoms.rattle()
           atoms.set_calculator(aseLJ())

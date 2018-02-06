@@ -203,8 +203,7 @@ def get_neighbors_oneway(positions,
   if debug:
     N = tf.Print(N, [N], 'tf offsets', summarize=20)
   noffsets = tf.shape(N)[0]
-  natoms = positions.get_shape().as_list()[0]
-
+  natoms = tf.shape(positions)[0]
   indices = tf.range(natoms)
   # Finally, we have to run two loops, one over the offsets, and one over the
   # positions. We will accumulate the neighbors as we go. I like to save all the

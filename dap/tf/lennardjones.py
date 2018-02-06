@@ -364,39 +364,15 @@ class LennardJones(Calculator):
     self.sigma = sigma
     self.epsilon = epsilon
 
-  def _energy(self, positions, cell, mask=None, strain=None):
-    """Compute the energy of a Lennard-Jones system.
-
-    Args:
-      positions: array-like shape=(numatoms, 3)
-        Array of cartesian coordinates of atoms in a unit cell.
-      cell: array-like shape=(3, 3)
-        Array of unit cell vectors in cartesian basis. Each row is a unit cell
-        vector.
-      mask: array-like (numatoms,)
-        ones for atoms, zero for padded positions.
-      strain: array-like shape=(3, 3)
-        Array of strains to compute the energy at.
-
-    Returns: float
-      The total energy from the Lennard Jones potential.
-    """
+    self._positions = tf.placeholder(dtype=tf.float64, shape=(None, 3))
+    self._cell = tf.placeholder(dtype=tf.float64, shape=(3, 3))
+    self._strain = tf.placeholder(dtype=tf.float64, shape=(3, 3))
 
     with tf.name_scope("LennardJones"):
       with tf.name_scope("setup"):
-        positions = tf.convert_to_tensor(positions)
-        cell = tf.convert_to_tensor(cell)
-        if mask is None:
-          mask = tf.ones_like(positions[:, 0])
-        mask = tf.convert_to_tensor(mask)
-        if strain is None:
-          strain = tf.zeros_like(cell)
-
-        strain = tf.convert_to_tensor(strain)
-
-        strained_cell = tf.matmul(cell, tf.eye(3, dtype=cell.dtype) + strain)
-        strained_positions = tf.matmul(positions,
-                                       tf.eye(3, dtype=cell.dtype) + strain)
+        strain_tensor = tf.eye(3, dtype=self._cell.dtype) + self._strain
+        strained_cell = tf.matmul(self._cell, strain_tensor)
+        strained_positions = tf.matmul(self._positions, strain_tensor)
 
         sigma = self.sigma
         epsilon = self.epsilon
@@ -419,72 +395,20 @@ class LennardJones(Calculator):
           _energy -= tf.reduce_sum(e0 * n)
           _energy += tf.reduce_sum(4 * epsilon * (c12 - c6))
 
-          return _energy
+          self._energy = _energy
 
-  def _forces(self, positions, cell, mask=None, strain=None):
-    """Compute the forces.
-
-    Args:
-      positions: array-like shape=(numatoms, 3)
-        Array of cartesian coordinates of atoms in a unit cell.
-      cell: array-like shape=(3, 3)
-        Array of unit cell vectors in cartesian basis. Each row is a unit cell 
-        vector.
-      mask: array-like (numatoms,)
-        ones for atoms, zero for padded positions.
-      strain: array-like shape=(3, 3)
-        Array of strains to compute the energy at.
-
-    Returns:
-      array: shape=(natoms, 3)
-    """
     with tf.name_scope("forces"):
-      positions = tf.convert_to_tensor(positions)
-      cell = tf.convert_to_tensor(cell)
-      if mask is None:
-        mask = tf.ones_like(positions[:, 0])
-      mask = tf.convert_to_tensor(mask)
-      if strain is None:
-        strain = tf.zeros_like(cell)
-      f = tf.gradients(-self._energy(positions, cell, mask, strain),
-                       positions)[0]
-      return tf.convert_to_tensor(f)
+      f = tf.gradients(-self._energy, self._positions)[0]
+      self._forces = tf.convert_to_tensor(f)
+          
 
-  def _stress(self, positions, cell, mask=None, strain=None):
-    """Compute the stress.
-
-    Args:
-      positions: array-like shape=(numatoms, 3)
-        Array of cartesian coordinates of atoms in a unit cell.
-      cell: array-like shape=(3, 3)
-        Array of unit cell vectors in cartesian basis. Each row is a unit cell 
-        vector.
-      mask: array-like (numatoms,)
-        ones for atoms, zero for padded positions
-      strain: array-like shape=(3, 3)
-        Array of strains to compute the stress at.
-
-    Returns:
-      The stress components [sxx, syy, szz, syz, sxz, sxy]
-      array: shape=(6,)
-    """
     with tf.name_scope("stress"):
-      with tf.name_scope("setup"):
-        positions = tf.convert_to_tensor(positions)
-        cell = tf.convert_to_tensor(cell)
-        if mask is None:
-          mask = tf.ones_like(positions[:, 0])
-        mask = tf.convert_to_tensor(mask)
-        if strain is None:
-          strain = tf.zeros_like(cell)
-
       with tf.name_scope("get_stress"):
-        volume = tf.abs(tf.matrix_determinant(cell))
-        g = tf.gradients(self._energy(positions, cell,
-                                      mask, strain), strain)
+        volume = tf.abs(tf.matrix_determinant(self._cell))
+        g = tf.gradients(self._energy, self._strain)
         stress = tf.convert_to_tensor(g[0])
         stress /= volume
-        return tf.gather(tf.reshape(stress, (9,)), [0, 4, 8, 5, 2, 1])
+        self._stress = tf.gather(tf.reshape(stress, (9,)), [0, 4, 8, 5, 2, 1])
       
   def calculate(self,
                 atoms=None,
@@ -495,13 +419,21 @@ class LennardJones(Calculator):
     """
     Calculator.calculate(self, atoms, properties, system_changes)
     self.sess.run(tf.global_variables_initializer())
-    self.results["energy"] = self._energy(atoms.positions,
-                                          atoms.cell).eval(session=self.sess)
-    self.results["forces"] = self._forces(atoms.positions,
-                                          atoms.cell).eval(session=self.sess)
+    self.results["energy"] = self.sess.run(self._energy,
+                                      feed_dict={self._positions: atoms.positions,
+                                                 self._cell: atoms.cell,
+                                                 self._strain: np.zeros_like(atoms.cell)})
 
-    self.results["stress"] = self._stress(atoms.positions,
-                                          atoms.cell).eval(session=self.sess)
+    self.results["forces"] = self.sess.run(self._forces,
+                                           feed_dict={self._positions: atoms.positions,
+                                                      self._cell: atoms.cell,
+                                                      self._strain: np.zeros_like(atoms.cell)})
+
+    self.results["stress"] = self.sess.run(self._stress,
+                                           feed_dict={self._positions: atoms.positions,
+                                                      self._cell: atoms.cell,
+                                                      self._strain: np.zeros_like(atoms.cell)})
+
 
   def save(self, label):
     "Save the graph and variables."
