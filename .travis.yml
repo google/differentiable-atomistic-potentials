@@ -49,7 +49,6 @@ install:
 script:
   - pwd
   - nosetests -v --with-coverage
-  - coverage run --source=dap	setup.py nosetests
 
 after_success:
   coveralls
