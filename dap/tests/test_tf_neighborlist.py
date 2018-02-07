@@ -166,30 +166,35 @@ get exact agreement on the number of neighbors.
     from ase.build import molecule
     from ase.collections import g2
 
+    Rc = 2.0
+    pos = tf.placeholder(tf.float64, [None, 3])
+    cell = tf.placeholder(tf.float64, [3, 3])
+    inds, dists, N = get_neighbors_oneway(pos, cell, 2 * Rc, skin=0.0)
+
     with self.test_session() as sess:
       for mlc in g2.names:
         atoms = molecule(mlc)
-        atoms.set_cell((50, 50, 50))
+        atoms.set_cell((50.0, 50.0, 50.0))
         atoms.center()
 
         if len(atoms) < 2:
           continue
 
-        Rc = 2.0
         nl = NeighborList(
             [Rc] * len(atoms), skin=0.0, bothways=False, self_interaction=0)
         nl.update(atoms)
 
-        inds, _, N = get_neighbors_oneway(
-            atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
-
-        inds, N = sess.run([inds, N])
+        _inds, _N = sess.run(
+            [inds, N], feed_dict={
+                pos: atoms.positions,
+                cell: atoms.cell
+            })
 
         for i in range(len(atoms)):
           ase_inds, ase_offs = nl.get_neighbors(i)
 
-          these_inds = np.array([x[1] for x in inds if x[0] == i])
-          these_offs = N[np.where(inds[:, 0] == i)]
+          these_inds = np.array([x[1] for x in _inds if x[0] == i])
+          these_offs = _N[np.where(_inds[:, 0] == i)]
 
           # Check indices are the same
           self.assertAllClose(ase_inds, these_inds)
@@ -206,12 +211,17 @@ get exact agreement on the number of neighbors.
     import numpy as np
     np.set_printoptions(precision=3, suppress=True)
 
+    a = 3.6
+    Rc = 2 * a + 0.01
+
+    pos = tf.placeholder(tf.float64, [None, 3])
+    cell = tf.placeholder(tf.float64, [3, 3])
+    inds, dists, N = get_neighbors_oneway(pos, cell, 2 * Rc, skin=0.0)
+
     for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
       for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
         print('\n', structure, repeat, '\n')
         print('============================\n')
-        a = 3.6
-        Rc = 2 * a + 0.01
         atoms = bulk('Cu', structure, a=a).repeat(repeat)
         atoms.rattle(0.02)
         nl = NeighborList(
@@ -220,17 +230,19 @@ get exact agreement on the number of neighbors.
 
         with tf.Session() as sess:
 
-          inds, dists, N = get_neighbors_oneway(
-              atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
-
-          inds, dists, N = sess.run([inds, dists, N])
+          _inds, _dists, _N = sess.run(
+              [inds, dists, N],
+              feed_dict={
+                  pos: atoms.positions,
+                  cell: atoms.cell
+              })
 
           for i in range(len(atoms)):
             ase_inds, ase_offs = nl.get_neighbors(i)
 
-            these_inds = np.array([x[1] for x in inds if x[0] == i])
+            these_inds = np.array([x[1] for x in _inds if x[0] == i])
             these_offs = np.array(
-                [offset for x, offset in zip(inds, N) if x[0] == i])
+                [offset for x, offset in zip(_inds, _N) if x[0] == i])
 
             # Check indices are the same
             #print('Indices are equal: ', np.all(ase_inds == these_inds))
@@ -259,15 +271,20 @@ get exact agreement on the number of neighbors.
     import numpy as np
     np.set_printoptions(precision=3, suppress=True)
 
+    Rc = 3.0
+
+    pos = tf.placeholder(tf.float64, [None, 3])
+    cell = tf.placeholder(tf.float64, [3, 3])
+    inds, dists, N = get_neighbors_oneway(pos, cell, 2 * Rc, skin=0.0)
+
     for repeat in ((1, 1, 1), (2, 1, 1), (1, 2, 1), (1, 1, 2), (1, 2, 3)):
       for structure in ('fcc', 'bcc', 'sc', 'hcp', 'diamond'):
         for a in [3.0, 4.0]:
           print('\n', structure, repeat, a, '\n')
           print('============================\n')
+
           atoms = bulk('Ar', structure, a=a).repeat(repeat)
           atoms.rattle()
-          print(atoms)
-          Rc = 3.0
 
           nl = NeighborList(
               [Rc] * len(atoms),
@@ -278,16 +295,18 @@ get exact agreement on the number of neighbors.
 
           with tf.Session() as sess:
 
-            inds, dists, N = get_neighbors_oneway(
-                atoms.positions, atoms.cell, 2 * Rc, skin=0.0)
-
-            inds, dists, N = sess.run([inds, dists, N])
+            _inds, _dists, _N = sess.run(
+                [inds, dists, N],
+                feed_dict={
+                    pos: atoms.positions,
+                    cell: atoms.cell
+                })
 
             for i in range(len(atoms)):
               ase_inds, ase_offs = nl.get_neighbors(i)
 
-              these_inds = np.array([x[1] for x in inds if x[0] == i])
-              these_offs = N[np.where(inds[:, 0] == i)]
+              these_inds = np.array([x[1] for x in _inds if x[0] == i])
+              these_offs = _N[np.where(_inds[:, 0] == i)]
 
               self.assertAllClose(ase_inds, these_inds)
 
