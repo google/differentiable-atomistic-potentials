@@ -1846,3 +1846,53 @@ with tf.Session() as sess:
 1
 125
 #+END_SRC
+** Using Tensorboard
+   
+[[https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard][Tensorboard]] is a browser-based tool to visualize your Tensorflow programs. You can create summaries of different operations, and view the graph. Usually Tensorboard is used to monitor training, but you can do other things too.
+
+Here is a contrived example where we change a variable and save the changes to Tensorboard.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+v = tf.Variable(0.0, tf.float32)
+vsum = tf.summary.scalar("v", v)
+summary = tf.summary.merge_all()
+
+with tf.Session() as sess:
+    sess.run(tf.global_variables_initializer())
+    writer = tf.summary.FileWriter('./summaries', sess.graph)
+    
+    for i in range(9):
+        v = tf.assign(v, float(i**2))
+        _v = sess.run(v)
+        _summary = sess.run(summary)  # Run this in a separate step
+        writer.add_summary(_summary, global_step=i)
+        print(i, v.eval())    
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+0 0.0
+1 1.0
+2 4.0
+3 9.0
+4 16.0
+5 25.0
+6 36.0
+7 49.0
+8 64.0
+#+END_SRC
+
+You won't see anything when you run the block above. You have to launch Tensorboard like this:
+
+#+BEGIN_SRC sh
+tensorboard --logdir=./summaries --port=6006 &
+google-chrome http://localhost:6006
+#+END_SRC
+
+#+RESULTS:
+| Created new window in existing browser session. |                           |
+| TensorBoard attempted to bind to port 6006      | but it was already in use |
+
+Then there will be a web page open to the summary.
