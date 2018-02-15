@@ -1927,3 +1927,59 @@ google-chrome http://localhost:6006
 | TensorBoard attempted to bind to port 6006      | but it was already in use |
 
 Then there will be a web page open to the summary.
+
+* Performance
+
+If you notice that your programs seem to slow down, it could be you are inadvertently accumulating nodes in the graph. For example, here is a bad way to run a program.
+
+#+BEGIN_SRC tf :results output drawer org
+# BAD way to do this
+import tensorflow as tf
+
+def f(x):
+    return tf.add(x, 1)
+
+for i in range(5):
+    a = f(i)
+    with tf.Session() as sess:       
+        val = a.eval()
+        print('# nodes: ', len([n.name for n in tf.get_default_graph().as_graph_def().node]), 'a: ', val)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+# nodes:  3 a:  1
+# nodes:  6 a:  2
+# nodes:  9 a:  3
+# nodes:  12 a:  4
+# nodes:  15 a:  5
+#+END_SRC
+
+Note the number of nodes is increasing, which is not desirable. Here is the right way, using a placeholder.
+
+#+BEGIN_SRC tf :results output drawer org
+# BAD way to do this
+import tensorflow as tf
+
+def f(x):
+    return tf.add(x, 1)
+
+X = tf.placeholder(tf.int32)
+a = f(X)
+
+for i in range(5):    
+    with tf.Session() as sess:
+        val = sess.run(a, feed_dict={X: i})
+        print('# nodes: ', len([n.name for n in tf.get_default_graph().as_graph_def().node]), 'a: ', val)
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+# nodes:  3 a:  1
+# nodes:  3 a:  2
+# nodes:  3 a:  3
+# nodes:  3 a:  4
+# nodes:  3 a:  5
+#+END_SRC
+
+Now, note that the number of nodes is constant.
