@@ -1017,6 +1017,37 @@ with tf.Session() as sess:
 pydoc:tensorflow.contrib.lookup.HashTable
 pydoc:tensorflow.contrib.lookup.KeyValueTensorInitializer
 
+HashTables are basically dictionaries with default values in Tensorflow. The are not as easy to construct though, and they are immutable after you initialize them.
+
+1. Identify keys and values. These will be passed to a KeyValueTensorInitializer.
+2. Create a KeyValueTensorInitializer that takes the keys and values, and optionally specifies their dtypes.
+3. Create the table with the initializer with a mandatory default value.
+4. In the session, initialize the table.
+5. then you can lookup values by tensors.
+
+#+BEGIN_SRC tf :results output drawer org
+import tensorflow as tf
+
+# here are some keys and 
+keys = ['a', 'b']
+values = [1, 2]
+
+ht_init = tf.contrib.lookup.KeyValueTensorInitializer(keys, values)
+table = tf.contrib.lookup.HashTable(ht_init, default_value=-1)
+
+input_tensor = tf.constant('a')
+out = table.lookup(input_tensor)
+
+with tf.Session():
+    table.init.run()  # Table initialization step
+    print(out.eval()) # The actual lookup
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC org
+1
+#+END_SRC
+
 
 * Sorting and Unique elements in tensorflow
 
