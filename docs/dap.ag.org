@@ -452,21 +452,23 @@ Here is an example usage.
 
 #+BEGIN_SRC python :results output org drawer
 from ase.build import bulk
-from dap.ag.ase_emt import EMT
+from ase.calculators.emt import EMT
+from dap.ag.emt import parameters, energy, forces, stress
 import numpy as np
 
 atoms = bulk('Cu', 'fcc', a=3.6).repeat((2, 2, 2))
 atoms.set_calculator(EMT())
 atoms.rattle()
-from dap.ag.emt import energy, forces, stress
 
-e = energy(atoms.positions, atoms.numbers, atoms.cell)
+
+e = energy(parameters, atoms.positions, atoms.numbers, atoms.cell)
 print(f'ase: {atoms.get_potential_energy()}\nag : {e}')
 
-f = forces(atoms.positions, atoms.numbers, atoms.cell)
+f = forces(parameters, atoms.positions, atoms.numbers, atoms.cell)
 print(f'Forces equal: {np.allclose(f, atoms.get_forces())}')
 
-s = stress(atoms.positions, atoms.numbers, atoms.cell)
+# Good luck getting this from ASE!
+s = stress(parameters, atoms.positions, atoms.numbers, atoms.cell)
 print(s)
 #+END_SRC
 
@@ -479,6 +481,82 @@ Forces equal: True
   3.16443974e-07 -2.32564931e-07]
 :END:
 
+** Training your own EMT
+
+One of the main points of this is to get a trainable EMT, so you can use it for what you want. The parameters are in dap.ag.emt.parameters. We can use this in autograd.
+
+These are a set of clusters we could use for input data.
+
+#+BEGIN_SRC ipython
+from ase.cluster.icosahedron import Icosahedron
+
+atoms = Icosahedron('Au', noshells=2)
+print(atoms)
+
+atoms = Icosahedron('Au', noshells=3)
+print(atoms)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[3]:
+# output
+: Atoms(symbols='Au', pbc=False, tags=...)
+: Atoms(symbols='Au13', pbc=False, cell=[4.908247792861572, 4.908247792861572, 4.908247792861572], tags=...)
+: Atoms(symbols='Au55', pbc=False, cell=[9.816495585723144, 9.816495585723144, 9.816495585723144], tags=...)
+:END:
+
+#+BEGIN_SRC ipython 
+from ase.cluster.octahedron import Octahedron
+
+atoms = Octahedron('Au', 2)
+print(atoms)
+
+atoms = Octahedron('Au', 3)
+print(atoms)
+
+atoms = Octahedron('Au', 4)
+print(atoms)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[7]:
+# output
+: Cluster(symbols='Au6', pbc=False, cell=[4.08, 4.08, 4.08])
+: Cluster(symbols='Au19', pbc=False, cell=[8.16, 8.16, 8.16])
+: Cluster(symbols='Au44', pbc=False, cell=[12.24, 12.24, 12.24])
+:END:
+
+#+BEGIN_SRC ipython 
+from ase.cluster.decahedron import Decahedron
+
+atoms = Decahedron('Au', 2, 2, 0)
+print(atoms)
+
+atoms = Decahedron('Au', 2, 2, 1)
+print(atoms)
+
+atoms = Decahedron('Au', 3, 2, 0)
+print(atoms)
+
+atoms = Decahedron('Au', 2, 3, 0)
+print(atoms)
+
+atoms = Decahedron('Au', 3, 3, 0)
+print(atoms)
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[12]:
+# output
+: Atoms(symbols='Au13', pbc=False, cell=[4.752390490203045, 4.519791943686726, 5.769991334482228])
+: Atoms(symbols='Au75', pbc=False, cell=[12.441919831163347, 11.832968930649798, 11.539982668964456])
+: Atoms(symbols='Au39', pbc=False, cell=[9.50478098040609, 9.039583887373452, 8.654987001723342])
+: Atoms(symbols='Au19', pbc=False, cell=[4.752390490203045, 4.519791943686726, 8.654987001723342])
+: Atoms(symbols='Au55', pbc=False, cell=[9.50478098040609, 9.039583887373452, 11.539982668964456])
+:END:
 
 *  Bibtex entries
 
