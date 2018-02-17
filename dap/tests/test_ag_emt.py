@@ -20,7 +20,7 @@ import unittest
 import autograd.numpy as np
 from ase.build import bulk
 from ase.calculators.emt import EMT
-from dap.ag.emt import (energy, forces, stress)
+from dap.ag.emt import (parameters, energy, forces, stress)
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
@@ -32,7 +32,7 @@ class TestAgEmt(unittest.TestCase):
     atoms.set_calculator(EMT())
 
     ase_e = atoms.get_potential_energy()
-    age = energy(atoms.positions, atoms.numbers, atoms.cell)
+    age = energy(parameters, atoms.positions, atoms.numbers, atoms.cell)
     self.assertEqual(ase_e, age)
 
     ase_f = atoms.get_forces()
@@ -47,7 +47,7 @@ class TestAgEmt(unittest.TestCase):
           atoms.rattle()
           atoms.set_calculator(EMT())
           ase_energy = atoms.get_potential_energy()
-          emt_energy = energy(atoms.positions, atoms.numbers, atoms.cell)
+          emt_energy = energy(parameters, atoms.positions, atoms.numbers, atoms.cell)
           self.assertEqual(ase_energy, emt_energy)
 
           ase_f = atoms.get_forces()
@@ -102,7 +102,7 @@ class TestAgEmt(unittest.TestCase):
 
           ase_stress = np.take(ase_stress.reshape((3, 3)), [0, 4, 8, 5, 2, 1])
 
-          ag_stress = stress(atoms.positions, atoms.numbers, atoms.cell)
+          ag_stress = stress(parameters, atoms.positions, atoms.numbers, atoms.cell)
 
           # I picked the 0.03 tolerance here. I thought it should be closer, but
           # it is a simple numerical difference I am using for the derivative,
