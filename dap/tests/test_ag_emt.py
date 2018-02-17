@@ -36,7 +36,7 @@ class TestAgEmt(unittest.TestCase):
     self.assertEqual(ase_e, age)
 
     ase_f = atoms.get_forces()
-    ag_f = forces(atoms.positions, atoms.numbers, atoms.cell)
+    ag_f = forces(parameters, atoms.positions, atoms.numbers, atoms.cell)
     self.assertTrue(np.allclose(ase_f, ag_f))
 
   def test_energy_forces(self):
@@ -51,7 +51,7 @@ class TestAgEmt(unittest.TestCase):
           self.assertEqual(ase_energy, emt_energy)
 
           ase_f = atoms.get_forces()
-          ag_f = forces(atoms.positions, atoms.numbers, atoms.cell)
+          ag_f = forces(parameters, atoms.positions, atoms.numbers, atoms.cell)
           self.assertTrue(np.allclose(ase_f, ag_f))
 
   def test_stress(self):
