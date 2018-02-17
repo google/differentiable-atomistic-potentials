@@ -43,7 +43,7 @@ parameters = {
 beta = 1.809  # (16 * pi / 3)**(1.0 / 3) / 2**0.5, preserve historical rounding
 
 
-def energy(positions, numbers, cell, strain=np.zeros((3, 3))):
+def energy(parameters, positions, numbers, cell, strain=np.zeros((3, 3))):
   """Compute the energy using Effective medium theory.
 
     Parameters
@@ -168,7 +168,7 @@ def energy(positions, numbers, cell, strain=np.zeros((3, 3))):
   return energy
 
 
-def forces(positions, numbers, cell):
+def forces(parameters, positions, numbers, cell):
   """Compute the forces of an EMT system.
 
     Parameters
@@ -185,11 +185,11 @@ def forces(positions, numbers, cell):
     forces : an array of forces. Shape = (natoms, 3)
 
     """
-  dEdR = elementwise_grad(energy, 0)
-  return -dEdR(positions, numbers, cell)
+  dEdR = elementwise_grad(energy, 1)
+  return -dEdR(parameters, positions, numbers, cell)
 
 
-def stress(positions, numbers, cell, strain=np.zeros((3, 3))):
+def stress(parameters, positions, numbers, cell, strain=np.zeros((3, 3))):
   """Compute the stress on an EMT system.
 
     Parameters
@@ -207,10 +207,10 @@ def stress(positions, numbers, cell, strain=np.zeros((3, 3))):
     [sxx, syy, szz, syz, sxz, sxy]
 
     """
-  dEdst = elementwise_grad(energy, 3)
+  dEdst = elementwise_grad(energy, 4)
 
   volume = np.abs(np.linalg.det(cell))
 
-  der = dEdst(positions, numbers, cell, strain)
+  der = dEdst(parameters, positions, numbers, cell, strain)
   result = (der + der.T) / 2 / volume
   return np.take(result, [0, 4, 8, 5, 2, 1])
