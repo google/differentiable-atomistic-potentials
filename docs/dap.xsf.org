@@ -1,0 +1,68 @@
+#+TITLE: XSF utilities
+
+aenet uses a modified version of the [[http://www.xcrysden.org/doc/XSF.html][xsf]] file format as the starting point for training. 
+
+#+BEGIN_SRC ipython
+from dap.py.xsf import write_xsf
+from ase.calculators.emt import EMT
+from ase.build import bulk
+
+atoms = bulk('Cu', 'fcc', a=3.6).repeat((2, 2, 2))
+atoms.rattle()
+atoms.set_calculator(EMT())
+
+
+print(write_xsf('0001.xsf', atoms))
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[4]:
+# output
+: # total energy = -0.0534529034684148 eV
+: 
+: CRYSTAL
+: PRIMVEC
+: 0.0 3.6 3.6
+: 3.6 0.0 3.6
+: 3.6 3.6 0.0
+: PRIMCOORD
+: 8 1
+: Cu   0.000496714153 -0.000138264301  0.000647688538  0.000318579371 -0.004676393488 -0.008212937162
+: Cu   1.801523029856  1.799765846625 -0.000234136957 -0.007259597937  0.005102141267 -0.006461956839
+: Cu   1.801579212816  0.000767434729  1.799530525614 -0.002357531707 -0.009663570323  0.003836331513
+: Cu   3.600542560044  1.799536582307  1.799534270246 -0.000747250509  0.003763298575  0.010677371668
+: Cu   0.000241962272  1.798086719755  1.798275082167  0.001160114038  0.014347070461  0.008689609585
+: Cu   1.799437712471  3.598987168880  1.800314247333 -0.001563826330 -0.004978775118 -0.000069725327
+: Cu   1.799091975924  1.798587696299  3.601465648769  0.006418871442  0.007411118538 -0.012801846980
+: Cu   3.599774223700  3.600067528205  3.598575251814  0.004030641631 -0.011304889912  0.004343153543
+: 
+:END:
+
+Note that periodic boundary conditions are implied to be in effect (i.e. this will not read non-periodic xsf files at this time).
+
+#+BEGIN_SRC ipython
+from dap.py.xsf import read_xsf
+
+atoms = read_xsf('0001.xsf')
+print(atoms)
+print(atoms.get_potential_energy())
+print(atoms.get_forces())
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# Out[5]:
+# output
+: Atoms(symbols='Cu8', pbc=True, cell=[[0.0, 3.6, 3.6], [3.6, 0.0, 3.6], [3.6, 3.6, 0.0]], calculator=SinglePointCalculator(...))
+: -0.0534529034684148
+: [[ 3.18579371e-04 -4.67639349e-03 -8.21293716e-03]
+:  [-7.25959794e-03  5.10214127e-03 -6.46195684e-03]
+:  [-2.35753171e-03 -9.66357032e-03  3.83633151e-03]
+:  [-7.47250509e-04  3.76329857e-03  1.06773717e-02]
+:  [ 1.16011404e-03  1.43470705e-02  8.68960959e-03]
+:  [-1.56382633e-03 -4.97877512e-03 -6.97253270e-05]
+:  [ 6.41887144e-03  7.41111854e-03 -1.28018470e-02]
+:  [ 4.03064163e-03 -1.13048899e-02  4.34315354e-03]]
+: 
+:END:
