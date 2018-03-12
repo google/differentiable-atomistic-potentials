@@ -14,6 +14,21 @@ An atomistic potential is a function that takes atomic coordinates, atom types a
 
 The first demonstration of this approach is for the Lennard Jones potential, which is fully implemented in TensorFlow to compute energies, forces and stress of periodic atomic systems containing one kind of chemical element. The potential is trainable from a database of reference data, e.g. density functional theory calculations. An example is illustrated in [[./docs/dap.tf.lennardjones.org]].
 
+* Installation
+
+If you have root access, and you want to install the bleeding edge version system-wide, it should be sufficient to run:
+
+#+BEGIN_SRC sh
+pip install git+git://github.com/google/differentiable-atomistic-potentials
+#+END_SRC
+
+If you want an editable, developer installation you might prefer this:
+
+#+BEGIN_SRC sh
+git clone https://github.com/google/differentiable-atomistic-potentials.git
+cd differentiable-atomistic-potentials
+pip install --user -e .
+#+END_SRC
 
 * Related projects
   
