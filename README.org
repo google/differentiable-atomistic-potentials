@@ -2,11 +2,11 @@
 #+AUTHOR: John Kitchin
 
 This is not an official Google product.
-
-#+BEGIN_HTML
+#+BEGIN_EXPORT html
 <a href='https://travis-ci.org/google/differentiable-atomistic-potentials'><img src='https://travis-ci.org/google/differentiable-atomistic-potentials.svg?branch=master'/></a>
 <a href='https://coveralls.io/github/google/differentiable-atomistic-potentials?branch=master'><img src='https://coveralls.io/repos/github/google/differentiable-atomistic-potentials/badge.svg?branch=master' alt='Coverage Status' /></a>
-#+END_HTML
+#+END_EXPORT
+
 
 * Summary
 
