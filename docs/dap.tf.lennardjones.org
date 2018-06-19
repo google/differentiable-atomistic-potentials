@@ -7,7 +7,7 @@ The main purpose of this document is to show from start to finish that you can d
 A potential use of this code is to run molecular simulations, e.g. molecular dynamics, on accelerated hardware. I don't have a sense for how well it will perform for large numbers of atoms. The neighbor distances code is fully vectorized, but state of the art MD codes are even smarter. In a simulation, they use a skin, and only update the distance matrix when an atom has moved further than a skin tolerance (which could cause it to move across the cutoff radius). This code is not that clever.
 
 * The training database
-  
+
 The [[./argon.db]] database contains 139 DFT calculations of Ar in different crystal structures at different volumes where the atoms have been rattled several times in each calculation. Here is a brief summary of the contents of the database.
 
 #+BEGIN_SRC python :results output org drawer
@@ -65,10 +65,10 @@ FORCES = np.array([row.forces for row in db.select(limit=N)])
 
 # PADDING
 MASKS = [np.ones(maxnatoms, dtype=np.float64) for atoms in ATOMS]
-PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64)
                     for atoms in ATOMS]
 
-PADDED_FORCES = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+PADDED_FORCES = [np.zeros((maxnatoms, 3), dtype=np.float64)
                  for atoms in ATOMS]
 
 for i, atoms in enumerate(ATOMS):
@@ -107,9 +107,9 @@ sess.run(init)
 
 for i in range(1000):
     if i % 200 and sess.run(loss) < 1e-5:
-        print(sess.run([epsilon, sigma, loss])) 
+        print(sess.run([epsilon, sigma, loss]))
         break
-    
+
     sess.run(train)
     if i % 200 == 0:
         print(sess.run([epsilon, sigma, loss]))
@@ -151,7 +151,7 @@ ENERGIES = np.array([row.energy for row in db.select()])
 
 # PADDING
 MASKS = [np.ones(maxnatoms, dtype=np.float64) for atoms in ATOMS]
-PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64) 
+PADDED_POSITIONS = [np.zeros((maxnatoms, 3), dtype=np.float64)
                     for atoms in ATOMS]
 
 for i, atoms in enumerate(ATOMS):
@@ -206,7 +206,7 @@ This figure shows the training data (white circles on top of the symbols) was mo
 
 These blocks will launch a Tensorboard visualization of the graphs for each function.
 
-** energy 
+** energy
 #+BEGIN_SRC python :results output org drawer
 from ase.build import bulk
 from dap.tf.visualize import show_graph
@@ -225,7 +225,7 @@ Created new window in existing browser session.
 :END:
 
 ** forces
-   
+
 #+BEGIN_SRC python :results output org drawer
 from ase.build import bulk
 from dap.tf.visualize import show_graph
@@ -244,7 +244,7 @@ Created new window in existing browser session.
 :END:
 
 ** stress
-   
+
 #+BEGIN_SRC python :results output org drawer
 from ase.build import bulk
 from dap.tf.visualize import show_graph
@@ -264,7 +264,7 @@ Created new window in existing browser session.
 
 
 * The Lennard Jones calculator
-  
+
 
 #+BEGIN_SRC python :results output org drawer
 from dap.tf.lennardjones import LennardJones
@@ -275,9 +275,9 @@ atoms = bulk('Ar', 'fcc', a=2.5).repeat((2, 1, 1))
 atoms.rattle()
 atoms.set_calculator(LennardJones())
 
-print(atoms.get_potential_energy())          
-print(atoms.get_forces())   
-print(atoms.get_stress())       
+print(atoms.get_potential_energy())
+print(atoms.get_forces())
+print(atoms.get_stress())
 #+END_SRC
 
 #+RESULTS:
@@ -287,4 +287,20 @@ print(atoms.get_stress())
  [ 0.0041116  -0.00362234 -0.00403562]]
 [ 4.01225582e-01  4.01225198e-01  4.01225601e-01 -1.81750310e-07
  -5.36816118e-07  9.27398348e-08]
+:END:
+
+
+* Class LJ
+
+
+#+BEGIN_SRC python :results output org drawer
+from dap.tf.lennardjones import LennardJones
+
+lj = LennardJones()
+
+lj.train('Ar', 'argon.db')
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
 :END:
