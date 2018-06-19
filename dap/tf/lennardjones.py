@@ -20,7 +20,8 @@ import numpy as np
 import tensorflow as tf
 from dap.tf.neighborlist import get_neighbors_oneway
 from ase.calculators.calculator import Calculator, all_changes
-
+import ase.db
+    
 
 def get_Rij(positions, cell, mask, cutoff_radius):
   """Get distances to neighboring atoms with periodic boundary conditions.
@@ -341,6 +342,9 @@ def stress_batch(POSITIONS,
 
 
 class LennardJones(Calculator):
+  """A simple Tensorflow driven calculator.
+
+  """
   implemented_properties = ["energy", "forces", "stress"]
 
   default_parameters = {"sigma": 1.0, "epsilon": 1.0}
@@ -449,3 +453,43 @@ class LennardJones(Calculator):
     self.sigma = g.get_tensor_by_name("sigma:0")
     self.epsilon = g.get_tensor_by_name("epsilon:0")
     print(f'Loaded {self.sigma} and {self.epsilon}')
+
+
+  def train(self, label, dbfile, nepochs=10,
+            learning_rate=0.001,
+            shuffle=True, percenttest=0.1):
+    """Train the potential against the data in a database.
+
+    Parameters
+    ----------
+    label: string, used for saving the results.
+    db: the path to an ase database containing training examples.
+    shuffle: boolean, if True, shuffle the data.
+    percenttest: float, fraction of data to use only for testing
+    """
+
+    with ase.db.connect(dbfile) as db:
+      data = [(row.toatoms(), row.energy) for row in db.select()]
+            
+    if shuffle:
+      import random
+      random.shuffle(data)
+
+    N_train = int(len(data) * (1 - percenttest))
+
+    train_data = data[0:N_train]
+    test_data = data[N_train:]
+
+    known_energies = tf.placeholder(tf.float64, None)
+    tf_energies = tf.placeholder(tf.float64, None)
+    
+    #loss = tf.reduce_mean(tf.square(tf_energies - known_energies))
+    #opt = tf.train.AdamOptimizer(learning_rate).minimize(loss)
+
+    for i in range(nepochs):
+      for atoms, ke in train_data:
+        atoms.set_calculator(self)
+        te = atoms.get_calculator()._energy
+        
+
+        _loss = self.sess.run([te])
